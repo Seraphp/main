@@ -15,6 +15,10 @@
  * @subpackage Policy
  */
 interface Specification {
+  /**
+   * @param array|Iterator $src
+   * @return boolean
+   */
   public function isSatisfiedBy($src);
 }
 ?>
