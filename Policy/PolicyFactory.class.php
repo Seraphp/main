@@ -17,6 +17,7 @@ require_once 'Policy/Specification.interface.php';
  *  
  * @package Phaser
  * @subpackage Policy
+ * TODO: Refactor class to make it static using PHP 5.3 __staticCall feature
  */
 class PolicyFactory {
     /**
