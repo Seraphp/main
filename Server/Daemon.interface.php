@@ -9,7 +9,7 @@
  * Daemon Interface definition for creating processes running on their 
  * own as daemons.
  * 
- * @package Phaser
+ * @package Server
  * 
  */
 interface Daemon{
