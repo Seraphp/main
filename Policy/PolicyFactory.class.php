@@ -15,8 +15,7 @@ require_once 'Policy/Specification.interface.php';
  * This way you can create more complex policy rules.
  * Should be static class but for this it will need PHP 5.3
  *  
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  * TODO: Refactor class to make it static using PHP 5.3 __staticCall feature
  */
 class PolicyFactory {

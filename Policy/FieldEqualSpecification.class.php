@@ -11,8 +11,7 @@ require_once 'Policy/FieldSpecification.class.php';
 /**
  * Implements 'equal fields' policy.
  *  
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  */
 class FieldEqualSpecification extends FieldSpecification
 {

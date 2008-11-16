@@ -3,7 +3,7 @@
  * Contains abstract parent class of all FieldPolicy implementations.
  *  
  * @author Peter Nagy <antronin@gmail.com>
- * @version $Id$
+ * @version $Id:FieldSpecification.class.php 234 2008-11-01 15:35:32Z peter $
  * @filesource
  */
 //namespace Phaser\Policy;
@@ -20,8 +20,7 @@ require_once 'Policy/NotSpecification.class.php';
  * new logical policy class are implemented, they should be added to this 
  * class.  
  * 
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  * @abstract 
  */
 abstract class FieldSpecification implements Specification{

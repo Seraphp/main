@@ -13,8 +13,7 @@ require_once 'Policy/FieldSpecification.class.php';
  * 
  * Implementation is based on PHP's preg_match function
  * 
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  */
 class FieldMatchesSpecification extends FieldSpecification{
     /**

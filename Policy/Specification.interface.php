@@ -2,7 +2,7 @@
 /**
  * File documentation
  * @author Peter Nagy <antronin@gmail.com>
- * @version $Id$
+ * @version $Id:Specification.interface.php 234 2008-11-01 15:35:32Z peter $
  * @filesource
  */
 //namespace Phaser\Policy;
@@ -11,8 +11,7 @@
  * 
  * Has a required method "isSatisfiedBy" which a data source as parameter.
  * 
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  */
 interface Specification {
   /**

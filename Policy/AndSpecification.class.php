@@ -3,7 +3,7 @@
  * Contains implementation of AndSpecification class 
  * 
  * @author Peter Nagy <antronin@gmail.com>
- * @version $Id$
+ * @version $Id:AndSpecification.class.php 234 2008-11-01 15:35:32Z peter $
  * @filesource
  */
 //namespace Phaser::Policy;
@@ -11,8 +11,7 @@ require_once 'Policy/Specification.interface.php';
 /**
  * Implements "And" type specification policy
  * 
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  */
 class AndSpecification implements Specification{
     

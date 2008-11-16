@@ -10,8 +10,7 @@ require_once 'Policy/FieldSpecification.class.php';
 /**
  * Implements 'field greater than value' policy.
  * 
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  */
 class FieldGreaterSpecification extends FieldSpecification{
     

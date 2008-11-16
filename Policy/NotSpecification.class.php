@@ -11,8 +11,7 @@ require_once 'Policy/Specification.interface.php';
 /**
  * Implements "Not" type specification policy
  * 
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  */
 class NotSpecification implements Specification{
     /**

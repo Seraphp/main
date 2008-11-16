@@ -10,9 +10,7 @@
 require_once 'Policy/Specification.interface.php';
 /**
  * Implements "Or" type specification policy
- * 
- * @package Phaser
- * @subpackage Policy
+ * @package Policy
  */
 class OrSpecification implements Specification{
     
