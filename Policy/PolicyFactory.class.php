@@ -166,6 +166,8 @@ class PolicyFactory {
 }
 /**
  * Exception class for policy plugin related issues 
+ * 
+ * @package Policy
  */
 class PolicyPluginException extends Exception{}
 ?>
