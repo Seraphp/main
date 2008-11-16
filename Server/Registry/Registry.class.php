@@ -12,7 +12,7 @@
  * Singleton implementation of the Registry pattern for storing and
  * retrieving values with keys.
  *
- * @package Phaser
+ * @package Server
  * @subpackage Registry
  */
 class Registry{
