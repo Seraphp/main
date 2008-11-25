@@ -17,7 +17,6 @@
 interface Observer{
     public function getName();
     public function update(Listener $instance);
-    public function getState();
 }
 /**
  * Listener interface definition
@@ -30,6 +29,7 @@ interface Observer{
 interface Listener{
     public function attach(Observer $instance);
     public function notify();
+    public function getState();
     public function detach(Observer $instance);
 }
 ?>
