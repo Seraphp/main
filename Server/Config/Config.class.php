@@ -4,10 +4,12 @@
  * 
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
+ * @copyright Copyright (c) 2008, Peter Nagy
  * @package Server
  * @subpackage Config
  * @filesource
  */
+/***/
 //namespace Phaser::Server::Config;
 require_once 'Server/DataStore.class.php';
 /**
@@ -36,9 +38,14 @@ class Config extends DataStore{
         $this->dirty = true;
     }
      
-    private function isChanged()
+    public function isChanged()
     {
         return ($this->dirty);
+    }
+    
+    public function clearState()
+    {
+        $this->dirty = false;
     }
 }
 ?>
