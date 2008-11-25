@@ -74,5 +74,31 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
         );
         $this->assertTrue($spec->isSatisfiedBy($this->src));
     }
+    
+    function testCallInvalidPolicy()
+    {
+        $PF = PolicyFactory::getInstance();
+        $this->setExpectedException('PolicyPluginException');
+        $spec = $PF->less('numField','');
+    }
+    
+    function testGetInitialPluginsDir()
+    {
+        $PF = PolicyFactory::getInstance();
+        $this->assertEquals($PF->getPluginsDir(),'/home/peter/workspace/phaser/Policy');
+    }
+    
+    function testInvalidPluginsDir()
+    {
+        $PF = PolicyFactory::getInstance();
+        $this->setExpectedException('PolicyPluginException');
+        $PF->setPluginsDir('/home/peter/workspace/phaser/tests/Policy');
+    }
+    
+    function testValidPluginsDir()
+    {
+        $PF = PolicyFactory::getInstance();
+        $PF->setPluginsDir('/home/peter/workspace/phaser/Policy');
+    }
 }
 ?>
