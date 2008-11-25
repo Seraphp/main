@@ -1,10 +1,13 @@
 <?php
 /**
  * Contains main server implementation
+ * 
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
+ * @copyright Copyright (c) 2008, Peter Nagy
  * @filesource
  */
+/***/
 require_once 'Server/Daemon.interface.php';
 /**
  * Implementation of Daemon interface

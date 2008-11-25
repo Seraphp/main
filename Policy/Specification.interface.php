@@ -3,8 +3,11 @@
  * File documentation
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id:Specification.interface.php 234 2008-11-01 15:35:32Z peter $
+ * @copyright Copyright (c) 2008, Peter Nagy
+ * @package Policy
  * @filesource
  */
+/***/
 //namespace Phaser\Policy;
 /**
  * Specification interface

@@ -4,9 +4,11 @@
  * 
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
+ * @copyright Copyright (c) 2008, Peter Nagy
  * @package Server
  * @filesource
  */
+/***/
 //namespace Phaser::Server;
 /**
  * DataStore class for storing keys with values

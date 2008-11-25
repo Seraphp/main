@@ -4,9 +4,11 @@
  * 
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id:AndSpecification.class.php 234 2008-11-01 15:35:32Z peter $
+ * @copyright Copyright (c) 2008, Peter Nagy
  * @package Policy
  * @filesource
  */
+/***/
 //namespace Phaser::Policy;
 require_once 'Policy/Specification.interface.php';
 /**

@@ -4,8 +4,11 @@
  * 
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
+ * @copyright Copyright (c) 2008, Peter Nagy
+ * @package Policy
  * @filesource
  */
+/***/
 //namespace Phaser\Policy;
 require_once 'Policy/FieldSpecification.class.php';
 /**
