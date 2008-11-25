@@ -4,8 +4,14 @@
  *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
+ * @copyright Copyright (c) 2008, Peter Nagy
+ * @package Server
+ * @subpackage Registry
  * @filesource
  */
+/***/
+require_once 'Singleton.interface.php';
+require_once 'Server/DataStore.class.php';
 /**
  * Register class with nested keys
  *
@@ -15,7 +21,7 @@
  * @package Server
  * @subpackage Registry
  */
-class Registry{
+class Registry extends DataStore implements Singleton{
 
     /**
      * Holds self reference
@@ -24,13 +30,6 @@ class Registry{
      */
     static private $instance = null;
     
-	/**
-     * Stores key=>value pairs of registry entries
-     *
-     * @var array
-     */
-    private $store = array();
-
     /**
      * Disabled constructor
      *
@@ -44,67 +43,20 @@ class Registry{
      */
     public function __clone()
     {
-        throw new Exception();
+        throw new Exception('Cloning is disabled!');
     }
 
     /**
      * Returns instance of class
      *
-     * @return unknown
+     * @return self
      */
     public function getInstance()
     {
         if(self::$instance === null){
-            self::$instance = new self();
+            self::$instance = new self;
         }
         return self::$instance;
     }
-
-    /**
-     * Checks recursively if a key is exists in the store.
-     *
-     * @param string $key
-     * @return boolean
-     */
-    public function isExists($key)
-    {
-        return (array_key_exists($key, $this->store));
-    }
-
-    /**
-     * Registers a value with a key in the registry.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     */
-    public function __set($key, $value)
-    {
-        if(is_array($this->store[$key]))
-        {
-            $this->store = array_merge_recursive($this->store[$key], $value);
-        }
-        else
-        {
-            $this->store[$key]=$value;
-        }
-            
-    }
-
-    /**
-     * Returns a value registered on a key in the store.
-     *
-     * @param string $key
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        if($this->isExists($key))
-        {
-            return $this->store[$key];
-        }
-        else return null;
-    }
-
 }
 ?>
