@@ -9,6 +9,7 @@
  * @filesource
  */
 //namespace Phaser::Server::Config;
+require_once 'Server/DataStore.class.php';
 /**
  * Config class decoates DataStore
  *
