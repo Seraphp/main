@@ -4,6 +4,7 @@
  * 
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id:AndSpecification.class.php 234 2008-11-01 15:35:32Z peter $
+ * @package Policy
  * @filesource
  */
 //namespace Phaser::Policy;
