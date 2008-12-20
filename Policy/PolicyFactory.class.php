@@ -115,7 +115,7 @@ class PolicyFactory {
         $nameMatch = preg_match('/^(.+)Specification.class.php$/',$plugin, $matches);
         if( $nameMatch !== FALSE && $nameMatch > 0)
         {
-            require_once 'Policy/'.$plugin;
+            require_once $this->pluginsDir.'/'.$plugin;
             $className = substr($plugin,0,-10);
             $class = new ReflectionClass($className);
             if($class->implementsInterface('Specification'))
