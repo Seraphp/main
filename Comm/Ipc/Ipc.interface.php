@@ -19,6 +19,8 @@ interface Ipc{
     function init($pid);
     function read();
     function write($to, $message);
+    function setRole();
+    function getRole();
     function close();
 }
 ?>
