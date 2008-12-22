@@ -11,7 +11,6 @@
 require_once 'Comm/Ipc/Ipc.interface.php';
 /**
  * Interprocess communication through unix sockets
- * TODO: Add JSON stream wrapper to socket transport (see stream_register_wrapper)
  */
 class IpcUnixsockets implements Ipc{
 
