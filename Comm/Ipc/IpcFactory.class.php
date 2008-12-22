@@ -61,7 +61,7 @@ class IpcFactory{
      */
     private static function isValidIpc($type)
     {
-        $pluginFile = sprintf('%s/%s.class.php',$this->pluginsDir,self::getClassName($type));
+        $pluginFile = sprintf('%s/%s.class.php',self::$pluginsDir,self::getClassName($type));
         if(is_file($pluginFile))
         {
             require_once $pluginFile;
