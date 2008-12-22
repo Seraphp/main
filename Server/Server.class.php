@@ -78,20 +78,32 @@ abstract class Server implements Daemon{
     {
         if (count($this->spawns) < $this->maxSpawns)
         {
+            $ipc = ($this->ipcType !== '')?IpcFactory::get($ipcType,$this->pid):null;
             $pid = pcntl_fork();
             if($pid < 0)
             {
                 throw new Exception('Unable to fork!');
-            }elseif($pid == 0){
+            }
+            elseif($pid == 0)
+            {
                 $this->pid = getmypid();
                 $this->role = 'child';
-                $this->ipc = ($this->ipcType !== '')?IpcFactory::get($ipcType,$this->pid):null;
-            }else{
-                $this->spawns[] = $pid;
+                if($ipc !== null)
+                {
+                    $ipc->setRole($this->role);
+                }
+                $this->ipc = $ipc;
+            }
+            else
+            {
+                if($ipc !== null)
+                {
+                    $ipc->setRole($this->role);
+                }
+                $this->spawns[] = array('pid'=>$pid, 'ipc'=>$ipc);
             }
             fputs(STDOUT, $pid." spawned\n");
         }
-
     }
 
     public function expell()
@@ -100,14 +112,19 @@ abstract class Server implements Daemon{
         $success = false;
         foreach($this->spawns as $child)
         {
-            fputs(STDOUT, "$child \n");
-            posix_kill ($child, SIGSTOP);
-            pcntl_waitpid ($child, $temp = 0, WNOHANG);
-            $success = pcntl_wifexited ($temp);
+            fputs(STDOUT, $child['pid']."\n");
+            posix_kill ($child['pid'], SIGSTOP);
+            pcntl_waitpid ($child['pid'], $temp = 0, WNOHANG);
+            $success = pcntl_wifexited($temp);
+            if($success && $child['ipc'] !== null)
+            {
+                $child['ipc']->close();
+            }
         }
-        return $success;
         fclose($this->pidFile);
         unlink($this->pidFolder.'/.phaser'.$this->appID.'.pid');
+        fputs(STDOUT, "Parent exiting..");
+        return $success;
     }
 
     public function setMaxSpawns($num)
@@ -136,6 +153,14 @@ abstract class Server implements Daemon{
             default:
                 fputs(STDOUT, 'signal received:'.$this->lastSignal);
                 fputs(STDOUT, ' a strange signal');
+        }
+    }
+
+    public function __destruct()
+    {
+        if($this->pidFile !== null)
+        {
+            $this->expell();
         }
     }
 }
