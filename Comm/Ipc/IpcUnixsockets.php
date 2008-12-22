@@ -21,6 +21,7 @@ class IpcUnixsockets implements Ipc{
     private $pid = null;
     private $ln = "\n";
 
+    const MAX_MESSAGE_LENGTH = 50000;
 
     public function init($pid, $role)
     {
@@ -57,7 +58,7 @@ class IpcUnixsockets implements Ipc{
 
     public function read()
     {
-        return stream_get_line(($this->role)?$this->sockChild:$this->sockParent,50000,$this->ln);
+        return stream_get_line(($this->role)?$this->sockChild:$this->sockParent,self::MAX_MESSAGE_LENGTH,$this->ln);
     }
 
     public function write($to, $message)
