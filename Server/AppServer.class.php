@@ -25,11 +25,11 @@ class AppServer extends Server{
     protected $pidFolder = '/home/peter/workspace/phaser';
     protected $appReg = null;
 
-    public function __construct($appID)
+    public function __construct($appID,$ipcType='unixsockets')
     {
         $this->appID = $appID;
         $this->appReg = AppServerRegistry::getInstance();
-        parent::__construct();
+        parent::__construct($ipcType);
     }
 
     public function getAppId()
