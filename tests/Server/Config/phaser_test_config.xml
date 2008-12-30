@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phaser>
+	<servers pidpath='/home/peter/workspace/phaser'>
+		<server id='main'>
+			<urimap>
+				<url>/</url>
+				<url>/admin/</url>
+			</urimap>
+			<config>
+				<maxchildren>5</maxchildren>
+				<address>127.0.0.1</address>
+				<port>8123</port>
+			</config>
+			<resources>
+				<includes>
+					<path>.</path>
+					<path>/home/peter/workspace/phaser</path>
+				</includes>
+			</resources>
+		</server>
+		<server id='session' internal='true'>
+			<config>
+				<maxchildren>5</maxchildren>
+				<address>127.0.0.1</address>
+				<port>8124</port>
+			</config>
+			<resources>
+				<includes>
+					<path>.</path>
+					<path>/home/peter/workspace/phaser</path>
+				</includes>
+			</resources>
+		</server>
+		<server id='dbpool' internal='true'>
+			<config>
+				<maxchildren>5</maxchildren>
+				<address>127.0.0.1</address>
+				<port>8125</port>
+			</config>
+			<resources>
+				<includes>
+					<path>.</path>
+					<path>/home/peter/workspace/phaser</path>
+				</includes>
+			</resources>
+		</server>
+	</servers>
+</phaser>
