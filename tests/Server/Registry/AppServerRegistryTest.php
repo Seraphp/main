@@ -43,10 +43,16 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
         $this->assertTrue($this->reg->addApp('mockery',$this->mockServer));
         $this->assertEquals($this->reg->getAppStatus('mockery'),null);
         $this->assertSame($this->reg->getAppInstance('mockery'),$this->mockServer);
+        $this->assertSame($this->mockServer, $this->reg->removeApp('mockery'));
         $this->setExpectedException('RegistryException');
+        $this->reg->removeApp('mockery');
+    }
+
+    function testAddSameApp()
+    {
         $this->assertTrue($this->reg->addApp('mockery',$this->mockServer));
-        $this->assertSame($this->reg->removeApp('mockery'), $this->mockServer);
         $this->setExpectedException('RegistryException');
+        $this->reg->addApp('mockery',$this->mockServer);
         $this->reg->removeApp('mockery');
     }
 
