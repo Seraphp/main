@@ -1,7 +1,7 @@
 <?php
 /**
  * Contains implementation of PolicyFactory and related exceptions
- * 
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2008, Peter Nagy
@@ -11,13 +11,14 @@
 /***/
 //namespace Phaser::Policy;
 require_once 'Policy/Specification.interface.php';
+require_once 'Exceptions/PluginException.class.php';
 /**
  * Factory class for creating PolicyRules
- * 
+ *
  * Registers all the available Specification classes as its own functions.
  * This way you can create more complex policy rules.
  * Should be static class but for this it will need PHP 5.3
- *  
+ *
  * @package Policy
  * TODO: Refactor class to make it static using PHP 5.3 __staticCall feature
  */
@@ -42,17 +43,17 @@ class PolicyFactory {
     private static $instance = null;
     /**
      * Private constructor to force singleton/static usage
-     * 
-     * Any call to constructor will result reading in plugins from 
+     *
+     * Any call to constructor will result reading in plugins from
      * default directory, which is the same dir as this file is located.
      */
     private function __construct(){
         $this->readPlugins();
     }
-    
+
     /**
      * Returns Singleton instance
-     *  
+     *
      * @return PolicyFactory
      */
     public function getInstance(){
@@ -61,7 +62,7 @@ class PolicyFactory {
         }
         return self::$instance;
     }
-    
+
     /**
      * Magic method to redirect methd calls to certain policy classes
      *
@@ -71,17 +72,17 @@ class PolicyFactory {
      */
     public function __call($func, $params)
     {
-        $this->readPlugins();        
+        $this->readPlugins();
         if(array_key_exists($func, $this->plugins))
         {
             $class = new ReflectionClass($this->plugins[$func]);
             return ($class->newInstanceArgs($params));
         }
-        else throw new PolicyPluginException('No plugin mapped to function '.$func);
+        else throw new PluginException('No plugin mapped to function '.$func);
     }
-    
+
     /**
-     * Read plugins form directory
+     * Read plugins from directory
      *
      */
     private function readPlugins()
@@ -96,17 +97,17 @@ class PolicyFactory {
             }
             $d->close();
         }
-        
+
     }
 
     /**
      * Registers policy implementation classes as callable functions
-     * 
+     *
      * Classes has to be called <PolicyName>Specification.class.php to make PolicyFactory
-     * able to register them. If <PolicyName> does not start with "Field", the methodname 
+     * able to register them. If <PolicyName> does not start with "Field", the methodname
      * will be postfixed with "_" to avoid name clashes with existing PHP native function.
-     * For example: 
-     *   AndSpecification.class.php will be registered as "PolicyFactory::and_".   
+     * For example:
+     *   AndSpecification.class.php will be registered as "PolicyFactory::and_".
      *
      * @param string $plugin
      * @throws PolicyPluginException
@@ -130,16 +131,16 @@ class PolicyFactory {
                     $this->plugins[strtolower($key)] =  $className;
                 }
             }
-            else throw new PolicyPluginException('Specification interface not implemented in '.$plugin);
+            else throw new PluginException('Specification interface not implemented in '.$plugin);
         }
     }
     /**
      * Sets plugins directory
-     * 
+     *
      * Also deletes already registered plugins and reload the plugins list.
-     * TODO: Refactor class to make it able to simply add a new directory to the plugins' 
+     * TODO: Refactor class to make it able to simply add a new directory to the plugins'
      * directory's lists.
-     * 
+     *
      * @param string $dir
      */
     public function setPluginsDir($dir){
@@ -147,7 +148,7 @@ class PolicyFactory {
         $this->plugins = array();
         $this->readPlugins();
     }
-    
+
     /**
      * Returns plugin directory
      *
@@ -156,7 +157,7 @@ class PolicyFactory {
     public function getPluginsDir(){
         return $this->pluginsDir;
     }
-    
+
     /**
      * Returns the list of usable method names for plugins
      *
@@ -167,10 +168,4 @@ class PolicyFactory {
         return (array_keys($this->plugins));
     }
 }
-/**
- * Exception class for policy plugin related issues 
- * 
- * @package Policy
- */
-class PolicyPluginException extends Exception{}
 ?>
