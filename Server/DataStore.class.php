@@ -1,7 +1,7 @@
 <?php
 /**
  * Holds implememntation of DataStore class
- * 
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2008, Peter Nagy
@@ -12,20 +12,20 @@
 //namespace Phaser::Server;
 /**
  * DataStore class for storing keys with values
- * 
+ *
  * The class is capable of storing any kind of value with a key, in an obejct based modell
- * 
+ *
  * @package Server
  */
 class DataStore{
-    
+
 	/**
      * Stores key=>value pairs of registry entries
      *
      * @var array
      */
-    private $store = array();
-    
+    protected $store = array();
+
     /**
      * Checks if a key is exists in the store.
      *
@@ -54,7 +54,7 @@ class DataStore{
         {
             $this->store[$key]=$value;
         }
-            
+
     }
 
     /**
@@ -67,7 +67,6 @@ class DataStore{
     {
         if($this->isExists($key))
         {
-            $this->pointer = $key;
             return $this->store[$key];
         }
         else return null;
