@@ -29,7 +29,7 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
             'or_'
         );
     }
-    
+
     function testFactoryPluginList()
     {
         $PF = PolicyFactory::getInstance();
@@ -38,25 +38,25 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
             $this->assertContains($plugin,$plugins);
         }
     }
-    
+
     function testFactoryEqual(){
         $PF = PolicyFactory::getInstance();
         $spec = $PF->equal('writer','Douglas Adams');
         $this->assertTrue($spec->isSatisfiedBy($this->src));
     }
-    
+
     function testFactoryGreater(){
         $PF = PolicyFactory::getInstance();
         $spec = $PF->greater('numField','40');
         $this->assertTrue($spec->isSatisfiedBy($this->src));
     }
-    
+
     function testFactoryMatches(){
         $PF = PolicyFactory::getInstance();
         $spec = $PF->matches('numField','/^\d{2}$/');
         $this->assertTrue($spec->isSatisfiedBy($this->src));
     }
-    
+
     function testFactoryFacility()
     {
         $PF = PolicyFactory::getInstance();
@@ -74,27 +74,27 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
         );
         $this->assertTrue($spec->isSatisfiedBy($this->src));
     }
-    
+
     function testCallInvalidPolicy()
     {
         $PF = PolicyFactory::getInstance();
-        $this->setExpectedException('PolicyPluginException');
+        $this->setExpectedException('PluginException');
         $spec = $PF->less('numField','');
     }
-    
+
     function testGetInitialPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
         $this->assertEquals($PF->getPluginsDir(),'/home/peter/workspace/phaser/Policy');
     }
-    
+
     function testInvalidPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
-        $this->setExpectedException('PolicyPluginException');
+        $this->setExpectedException('PluginException');
         $PF->setPluginsDir('/home/peter/workspace/phaser/tests/Policy');
     }
-    
+
     function testValidPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
