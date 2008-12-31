@@ -16,10 +16,10 @@
  */
 interface Ipc{
 
-    function init($pid);
+    function init($pid, $role);
     function read();
     function write($to, $message);
-    function setRole();
+    function setRole($role);
     function getRole();
     function close();
 }
