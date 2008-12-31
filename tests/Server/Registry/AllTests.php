@@ -6,7 +6,8 @@
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';
-require_once 'tests/Server/Registry/RegistryTest.php';
+require_once 'RegistryTest.php';
+require_once 'AppServerRegistryTest.php';
 /**
  * Class documentation
  */
@@ -16,6 +17,7 @@ class Registry_AllTests{
     {
         // @codeCoverageIgnoreStart
         $suite = new PHPUnit_Framework_TestSuite('Registry facilities');
+        $suite->addTestSuite('AppServerRegistryTest');
         $suite->addTestSuite('RegistryTest');
         return $suite;
         // @codeCoverageIgnoreEnd
