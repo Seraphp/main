@@ -16,20 +16,18 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
 
     function setUp()
     {
-        $this->appID = 'phaserMain';
+        $this->appID = 'main';
     }
-    
+
     function testAppServerInstatiation()
     {
         $this->server = new AppServer($this->appID);
+        $this->assertEquals($this->server->getAppId(), $this->appID);
         $this->assertTrue($this->server->summon());
-        $this->assertFileExists('/home/peter/workspace/phaser/.'.$this->appID.'.pid');
+        $this->assertFileExists('/home/peter/workspace/phaser/.phaser'.$this->appID.'.pid');
+        $this->assertEquals(5, $this->server->getMaxSpawns());
+        $this->server->setMaxSpawns(10);
+        $this->assertEquals(10, $this->server->getMaxSpawns());
     }
-    
-    function tearDown()
-    {
-        $this->server->expell();
-    }
-
 }
 ?>
