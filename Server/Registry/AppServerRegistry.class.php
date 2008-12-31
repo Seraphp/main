@@ -79,7 +79,9 @@ class AppServerRegistry extends Registry{
     }
 
     /**
-     * Enter description here...
+     * Remove application from registry
+     *
+     * Returns reference of the removed application
      *
      * @param string $appID
      * @return AppServer
@@ -99,7 +101,7 @@ class AppServerRegistry extends Registry{
     }
 
     /**
-     * Enter description here...
+     * Store reference of application in registry.
      *
      * @param string $appID
      * @param AppServer $appRef
@@ -123,5 +125,6 @@ class AppServerRegistry extends Registry{
  * @package Server
  * @subpackage Registry
  */
-class RegistryException extends Exception{}
+class RegistryException extends Exception{
+}
 ?>
