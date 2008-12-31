@@ -25,6 +25,12 @@ class RegistryTest extends PHPUnit_Framework_TestCase{
         $this->assertSame($this->reg, Registry::getInstance());
     }
     
+    function testCloningDisabled()
+    {
+        $this->setExpectedException('Exception');
+        $newReg = clone $this->reg;
+    }
+    
     function testEmptyRegistryKeyIsInvalid()
     {
         $this->assertFalse($this->reg->isExists('somekey'));
