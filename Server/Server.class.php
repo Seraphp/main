@@ -132,6 +132,11 @@ abstract class Server implements Daemon{
         $this->maxSpawns = $num;
     }
 
+    public function getMaxSpawns($num)
+    {
+        return $this->maxSpawns;
+    }
+
     private function signalHandler($sigCode)
     {
         switch($sigCode){
