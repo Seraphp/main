@@ -132,7 +132,7 @@ abstract class Server implements Daemon{
         $this->maxSpawns = $num;
     }
 
-    public function getMaxSpawns($num)
+    public function getMaxSpawns()
     {
         return $this->maxSpawns;
     }
