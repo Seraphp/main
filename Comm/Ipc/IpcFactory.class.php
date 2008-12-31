@@ -38,7 +38,7 @@ class IpcFactory{
         {
             $className = self::getClassName($type);
             $class = new $className;
-            $class->init($pid);
+            $class->init($pid, 'child');
             return $class;
         }
     }
@@ -46,6 +46,25 @@ class IpcFactory{
     static function getClassName($type)
     {
         return sprintf('Ipc%s',ucfirst($type));
+    }
+
+    static function setPluginsDir($dir = '')
+    {
+        if(empty($dir))
+        {
+            $dir = dirname(__FILE__);
+        }
+        if(is_dir($dir))
+        {
+            self::$pluginsDir = $dir;
+            return true;
+        }
+        else return false;
+    }
+
+    static function getPluginsDir()
+    {
+        return self::$pluginsDir;
     }
 
     /**
@@ -61,6 +80,7 @@ class IpcFactory{
      */
     private static function isValidIpc($type)
     {
+        self::setPluginsDir();
         $pluginFile = sprintf('%s/%s.class.php',self::$pluginsDir,self::getClassName($type));
         if(is_file($pluginFile))
         {
@@ -72,6 +92,7 @@ class IpcFactory{
             }
             else throw new PluginException('Ipc interface not implemented in '.$type);
         }
+        else throw new PluginException(self::getClassName($type).'.class.php not exists!');
     }
 }
 ?>
