@@ -45,7 +45,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
     {
         $this->conf->somekey = array('foo'=>array('bar'=>'somevalue'));
         $this->conf->clearState();
-        $this->assertFlase($this->conf->isChanged());
+        $this->assertFalse($this->conf->isChanged());
     }
 
     function testConfigValueIsReference()
