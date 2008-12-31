@@ -78,7 +78,7 @@ abstract class Server implements Daemon{
     {
         if (count($this->spawns) < $this->maxSpawns)
         {
-            $ipc = ($this->ipcType !== '')?IpcFactory::get($ipcType,$this->pid):null;
+            $ipc = ($this->ipcType !== '')?IpcFactory::get($this->ipcType,$this->pid):null;
             $pid = pcntl_fork();
             if($pid < 0)
             {
@@ -121,8 +121,9 @@ abstract class Server implements Daemon{
                 $child['ipc']->close();
             }
         }
+        flock($this->pidFile, LOCK_UN);
         fclose($this->pidFile);
-        unlink($this->pidFolder.'/.phaser'.$this->appID.'.pid');
+        unlink($this->pidFile);
         fputs(STDOUT, "Parent exiting..");
         return $success;
     }
