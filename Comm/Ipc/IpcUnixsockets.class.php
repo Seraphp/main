@@ -5,12 +5,16 @@
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id:IpcUnixsockets.class.php 289 2008-12-31 17:13:49Z peter $
  * @copyright Copyright (c) 2008, Peter Nagy
+ * @package Comm
+ * @subpackage Ipc
  * @filesource
  */
 /***/
 require_once 'Comm/Ipc/Ipc.interface.php';
 /**
  * Interprocess communication through unix sockets
+ * @package Comm
+ * @subpackage Ipc
  */
 class IpcUnixsockets implements Ipc{
 

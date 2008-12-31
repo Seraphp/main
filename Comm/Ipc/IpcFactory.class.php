@@ -19,6 +19,8 @@ require_once 'Exceptions/PluginException.class.php';
  * classes, depending on the given type. Class checks if the requested
  * implementation type is exists in the filesystem. Requesting such not
  * implemented types results throwing Exception.
+ * @package Comm
+ * @subpackage Ipc
  */
 class IpcFactory{
 
