@@ -3,7 +3,7 @@
  * Holds IpcUnixsockets class implementation
  *
  * @author Peter Nagy <antronin@gmail.com>
- * @version $Id$
+ * @version $Id:IpcUnixsockets.class.php 289 2008-12-31 17:13:49Z peter $
  * @copyright Copyright (c) 2008, Peter Nagy
  * @filesource
  */
@@ -24,6 +24,7 @@ class IpcUnixsockets implements Ipc{
 
     public function init($pid, $role)
     {
+        $this->close();
         //opening a pair of unix sockets, which are indistinguishable and connected
         $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
         foreach($sockets as $sock)
@@ -34,6 +35,7 @@ class IpcUnixsockets implements Ipc{
         $this->sockParent = $sockets[1];
         $this->pid = $pid;
         $this->role = ($role == 'child');
+        return $this->getRole();
     }
 
     public function getRole()
@@ -43,16 +45,17 @@ class IpcUnixsockets implements Ipc{
 
     public function setRole($role)
     {
-        //a process needs only one side of the socket
-        if($role == 'child')
+        if($this->role != ($role == 'child'))
         {
-            fclose($this->sockParent);
+              $this->role = ($role == 'child');
+              $this->roleChange();
         }
-        else
-        {
-            fclose($this->sockChild);
-        }
-        $this->role = ($role == 'child');
+        return $this->getRole();
+    }
+
+    private function roleChange()
+    {
+        $this->init($this->pid, $this->role);
     }
 
     public function read()
@@ -62,22 +65,22 @@ class IpcUnixsockets implements Ipc{
 
     public function write($to, $message)
     {
-        fwrites(($this->role)?$this->sockChild:$this->sockParent);
+        return fwrite(($this->role)?$this->sockChild:$this->sockParent, $message.$this->ln);
     }
 
     public function close()
     {
-        if($this->role)//when we are in the child process
+        if(is_resource($this->sockChild))
         {
             fclose($this->sockChild);
         }
-        else
+        if(is_resource($this->sockParent))
         {
             fclose($this->sockParent);
         }
     }
 
-    public function _destruct()
+    public function __destruct()
     {
         $this->close();
     }
