@@ -6,11 +6,11 @@
 				<url>/</url>
 				<url>/admin/</url>
 			</urimap>
-			<config>
+			<instance>
 				<maxchildren>5</maxchildren>
 				<address>127.0.0.1</address>
 				<port>8123</port>
-			</config>
+			</instance>
 			<resources>
 				<includes>
 					<path>.</path>
@@ -19,11 +19,11 @@
 			</resources>
 		</server>
 		<server id='session' internal='true'>
-			<config>
+			<instance>
 				<maxchildren>5</maxchildren>
 				<address>127.0.0.1</address>
 				<port>8124</port>
-			</config>
+			</instance>
 			<resources>
 				<includes>
 					<path>.</path>
@@ -32,15 +32,16 @@
 			</resources>
 		</server>
 		<server id='dbpool' internal='true'>
-			<config>
+			<instance>
 				<maxchildren>5</maxchildren>
 				<address>127.0.0.1</address>
 				<port>8125</port>
-			</config>
+			</instance>
 			<resources>
 				<includes>
 					<path>.</path>
 					<path>/home/peter/workspace/phaser</path>
+					<file>dbPool.class.php</file>
 				</includes>
 			</resources>
 		</server>

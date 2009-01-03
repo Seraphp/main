@@ -1,7 +1,7 @@
 <?php
 /**
  * Holds implememntation of Configuration class
- * 
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2008, Peter Nagy
@@ -17,14 +17,14 @@ require_once 'Server/DataStore.class.php';
  *
  * The class hold the configuration of a server and can signal
  * if it is changed.
- *  
+ *
  * @package Server
  * @subpackage Config
  */
 class Config extends DataStore{
-    
+
     private $dirty = false;
- 
+
     /**
      * Registers a value with a key in the registry.
      *
@@ -37,15 +37,17 @@ class Config extends DataStore{
         parent::__set($key,$value);
         $this->dirty = true;
     }
-     
+
     public function isChanged()
     {
         return ($this->dirty);
     }
-    
+
     public function clearState()
     {
         $this->dirty = false;
     }
 }
+
+class ConfigException extends Exception{}
 ?>

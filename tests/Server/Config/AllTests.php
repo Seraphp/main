@@ -7,6 +7,7 @@
  */
 require_once 'PHPUnit/Framework.php';
 require_once 'tests/Server/Config/ConfigTest.php';
+require_once 'tests/Server/Config/ConfigFactoryTest.php';
 /**
  * Class documentation
  */
@@ -17,6 +18,7 @@ class Config_AllTests{
         // @codeCoverageIgnoreStart
         $suite = new PHPUnit_Framework_TestSuite('Config facilities');
         $suite->addTestSuite('ConfigTest');
+        $suite->addTestSuite('ConfigFactoryTest');
         return $suite;
         // @codeCoverageIgnoreEnd
     }
