@@ -81,14 +81,14 @@
             </table>
           </td>
           <td class="coverPerHi">100.00%</td>
-          <td class="coverNumHi">3 / 3</td>
+          <td class="coverNumHi">4 / 4</td>
         </tr>
 
         <tr>
           <td class="tableHead" colspan="10">&nbsp;</td>
         </tr>
         <tr>
-          <td class="coverItem"><b><a href="#13">Config_AllTests</a></b></td>
+          <td class="coverItem"><b><a href="#14">Config_AllTests</a></b></td>
           <td class="coverBar" align="center" width="100">
             <table border="0" cellspacing="0" cellpadding="1">
               <tr>
@@ -115,11 +115,11 @@
             </table>
           </td>
           <td class="coverPerHi">100.00%</td>
-          <td class="coverNumHi">3 / 3</td>
+          <td class="coverNumHi">4 / 4</td>
         </tr>
 
         <tr>
-          <td class="coverFile" colspan="4">&nbsp;<a href="#15">public static function suite()</a></td>
+          <td class="coverFile" colspan="4">&nbsp;<a href="#16">public static function suite()</a></td>
           <td class="coverBar" align="center" width="100">
             <table border="0" cellspacing="0" cellpadding="1">
               <tr>
@@ -137,7 +137,7 @@
             </table>
           </td>
           <td class="coverPerHi">100.00%%</td>
-          <td class="coverNumHi">3 / 3</td>
+          <td class="coverNumHi">4 / 4</td>
         </tr>
 
 
@@ -162,20 +162,22 @@
 <span class="lineNum" id="container7"><a name="7"></a><a href="#7" id="line7">       7</a> </span>                :  */                                                                   
 <span class="lineNum" id="container8"><a name="8"></a><a href="#8" id="line8">       8</a> </span>                : require_once 'PHPUnit/Framework.php';                                 
 <span class="lineNum" id="container9"><a name="9"></a><a href="#9" id="line9">       9</a> </span>                : require_once 'tests/Server/Config/ConfigTest.php';                    
-<span class="lineNum" id="container10"><a name="10"></a><a href="#10" id="line10">      10</a> </span>                : /**                                                                   
-<span class="lineNum" id="container11"><a name="11"></a><a href="#11" id="line11">      11</a> </span>                :  * Class documentation                                                
-<span class="lineNum" id="container12"><a name="12"></a><a href="#12" id="line12">      12</a> </span>                :  */                                                                   
-<span class="lineNum" id="container13"><a name="13"></a><a href="#13" id="line13">      13</a> </span>                : class Config_AllTests{                                                
-<span class="lineNum" id="container14"><a name="14"></a><a href="#14" id="line14">      14</a> </span>                :                                                                       
-<span class="lineNum" id="container15"><a name="15"></a><a href="#15" id="line15">      15</a> </span>                :     public static function suite()                                    
-<span class="lineNum" id="container16"><a name="16"></a><a href="#16" id="line16">      16</a> </span>                :     {                                                                 
-<span class="lineNum" id="container17"><a name="17"></a><a href="#17" id="line17">      17</a> </span>                :         // @codeCoverageIgnoreStart                                   
-<span class="lineNum" id="container18"><a name="18"></a><a href="#18" id="line18">      18</a> </span>                :         $suite = new PHPUnit_Framework_TestSuite('Config facilities');
-<span class="lineNum" id="container19"><a name="19"></a><a href="#19" id="line19">      19</a> </span>                :         $suite-&gt;addTestSuite('ConfigTest');                           
-<span class="lineNum" id="container20"><a name="20"></a><a href="#20" id="line20">      20</a> </span>                :         return $suite;                                                
-<span class="lineNum" id="container21"><a name="21"></a><a href="#21" id="line21">      21</a> </span>                :         // @codeCoverageIgnoreEnd                                     
-<span class="lineNum" id="container22"><a name="22"></a><a href="#22" id="line22">      22</a> </span><span class="lineDeadCode">                :     }                                                                 </span>
-<span class="lineNum" id="container23"><a name="23"></a><a href="#23" id="line23">      23</a> </span>                : }                                                                     
+<span class="lineNum" id="container10"><a name="10"></a><a href="#10" id="line10">      10</a> </span>                : require_once 'tests/Server/Config/ConfigFactoryTest.php';             
+<span class="lineNum" id="container11"><a name="11"></a><a href="#11" id="line11">      11</a> </span>                : /**                                                                   
+<span class="lineNum" id="container12"><a name="12"></a><a href="#12" id="line12">      12</a> </span>                :  * Class documentation                                                
+<span class="lineNum" id="container13"><a name="13"></a><a href="#13" id="line13">      13</a> </span>                :  */                                                                   
+<span class="lineNum" id="container14"><a name="14"></a><a href="#14" id="line14">      14</a> </span>                : class Config_AllTests{                                                
+<span class="lineNum" id="container15"><a name="15"></a><a href="#15" id="line15">      15</a> </span>                :                                                                       
+<span class="lineNum" id="container16"><a name="16"></a><a href="#16" id="line16">      16</a> </span>                :     public static function suite()                                    
+<span class="lineNum" id="container17"><a name="17"></a><a href="#17" id="line17">      17</a> </span>                :     {                                                                 
+<span class="lineNum" id="container18"><a name="18"></a><a href="#18" id="line18">      18</a> </span>                :         // @codeCoverageIgnoreStart                                   
+<span class="lineNum" id="container19"><a name="19"></a><a href="#19" id="line19">      19</a> </span>                :         $suite = new PHPUnit_Framework_TestSuite('Config facilities');
+<span class="lineNum" id="container20"><a name="20"></a><a href="#20" id="line20">      20</a> </span>                :         $suite-&gt;addTestSuite('ConfigTest');                           
+<span class="lineNum" id="container21"><a name="21"></a><a href="#21" id="line21">      21</a> </span>                :         $suite-&gt;addTestSuite('ConfigFactoryTest');                    
+<span class="lineNum" id="container22"><a name="22"></a><a href="#22" id="line22">      22</a> </span>                :         return $suite;                                                
+<span class="lineNum" id="container23"><a name="23"></a><a href="#23" id="line23">      23</a> </span>                :         // @codeCoverageIgnoreEnd                                     
+<span class="lineNum" id="container24"><a name="24"></a><a href="#24" id="line24">      24</a> </span><span class="lineDeadCode">                :     }                                                                 </span>
+<span class="lineNum" id="container25"><a name="25"></a><a href="#25" id="line25">      25</a> </span>                : }                                                                     
 
 </pre>
         </td>
@@ -184,7 +186,7 @@
 
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
       <tr><td class="ruler"><img src="glass.png" width="3" height="3" alt=""></td></tr>
-      <tr><td class="versionInfo">Generated by <a href="http://www.phpunit.de/">PHPUnit 3.3.9</a> and <a href="http://www.xdebug.org/">Xdebug 2.0.3</a> at Wed Dec 31 21:37:03 CET 2008.</td></tr>
+      <tr><td class="versionInfo">Generated by <a href="http://www.phpunit.de/">PHPUnit 3.3.9</a> and <a href="http://www.xdebug.org/">Xdebug 2.0.3</a> at Sat Jan 3 22:48:26 CET 2009.</td></tr>
     </table>
 
     <br />
