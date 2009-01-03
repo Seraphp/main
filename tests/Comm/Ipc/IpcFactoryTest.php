@@ -29,8 +29,7 @@ class IpcFactoryTest extends PHPUnit_Framework_TestCase{
     function testValidPlugin()
     {
         IpcFactory::setPluginsDir('/home/peter/workspace/phaser/Comm/Ipc');
-        $class = new ReflectionClass(IpcFactory::get('unixsockets',0));
-        $this->assertTrue($class->implementsInterface('Ipc'));
+        $this->assertThat(IpcFactory::get('unixsockets',0),$this->IsInstanceOf('Ipc'));
     }
 
     function testNonexistingPlugin()
