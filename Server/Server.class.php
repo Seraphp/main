@@ -123,8 +123,10 @@ abstract class Server implements Daemon{
         }
         flock($this->pidFile, LOCK_UN);
         fclose($this->pidFile);
-        unlink($this->pidFile);
-        fputs(STDOUT, "Parent exiting..");
+        $pidData = stream_get_meta_data($this->pidFile);
+        fputs(STDOUT, "deleting ".$pidData['uri']."\n");
+        unlink($pidData['uri']);
+        fputs(STDOUT, "Parent exiting..\n");
         return $success;
     }
 
