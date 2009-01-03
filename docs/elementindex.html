@@ -141,10 +141,10 @@
 	</div>
 	<dl>
 			<dt class="field">
-						<span class="var-title">$configFiles</span>
+						<span class="var-title">$configFile</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="Server/Config/ConfigFactory.html#var$configFiles">ConfigFactory::$configFiles</a> in ConfigFactory.class.php</div>
+			<div class="index-item-details"><a href="Server/Config/ConfigFactory.html#var$configFile">ConfigFactory::$configFile</a> in ConfigFactory.class.php</div>
 					</dd>
 			<dt class="field">
 						<span class="var-title">$configPath</span>
@@ -162,13 +162,13 @@
 						<span class="method-title">close</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="Comm/Ipc/IpcUnixsockets.html#methodclose">IpcUnixsockets::close()</a> in IpcUnixsockets.class.php</div>
+			<div class="index-item-details"><a href="Comm/Ipc/Ipc.html#methodclose">Ipc::close()</a> in Ipc.interface.php</div>
 					</dd>
 			<dt class="field">
 						<span class="method-title">close</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="Comm/Ipc/Ipc.html#methodclose">Ipc::close()</a> in Ipc.interface.php</div>
+			<div class="index-item-details"><a href="Comm/Ipc/IpcUnixsockets.html#methodclose">IpcUnixsockets::close()</a> in IpcUnixsockets.class.php</div>
 					</dd>
 			<dt class="field">
 						Config
@@ -178,11 +178,17 @@
 							<div class="index-item-description">Config class decoates DataStore</div>
 					</dd>
 			<dt class="field">
+						ConfigException
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="Server/Config/ConfigException.html">ConfigException</a> in Config.class.php</div>
+					</dd>
+			<dt class="field">
 						ConfigFactory
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="Server/Config/ConfigFactory.html">ConfigFactory</a> in ConfigFactory.class.php</div>
-							<div class="index-item-description">Class documentation</div>
+							<div class="index-item-description">Class for parsing xml file and loading the settings into  AppRegistry.</div>
 					</dd>
 			<dt class="field">
 						<span class="include-title">Config.class.php</span>
@@ -1073,13 +1079,13 @@
 						<span class="var-title">$spec2</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="Policy/AndSpecification.html#var$spec2">AndSpecification::$spec2</a> in AndSpecification.class.php</div>
+			<div class="index-item-details"><a href="Policy/OrSpecification.html#var$spec2">OrSpecification::$spec2</a> in OrSpecification.class.php</div>
 					</dd>
 			<dt class="field">
 						<span class="var-title">$spec2</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="Policy/OrSpecification.html#var$spec2">OrSpecification::$spec2</a> in OrSpecification.class.php</div>
+			<div class="index-item-details"><a href="Policy/AndSpecification.html#var$spec2">AndSpecification::$spec2</a> in AndSpecification.class.php</div>
 					</dd>
 			<dt class="field">
 						<span class="var-title">$store</span>
@@ -1162,6 +1168,12 @@
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="Comm/Ipc/Ipc.html#methodsetRole">Ipc::setRole()</a> in Ipc.interface.php</div>
+					</dd>
+			<dt class="field">
+						<span class="method-title">setXmlSrc</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="Server/Config/ConfigFactory.html#methodsetXmlSrc">ConfigFactory::setXmlSrc()</a> in ConfigFactory.class.php</div>
 					</dd>
 			<dt class="field">
 						<span class="method-title">shutdown</span>
@@ -1334,6 +1346,13 @@
 							<div class="index-item-description">Disabled cloning facility to preserve only 1 instance</div>
 					</dd>
 			<dt class="field">
+						<span class="method-title">__clone</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="Server/Config/ConfigFactory.html#method__clone">ConfigFactory::__clone()</a> in ConfigFactory.class.php</div>
+							<div class="index-item-description">Disabled cloning facility to preserve only 1 instance</div>
+					</dd>
+			<dt class="field">
 						<span class="method-title">__construct</span>
 					</dt>
 		<dd class="index-item-body">
@@ -1344,15 +1363,15 @@
 						<span class="method-title">__construct</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="Policy/NotSpecification.html#method__construct">NotSpecification::__construct()</a> in NotSpecification.class.php</div>
-							<div class="index-item-description">Stores the specification which will be negated</div>
+			<div class="index-item-details"><a href="Policy/OrSpecification.html#method__construct">OrSpecification::__construct()</a> in OrSpecification.class.php</div>
+							<div class="index-item-description">Stores the specifications which will be related</div>
 					</dd>
 			<dt class="field">
 						<span class="method-title">__construct</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="Policy/OrSpecification.html#method__construct">OrSpecification::__construct()</a> in OrSpecification.class.php</div>
-							<div class="index-item-description">Stores the specifications which will be related</div>
+			<div class="index-item-details"><a href="Policy/NotSpecification.html#method__construct">NotSpecification::__construct()</a> in NotSpecification.class.php</div>
+							<div class="index-item-description">Stores the specification which will be negated</div>
 					</dd>
 			<dt class="field">
 						<span class="method-title">__construct</span>

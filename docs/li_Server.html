@@ -146,11 +146,13 @@ if (document.getElementById) {
 			
 		    		    			var subpackagetree_classe = new WebFXTreeItem('Interface(s)', '');
     			
-    			    			        			    			        			
+    			    			        			    			        			    			        			
     			subpackagetree.add(subpackagetree_classe);
     						    		    			var subpackagetree_classe = new WebFXTreeItem('Class(es)', '');
     			
     			    			            				var classe = new WebFXTreeItem('Config', 'Server/Config/Config.html');
+        				subpackagetree_classe.add(classe);
+        			    			    			            				var classe = new WebFXTreeItem('ConfigException', 'Server/Config/ConfigException.html');
         				subpackagetree_classe.add(classe);
         			    			    			            				var classe = new WebFXTreeItem('ConfigFactory', 'Server/Config/ConfigFactory.html');
         				subpackagetree_classe.add(classe);
