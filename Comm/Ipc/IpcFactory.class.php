@@ -25,8 +25,19 @@ require_once 'Exceptions/PluginException.class.php';
 class IpcFactory{
 
     private static $pluginsDir  = '';
+
     /**
-     * Returns a object which implements Ipc interface
+     * Stores which pid is using which Ipc class instance.
+     *
+     * @var array
+     */
+    private static $IpcArray = array();
+
+    /**
+     * Returns a object which implements Ipc interface.
+     *
+     * A pid can use only 1 instance, so factory will return the same instance
+     * for the same pid.
      *
      * @param string $type
      * @param integer $pid
@@ -38,10 +49,18 @@ class IpcFactory{
     {
         if(self::isValidIpc($type))
         {
-            $className = self::getClassName($type);
-            $class = new $className;
-            $class->init($pid, 'child');
-            return $class;
+            if(array_key_exists($pid, self::$IpcArray))
+            {
+                return self::$IpcArray[$pid];
+            }
+            else
+            {
+                $className = self::getClassName($type);
+                $class = new $className;
+                self::$IpcArray[$pid] = $class;
+                $class->init($pid, 'child');
+                return $class;
+            }
         }
     }
 
