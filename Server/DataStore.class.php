@@ -27,6 +27,13 @@ class DataStore{
     protected $store = array();
 
     /**
+     * Overwright flag for existing data writing in the registry
+     *
+     * @var boolean
+     */
+    protected $overwrite = true;
+
+    /**
      * Checks if a key is exists in the store.
      *
      * @param string $key
@@ -40,21 +47,31 @@ class DataStore{
     /**
      * Registers a value with a key in the registry.
      *
-     * @param string $key
-     * @param mixed $value
-     * @return void
+     * If the variable is already registered, it will be overwritten by default.
+     * To changes this behaviour, call "isOverwrite()" with false.
+     *
+     * @param string  $key
+     * @param mixed  $value
+     * @return boolean
      */
     public function __set($key, $value)
     {
-        if(is_array($this->store[$key]))
-        {
-            $this->store = array_merge_recursive($this->store[$key], $value);
-        }
-        else
+        if($this->overwrigth === true)
         {
             $this->store[$key]=$value;
         }
-
+        else
+        {
+            if($this->isExists($key) === true)
+            {
+                 return false;
+            }
+            else
+            {
+                $this->store[$key]=$value;
+            }
+        }
+        return true;
     }
 
     /**
@@ -70,6 +87,17 @@ class DataStore{
             return $this->store[$key];
         }
         else return null;
+    }
+
+    /**
+     * Sets overwrite behaviour when storing a value
+     * which already exists in registry. Default is true
+     *
+     * @param boolean $flag
+     */
+    public function isOverwrite($flag)
+    {
+        $this->overwrite = (boolean) $flag;
     }
 }
 ?>
