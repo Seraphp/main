@@ -29,7 +29,7 @@ class IpcFactoryTest extends PHPUnit_Framework_TestCase{
     function testValidPlugin()
     {
         IpcFactory::setPluginsDir('/home/peter/workspace/phaser/Comm/Ipc');
-        $this->assertThat(IpcFactory::get('unixsockets',0),$this->IsInstanceOf('Ipc'));
+        $this->assertThat(IpcFactory::get('unixsockets',0),$this->IsInstanceOf('IpcAdapter'));
     }
 
     function testNonexistingPlugin()
