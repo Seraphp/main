@@ -5,7 +5,8 @@
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2009, Peter Nagy
- * @package
+ * @package Server
+ * @subpackage Registry
  * @filesource
  */
 /***/
@@ -16,6 +17,8 @@ require_once 'Comm/Ipc/IpcAdapter.interface.php';
  *
  * Setting a value stored in the registry will be propagated to the parent
  * process which is connected to the same IPC channel through IpcAdapter class.
+ * @package Server
+ * @subpackage Registry
  */
 class IpcRegistry extends Registry{
 
