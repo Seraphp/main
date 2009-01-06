@@ -48,7 +48,7 @@ class DataStore{
      * Registers a value with a key in the registry.
      *
      * If the variable is already registered, it will be overwritten by default.
-     * To changes this behaviour, call "isOverwrite()" with false.
+     * To changes this behaviour, call "setOverwrite()" with false.
      *
      * @param string  $key
      * @param mixed  $value
@@ -95,7 +95,7 @@ class DataStore{
      *
      * @param boolean $flag
      */
-    public function isOverwrite($flag)
+    public function setOverwrite($flag)
     {
         $this->overwrite = (boolean) $flag;
     }
