@@ -27,6 +27,13 @@ class DataStore{
     protected $store = array();
 
     /**
+     * Enter description here...
+     *
+     * @var boolean
+     */
+    protected $dirty = false;
+
+    /**
      * Overwright flag for existing data writing in the registry
      *
      * @var boolean
@@ -71,6 +78,7 @@ class DataStore{
                 $this->store[$key]=$value;
             }
         }
+        $this->dirty = true;
         return true;
     }
 
