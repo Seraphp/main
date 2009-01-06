@@ -10,13 +10,13 @@
  * @filesource
  */
 /***/
-require_once 'Comm/Ipc/Ipc.interface.php';
+require_once 'Comm/Ipc/IpcAdapter.interface.php';
 /**
  * Interprocess communication through unix sockets
  * @package Comm
  * @subpackage Ipc
  */
-class IpcUnixsockets implements Ipc{
+class IpcUnixsockets implements IpcAdapter{
 
     private $sockChild = null;
     private $sockParent = null;
