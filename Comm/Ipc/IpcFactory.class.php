@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-require_once 'Comm/Ipc/Ipc.interface.php';
+require_once 'Comm/Ipc/IpcAdapter.interface.php';
 require_once 'Exceptions/PluginException.class.php';
 /**
  * Static class to retrieve Ipc implementation classes
@@ -38,6 +38,8 @@ class IpcFactory{
      *
      * A pid can use only 1 instance, so factory will return the same instance
      * for the same pid.
+     *
+     * TODO: Function needs testing
      *
      * @param string $type
      * @param integer $pid
@@ -107,11 +109,11 @@ class IpcFactory{
         {
             require_once $pluginFile;
             $class = new ReflectionClass(self::getClassName($type));
-            if($class->implementsInterface('Ipc'))
+            if($class->implementsInterface('IpcAdapter'))
             {
                 return true;
             }
-            else throw new PluginException('Ipc interface not implemented in '.$type);
+            else throw new PluginException('IpcAdapter interface not implemented in '.$type);
         }
         else throw new PluginException(self::getClassName($type).'.class.php not exists!');
     }
