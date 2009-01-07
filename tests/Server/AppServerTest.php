@@ -7,6 +7,7 @@
  */
 require_once 'PHPUnit/Framework.php';
 require_once 'Server/AppServer.class.php';
+require_once 'Server/DefaultEngine.class.php';
 /**
  * Class documentation
  */
@@ -21,7 +22,7 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
 
     function testAppServerInstatiation()
     {
-        $this->server = new AppServer($this->appID);
+        $this->server = new AppServer($this->appID, new DefaultEngine);
         $this->assertEquals($this->server->getAppId(), $this->appID);
         $this->assertTrue($this->server->summon());
         $this->assertFileExists('/home/peter/workspace/phaser/.phaser'.$this->appID.'.pid');

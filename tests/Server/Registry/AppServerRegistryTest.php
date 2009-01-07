@@ -8,6 +8,7 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'Server/Registry/AppServerRegistry.class.php';
 require_once 'Server/AppServer.class.php';
+require_once 'Server/DefaultEngine.class.php';
 /**
  * Class documentation
  */
@@ -18,7 +19,7 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
     function setUp()
     {
         $this->reg = AppServerRegistry::getInstance();
-        $this->mockServer = $this->getMock('AppServer', array('getStatus'),array('mockery'));
+        $this->mockServer = $this->getMock('AppServer', array('getStatus'),array('mockery',new DefaultEngine));
     }
 
     function testRegistryIsSingleton()
