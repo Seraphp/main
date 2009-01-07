@@ -24,11 +24,13 @@ class AppServer extends Server{
     private $includeFolder = '';
     protected $pidFolder = '/home/peter/workspace/phaser';
     protected $appReg = null;
+    private $engine = null;
 
-    public function __construct($appID,$ipcType='unixsockets')
+    public function __construct($appID, $engine, $ipcType='unixsockets')
     {
         $this->appID = $appID;
         $this->appReg = AppServerRegistry::getInstance();
+        $this->engine = $engine;
         parent::__construct($ipcType);
     }
 
@@ -37,8 +39,9 @@ class AppServer extends Server{
         return $this->appID;
     }
 
-    public function process()
+    public function process(Request $req)
     {
+        return $this->engine->process($req);
     }
 
     public function expell()
