@@ -23,7 +23,7 @@ require_once 'Server/DataStore.class.php';
  */
 class Config extends DataStore{
 
-    private $dirty = false;
+    protected $dirty = false;
 
     /**
      * Registers a value with a key in the registry.
