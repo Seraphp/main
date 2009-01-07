@@ -19,6 +19,7 @@ require_once 'Comm/Ipc/IpcAdapter.interface.php';
  * process which is connected to the same IPC channel through IpcAdapter class.
  * @package Server
  * @subpackage Registry
+ * @todo Test the class
  */
 class IpcRegistry extends Registry{
 
