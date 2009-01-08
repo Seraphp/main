@@ -60,12 +60,21 @@ class IpcRegistry extends Registry{
         }
     }
 
+    public function mergeChanges($changes)
+    {
+        if(is_array($changes))
+        {
+            $this->store = array_merge($this->store, $changes);
+            return count($changes);
+        }
+        else return 0;
+    }
     /**
      * Method send all the changed values to the parent process and sets to default the dirty flag.
      *
      * @return integer  Number of changed values in registry
      */
-    public function save()
+    public function save($changes = null)
     {
         if($this->dirty === true)
         {

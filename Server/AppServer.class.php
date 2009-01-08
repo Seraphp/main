@@ -11,7 +11,6 @@
 /***/
 //namespace Phaser::Server;
 require_once 'Server/Server.class.php';
-require_once 'Server/Registry/AppServerRegistry.class.php';
 require_once 'Comm/Request.interface.php';
 /**
  * AppServer implementation class
@@ -29,14 +28,36 @@ class AppServer extends Server{
     public function __construct($appID, $engine, $ipcType='unixsockets')
     {
         $this->appID = $appID;
-        $this->appReg = AppServerRegistry::getInstance();
         $this->engine = $engine;
         parent::__construct($ipcType);
+        if($this->ipc !== null)
+        {
+            require_once 'Server/Registry/IpcRegistry.class.php';
+            $this->appReg = IpcRegistry::getInstance();
+            $this->appReg->useIpc($this->ipc);
+        }
+        else
+        {
+            require_once 'Server/Registry/Registry.class.php';
+            $this->appReg = Registry::getInstance();
+        }
     }
 
     public function getAppId()
     {
         return $this->appID;
+    }
+
+    protected function starHart()
+    {
+        while(true)
+        {
+            usleep(200);
+            if($this->ipc !== null)
+            {
+                $this->appReg->mergeChanges(unserialize($this->ipc->read()));
+            }
+        }
     }
 
     public function process(Request $req)
