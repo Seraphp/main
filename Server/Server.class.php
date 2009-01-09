@@ -19,15 +19,59 @@ require_once 'Comm/Ipc/IpcFactory.class.php';
  * @package Server
  */
 abstract class Server implements Daemon{
+
+    /**
+     * Maximum number of allowed child processes. Default is 5.
+     * @var integer
+     */
     private $maxSpawns = 5;
+
+    /**
+     * Actual role of the process (could be 'parent'(in the main process),
+     * or 'child' in the forked subprocesses.
+     * @var string
+     */
     protected $role = 'parent';
+    /**
+     * Stores existing child processes
+     * @var array
+     */
     protected $spawns = array();
+    /**
+     * @var string
+     */
     protected $pidFile = null;
+    /**
+     * @var string
+     */
     protected $pidFolder = null;
+    /**
+     * Own PID (process id)
+     * @var integer
+     */
     protected $pid;
+    /**
+     * The IpcAdapter instance reference used or Null if there is no need for one
+     * @var IpcAdapter|Null
+     */
     protected $ipc = null;
+    /**
+     * Class name of the IpcAdapter class which is used, if any
+     * @var string
+     */
     protected $ipcType = '';
 
+    protected $availSigs = array();
+
+    /**
+     * Constructor of the Server process
+     *
+     * Set PHP to no timeout, and if an IpcAdapter name was given,
+     * it stores it.
+     *
+     * @param string $ipcType  (Optional) set used IpcAdapter class's name
+     * @return Server
+     */
     public function __construct($ipcType = '')
     {
         ini_set('max_execution_time',0);
@@ -35,16 +79,26 @@ abstract class Server implements Daemon{
         set_time_limit(0);
         $this->ipcType = $ipcType;
         $this->pid = getmypid();
+        $consts = get_defined_constants(true);
+        $this->availSignals = $consts['pcntl'];
+        unset($consts);
     }
 
+    /**
+     * Initiate daemonization process
+     *
+     * Opens pidfile, sets up signal handlers and start the infinite
+     * loop of the process.
+     *
+     * @return boolean
+     */
     final public function summon()
     {
         $this->spawn();
         if($this->role == 'child')
         {//we are the new process
             $this->savePid2File();
-            pcntl_signal(SIGCHLD, array($this,'signalHandler'),true);
-            pcntl_signal(SIGUSR1, array($this,'signalHandler'),true);
+            $this->setUpSigHandlers();
             //changing back as from now on we are the Parent server process
             $this->role == 'parent';
             fputs(STDOUT, 'Server process (pid:'.$this->pid.") summoned\n");
@@ -56,6 +110,36 @@ abstract class Server implements Daemon{
         }
     }
 
+    /**
+     * Setting up signal handlers for defined callback functions
+     *
+     * Method will search for defined methods in the class which has a name ending as 'Callback'
+     *
+     * @return void
+     */
+    protected function setUpSigHandlers()
+    {
+        foreach ($this->availSigs as $signal)
+        {
+        	$signal = strtoupper($signal);
+            if( $signal !== 'SIGKILL' &&
+                is_callable(array($this,strtolower($signal).'Callback'))
+            )
+        	{
+        	    pcntl_signal(constant($signal), array($this,'signalHandler'),true);
+        	}
+        }
+    }
+
+    /**
+     * Opens a pidfile for the process
+     *
+     * The opened file will be blocked to write for other processes.
+     * Method will write process id into the file.
+     *
+     * @throws Exception  If unable to get a lock on the file
+     * @return void
+     */
     private function savePid2File()
     {
         $this->pidFile = fopen($this->pidFolder.'/.phaser'.$this->appID.'.pid', "a");
@@ -67,13 +151,30 @@ abstract class Server implements Daemon{
         fflush($this->pidFile);
     }
 
+    /**
+     * Start infinite loop of the process
+     *
+     * In every cycle it calls hartBeat() method to perform actions.
+     *
+     * @return void
+     */
     protected function startHart()
     {
-        while(true){
-            usleep(500);
+        while(true)
+        {
+            $this->hartBeat();
         }
     }
 
+    /**
+     * Create a new child process
+     *
+     * If the maximum allowed numbers of child processes not reached, it will
+     * fork a new one. Throws an exception if not able to fork.
+     *
+     * @return void
+     * @throws Exception
+     */
     public function spawn()
     {
         if (count($this->spawns) < $this->maxSpawns)
@@ -106,6 +207,23 @@ abstract class Server implements Daemon{
         }
     }
 
+    /**
+     * Called continuasly at every cycle of the process's hart.
+     * @see Server::startHart()
+     *
+     * @return void
+     */
+    abstract protected function hartBeat(){}
+
+    /**
+     * Process shutdown method
+     *
+     * Sends SIGSTOP to all existing child process and waits for them to exit.
+     * Closes IpcAdapter connections and tries to remove the pidfile created
+     * for this process.
+     *
+     * @return boolean
+     */
     public function expell()
     {
         fputs(STDOUT, "children: \n");
@@ -122,48 +240,94 @@ abstract class Server implements Daemon{
             }
         }
         flock($this->pidFile, LOCK_UN);
-        fclose($this->pidFile);
         $pidData = stream_get_meta_data($this->pidFile);
+        fclose($this->pidFile);
         fputs(STDOUT, "deleting ".$pidData['uri']."\n");
         unlink($pidData['uri']);
         fputs(STDOUT, "Parent exiting..\n");
         return $success;
     }
 
+    /**
+     * Sets maximum allowed number of child processes
+     * @param integer $num
+     * @return integer Actual number of allowed child processes
+     */
     public function setMaxSpawns($num)
     {
         $this->maxSpawns = $num;
+        return $this->maxSpawns;
     }
 
+    /**
+     * Get actual number of allowed child processes
+     * @return integer
+     */
     public function getMaxSpawns()
     {
         return $this->maxSpawns;
     }
 
+    /**
+     * Main signal handler method, calling callback functions for signals.
+     *
+     * @param $sigCode
+     * @return void
+     */
     private function signalHandler($sigCode)
     {
-        switch($sigCode){
-            case 0:
-                return;
-            break;
+        switch($sigCode)
+        {
+        /*
+        Here For every signal we re-register the signal handler before doing everything else,
+        to avoid race condition, the situation when a second signal arrives before the first
+        one waould be processed.
+        */
             case SIGCHILD:
                 pcntl_signal(SIGCHLD, array($this,'signalHandler'),true);
-                fputs(STDOUT, 'signal received:'.$this->lastSignal);
-                fputs(STDOUT, ' means SIGCHILD...');
-                $this->expell();
+                while(($pid=pcntl_wait($sigCode, WNOHANG))>0)
+                {//Handling all exited child with this 'while'
+                    $this->childExitedCallback($pid, pcntl_wexitstatus($sigCode));
+                }
             break;
             case SIGUSR1:
                 pcntl_signal(SIGUSR1, array($this,'signalHandler'),true);
-                fputs(STDOUT, 'signal received:'.$this->lastSignal);
-                fputs(STDOUT, ' means SIGUSR1...');
-                $this->expell();
+                $this->sigUsr1Callback();
             break;
             default:
-                fputs(STDOUT, 'signal received:'.$this->lastSignal);
-                fputs(STDOUT, ' a strange signal');
+                $sigName = array_search($sigCode,$this->availSigs);
+                pcntl_signal($sigName, array($this,'signalHandler'),true);
+                $callbackMethod = strtolower($sigName).'Callback';
+                call_user_func(array($this,$callbackMethod));
+                return;
         }
     }
 
+
+    /**
+     * Callback function called when a child process exited
+     *
+     * @param integer $pid  PID of the Child process which exited
+     * @param integer $status  Exit status of the child process
+     * @return void
+     */
+    abstract protected function childExitedCallback($pid, $status){}
+
+    /**
+     * Callback function to handle SIGUSR1
+     *
+     * @return void
+     */
+    abstract protected function sigUsr1Callback(){}
+
+    /**
+     * Destructor method
+     *
+     * If there is a pidfile open, it will call expell()
+     * @see Server::expell()
+     *
+     * @return void
+     */
     public function __destruct()
     {
         if($this->pidFile !== null)
