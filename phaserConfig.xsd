@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.phaser.com/phaserConfig"
+	xmlns:tns="http://www.phaser.com/phaserConfig" elementFormDefault="qualified">
+	<attribute name="pidpath" type="anyURI" />
+	<element name="server" type="tns:serverType" />
+	<element name="servers" type="tns:serversType" />
+	<complexType name="serversType">
+		<sequence>
+			<element ref="tns:server" minOccurs="1" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="tns:pidpath"></attribute>
+	</complexType>
+	<complexType name="serverType">
+		<all>
+			<element ref="tns:urimap" minOccurs="1" maxOccurs="1"/>
+			<element ref="tns:resources" minOccurs="1" maxOccurs="1"/>
+			<element ref="tns:instance" minOccurs="1" maxOccurs="1"/>
+		</all>
+		<attribute ref="tns:id" />
+	</complexType>
+
+	<attribute name="id" type="string" />
+
+	<complexType name="urimapType">
+		<sequence>
+			<element ref="tns:url" minOccurs="1" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="instanceType">
+		<all>
+			<element ref="tns:ipc" minOccurs="0" maxOccurs="1" />
+			<element ref="tns:engine" minOccurs="0" maxOccurs="1"/>
+			<element ref="tns:maxChildren" minOccurs="0" maxOccurs="1"/>
+			<group ref="tns:socketParams"></group>
+		</all>
+	</complexType>
+
+	<element name="instance" type="tns:instanceType" />
+
+	<element name="urimap" type="tns:urimapType" />
+
+	<element name="resources" type="tns:resourceType" />
+
+	<complexType name="resourceType">
+		<sequence>
+			<element ref="tns:includes" minOccurs="1" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<element name="url" type="anyURI" />
+
+	<element name="includes" type="tns:includesType" />
+
+	<complexType name="includesType">
+		<sequence>
+			<element name="path" type="anyURI" minOccurs="1" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+
+	<element name="ipc" type="string" />
+
+	<element name="engine" type="string" />
+
+	<element name="maxChildren" type="int" />
+
+	<element name="address" type="string" />
+
+	<element name="port" type="int" />
+
+    <element name="phaser" type="tns:rootType"/>
+
+	<complexType name="rootType">
+		<sequence>
+			<element ref="tns:servers" maxOccurs="1" minOccurs="1"/>
+		</sequence>
+	</complexType>
+
+	<group name="socketParams">
+		<all>
+			<element ref="tns:address" minOccurs="0" maxOccurs="1"></element>
+			<element ref="tns:port" minOccurs="0" maxOccurs="1"></element>
+		</all>
+	</group>
+</schema>

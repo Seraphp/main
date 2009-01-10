@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phaser xmlns="http://www.phaser.com/phaserConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.phaser.com/phaserConfig phaserConfig.xsd ">
+	<servers pidpath='/home/peter/workspace/phaser'>
+		<server id="main">
+			<urimap>
+				<url>/</url>
+			</urimap>
+			<resources>
+				<includes>
+					<path>/home/peter/workspace/phaser</path>
+				</includes>
+			</resources>
+			<instance>
+				<ipc>unixsockets</ipc>
+				<maxChildren>4</maxChildren>
+				<address>127.0.0.1</address>
+				<port>8080</port>
+			</instance>
+		</server>
+	</servers>
+</phaser>
