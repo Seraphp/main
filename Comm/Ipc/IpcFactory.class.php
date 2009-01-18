@@ -87,6 +87,10 @@ class IpcFactory{
 
     static function getPluginsDir()
     {
+        if(empty(self::$pluginsDir))
+        {
+            self::setPluginsDir();
+        }
         return self::$pluginsDir;
     }
 
@@ -103,7 +107,10 @@ class IpcFactory{
      */
     private static function isValidIpc($type)
     {
-        self::setPluginsDir();
+        if(empty(self::$pluginsDir))
+        {
+            self::setPluginsDir();
+        }
         $pluginFile = sprintf('%s/%s.class.php',self::$pluginsDir,self::getClassName($type));
         if(is_file($pluginFile))
         {
