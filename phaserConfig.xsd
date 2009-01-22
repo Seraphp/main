@@ -1,85 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.phaser.com/phaserConfig"
-	xmlns:tns="http://www.phaser.com/phaserConfig" elementFormDefault="qualified">
-	<attribute name="pidpath" type="anyURI" />
-	<element name="server" type="tns:serverType" />
-	<element name="servers" type="tns:serversType" />
-	<complexType name="serversType">
-		<sequence>
-			<element ref="tns:server" minOccurs="1" maxOccurs="unbounded"/>
-		</sequence>
-		<attribute ref="tns:pidpath"></attribute>
-	</complexType>
-	<complexType name="serverType">
-		<all>
-			<element ref="tns:urimap" minOccurs="1" maxOccurs="1"/>
-			<element ref="tns:resources" minOccurs="1" maxOccurs="1"/>
-			<element ref="tns:instance" minOccurs="1" maxOccurs="1"/>
-		</all>
-		<attribute ref="tns:id" />
-	</complexType>
+<xs:schema targetNamespace="http://www.phaser.com/phaserConfig"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.phaser.com/phaserConfig" attributeFormDefault="qualified">
+	<xs:element name="servers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:server" minOccurs="1"
+					maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="pidpath" type="xs:anyURI" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="server">
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="tns:urimap" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="tns:resources" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="tns:instance" minOccurs="1" maxOccurs="1" />
+			</xs:all>
+			<xs:attribute name="id" type="tns:serverId" use="required" />
+		</xs:complexType>
+	</xs:element>
 
-	<attribute name="id" type="string" />
+	<xs:complexType name="urimapType">
+		<xs:sequence>
+			<xs:element ref="tns:url" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
 
-	<complexType name="urimapType">
-		<sequence>
-			<element ref="tns:url" minOccurs="1" maxOccurs="unbounded" />
-		</sequence>
-	</complexType>
+	<xs:complexType name="instanceType">
+		<xs:all>
+			<xs:element ref="tns:ipc" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="tns:engine" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="tns:maxChildren" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="tns:address" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="tns:port" minOccurs="0" maxOccurs="1" />
+		</xs:all>
+	</xs:complexType>
 
-	<complexType name="instanceType">
-		<all>
-			<element ref="tns:ipc" minOccurs="0" maxOccurs="1" />
-			<element ref="tns:engine" minOccurs="0" maxOccurs="1"/>
-			<element ref="tns:maxChildren" minOccurs="0" maxOccurs="1"/>
-			<group ref="tns:socketParams"></group>
-		</all>
-	</complexType>
+	<xs:element name="instance" type="tns:instanceType" />
 
-	<element name="instance" type="tns:instanceType" />
+	<xs:element name="urimap" type="tns:urimapType" />
 
-	<element name="urimap" type="tns:urimapType" />
+	<xs:element name="resources" type="tns:resourceType" />
 
-	<element name="resources" type="tns:resourceType" />
+	<xs:complexType name="resourceType">
+		<xs:sequence>
+			<xs:element ref="tns:includes" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
 
-	<complexType name="resourceType">
-		<sequence>
-			<element ref="tns:includes" minOccurs="1" maxOccurs="unbounded" />
-		</sequence>
-	</complexType>
+	<xs:element name="url" type="xs:anyURI" />
 
-	<element name="url" type="anyURI" />
+	<xs:element name="includes" type="tns:includesType" />
 
-	<element name="includes" type="tns:includesType" />
+	<xs:complexType name="includesType">
+		<xs:sequence>
+			<xs:element name="path" type="xs:anyURI" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
 
-	<complexType name="includesType">
-		<sequence>
-			<element name="path" type="anyURI" minOccurs="1" maxOccurs="unbounded"/>
-		</sequence>
-	</complexType>
+	<xs:element name="ipc" type="xs:string" />
 
-	<element name="ipc" type="string" />
+	<xs:element name="engine" type="xs:string" />
 
-	<element name="engine" type="string" />
+	<xs:element name="maxChildren" type="xs:int" />
 
-	<element name="maxChildren" type="int" />
+	<xs:element name="address" type="xs:string" />
 
-	<element name="address" type="string" />
+	<xs:element name="port" type="xs:int" />
 
-	<element name="port" type="int" />
+    <xs:element name="phaser" type="tns:rootType"/>
 
-    <element name="phaser" type="tns:rootType"/>
+	<xs:complexType name="rootType">
+		<xs:sequence>
+			<xs:element ref="tns:servers" maxOccurs="1" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:simpleType name="serverId">
+	  <xs:restriction base="xs:string">
+	    <xs:pattern value="[a-z]+"/>
+	  </xs:restriction>
+	</xs:simpleType>
 
-	<complexType name="rootType">
-		<sequence>
-			<element ref="tns:servers" maxOccurs="1" minOccurs="1"/>
-		</sequence>
-	</complexType>
-
-	<group name="socketParams">
-		<all>
-			<element ref="tns:address" minOccurs="0" maxOccurs="1"></element>
-			<element ref="tns:port" minOccurs="0" maxOccurs="1"></element>
-		</all>
-	</group>
-</schema>
+</xs:schema>

@@ -5,6 +5,9 @@
  * @package Phaser
  */
 require_once 'Server/AppServer.class.php';
-$mainServer = new AppServer('main');
-$mainServer->summon();
+require_once 'Server/Config/ConfigFactory.class.php';
+$cf = ConfigFactory::getInstance();
+$cf->setXmlSrc('/home/peter/workspace/phaser/phaserConf.xml');
+$mainServer = new AppServer($cf->getConf('main'));
+$procID = $mainServer->summon();
 ?>
