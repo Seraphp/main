@@ -36,6 +36,37 @@ class IpcRegistry extends Registry{
      */
     protected $changedKeys = array();
 
+    private static $instance = null;
+
+    /**
+     * Disabled constructor
+     *
+     */
+    private function __construct()
+    {}
+
+	/**
+     * Disabled cloning facility to preserve only 1 instance
+     * @throws Exception  if used
+     */
+    public function __clone()
+    {
+        throw new Exception('Cloning is disabled!');
+    }
+
+    /**
+     * Returns instance of class
+     *
+     * @return self
+	*/
+    public function getInstance()
+    {
+        if(self::$instance === null){
+            self::$instance = new self;
+        }
+        return self::$instance;
+    }
+
     /**
      * Adds the IpcAdapter for the class
      *
@@ -60,8 +91,9 @@ class IpcRegistry extends Registry{
         }
     }
 
-    public function mergeChanges($changes)
+    public function mergeChanges()
     {
+        $changes = unserialize($this->ipc->read());
         if(is_array($changes))
         {
             $this->store = array_merge($this->store, $changes);

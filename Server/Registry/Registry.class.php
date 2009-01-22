@@ -29,14 +29,14 @@ class Registry extends DataStore implements Singleton{
      * @var Registry
      */
     static private $instance = null;
-    
+
     /**
      * Disabled constructor
      *
      */
     private function __construct()
     {}
-    
+
 	/**
      * Disabled cloning facility to preserve only 1 instance
      * @throws Exception  if used

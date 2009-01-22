@@ -12,7 +12,7 @@
 //namespace Phaser::Server::Config;
 require_once 'Singleton.interface.php';
 require_once 'Server/Config/Config.class.php';
-require_once 'Server/Registry/AppServerRegistry.class.php';
+require_once 'Server/Registry/Registry.class.php';
 /**
  * Class for parsing xml file and loading the settings into
  * AppRegistry.
@@ -23,14 +23,14 @@ require_once 'Server/Registry/AppServerRegistry.class.php';
 class ConfigFactory implements Singleton{
 
     private static $instance = null;
-    private static $registry = null;
+    private $registry = null;
     private $configPath = '';
     private $configFile = '';
     private $xml = null;
 
-    private function __construct(AppServerRegistry $reg)
+    private function __construct(Registry $reg)
     {
-        self::$registry = $reg;
+        $this->registry = $reg;
         $this->configPath = dirname(__FILE__);
         $this->configFile = 'phaserConf.xml';
     }
@@ -46,18 +46,18 @@ class ConfigFactory implements Singleton{
 
     public function getConf($name)
     {
-        if(self::$registry->$name === null)
+        if($this->registry->$name === null)
         {
-            self::$registry->$name = $this->parse($name);
+            $this->registry->$name = $this->parse($name);
         }
-        return self::$registry->$name;
+        return $this->registry->$name;
     }
 
     public function getInstance()
     {
         if(self::$instance === null)
         {
-            self::$instance = new self(AppServerRegistry::getInstance());
+            self::$instance = new self(Registry::getInstance());
         }
         return self::$instance;
     }
@@ -69,6 +69,13 @@ class ConfigFactory implements Singleton{
             $this->setXmlSrc($xmlFile);
         }
         $this->xml = simplexml_load_file($this->configPath.DIRECTORY_SEPARATOR.$this->configFile);
+        //Fetch all namespaces
+        $namespaces = $this->xml->getNamespaces(true);
+        //Register them with their prefixes
+        foreach ($namespaces as $prefix => $ns)
+        {
+            $this->xml->registerXPathNamespace($prefix, $ns);
+        }
     }
 
     public function setXmlSrc($xmlFile)
@@ -85,9 +92,9 @@ class ConfigFactory implements Singleton{
     {
         if($this->xml === null)
         {
-            self::load();
+            $this->load();
         }
-        $serverConfXML = $this->xml->xpath("//servers/server[@id='$name']");
+        $serverConfXML = $this->xml->xpath('//servers/server[@id="'.$name.'"]');
         switch (count($serverConfXML))
         {
             case 0:
@@ -97,6 +104,7 @@ class ConfigFactory implements Singleton{
                 $props = array_keys((array)$serverConfXML[0]->children());
                 $parentNode = $serverConfXML[0]->xpath('..');
                 $conf = new Config;
+                $conf->name = (string) $serverConfXML[0]->attributes()->id;
                 $conf->pidpath = (string) $parentNode[0]->attributes()->pidpath;
                 if(in_array('urimap',$props))
                 {

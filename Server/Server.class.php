@@ -61,6 +61,10 @@ abstract class Server implements Daemon{
      */
     protected $ipcType = '';
 
+    /**
+     * All the available signal in the system
+     * @var array
+     */
     protected $availSigs = array();
 
     /**
@@ -80,7 +84,7 @@ abstract class Server implements Daemon{
         $this->ipcType = $ipcType;
         $this->pid = getmypid();
         $consts = get_defined_constants(true);
-        $this->availSignals = $consts['pcntl'];
+        $this->availSigs = $consts['pcntl'];
         unset($consts);
     }
 
@@ -94,19 +98,25 @@ abstract class Server implements Daemon{
      */
     final public function summon()
     {
-        $this->spawn();
+        $pid = $this->spawn();
         if($this->role == 'child')
         {//we are the new process
             $this->savePid2File();
             $this->setUpSigHandlers();
             //changing back as from now on we are the Parent server process
-            $this->role == 'parent';
+            $this->role = 'parent';
+            if($this->ipcType !== '')
+            {
+                $this->ipc = IpcFactory::get($this->ipcType,$this->pid);
+                $this->ipc->setRole($this->role);
+            }
             fputs(STDOUT, 'Server process (pid:'.$this->pid.") summoned\n");
+            $this->onSummon();
             $this->startHart();
         }
         else
         {//we are the parent process
-            return true;
+            return $pid;
         }
     }
 
@@ -119,14 +129,19 @@ abstract class Server implements Daemon{
      */
     protected function setUpSigHandlers()
     {
-        foreach ($this->availSigs as $signal)
+        fputs(STDOUT, "setUpSigHandlers() called\n");
+        foreach (array_flip($this->availSigs) as $signal)
         {
-        	$signal = strtoupper($signal);
-            if( $signal !== 'SIGKILL' &&
+        	//SIGKILL cannot be overwriten, SIGCHILD has own handler.
+            if( ($signal !== 'SIGKILL') &&
                 is_callable(array($this,strtolower($signal).'Callback'))
             )
         	{
-        	    pcntl_signal(constant($signal), array($this,'signalHandler'),true);
+        	    fputs(STDOUT, 'Registering signal handler for '.$signal.'('.constant($signal).')...');
+        	    if(pcntl_signal(constant($signal), array($this,'signalHandler'),true))
+        	        fputs(STDOUT, "OK\n");
+        	    else
+        	        fputs(STDOUT, "Failed\n");
         	}
         }
     }
@@ -160,6 +175,7 @@ abstract class Server implements Daemon{
      */
     protected function startHart()
     {
+        declare(ticks = 1);
         while(true)
         {
             $this->hartBeat();
@@ -179,31 +195,27 @@ abstract class Server implements Daemon{
     {
         if (count($this->spawns) < $this->maxSpawns)
         {
-            $ipc = ($this->ipcType !== '')?IpcFactory::get($this->ipcType,$this->pid):null;
             $pid = pcntl_fork();
             if($pid < 0)
             {
                 throw new Exception('Unable to fork!');
             }
             elseif($pid == 0)
-            {
+            {//child process
                 $this->pid = getmypid();
                 $this->role = 'child';
-                if($ipc !== null)
+                if($this->ipcType !== '')
                 {
-                    $ipc->setRole($this->role);
+                    $this->ipc = IpcFactory::get($this->ipcType, posix_getppid());
                 }
-                $this->ipc = $ipc;
+                return $this->pid;
             }
             else
-            {
-                if($ipc !== null)
-                {
-                    $ipc->setRole($this->role);
-                }
-                $this->spawns[] = array('pid'=>$pid, 'ipc'=>$ipc);
+            {//parent process
+                $this->spawns[$pid] = array('ipc'=>$ipc);
+                fputs(STDOUT, $pid." spawned\n");
+                return $pid;
             }
-            fputs(STDOUT, $pid." spawned\n");
         }
     }
 
@@ -213,7 +225,7 @@ abstract class Server implements Daemon{
      *
      * @return void
      */
-    abstract protected function hartBeat(){}
+    abstract protected function hartBeat();
 
     /**
      * Process shutdown method
@@ -226,6 +238,7 @@ abstract class Server implements Daemon{
      */
     public function expell()
     {
+        $this->onExpell();
         fputs(STDOUT, "children: \n");
         $success = false;
         foreach($this->spawns as $child)
@@ -276,6 +289,7 @@ abstract class Server implements Daemon{
      */
     private function signalHandler($sigCode)
     {
+        fputs(STDOUT, __METHOD__." called\n");
         switch($sigCode)
         {
         /*
@@ -283,22 +297,31 @@ abstract class Server implements Daemon{
         to avoid race condition, the situation when a second signal arrives before the first
         one waould be processed.
         */
-            case SIGCHILD:
+            case SIGCHLD:
                 pcntl_signal(SIGCHLD, array($this,'signalHandler'),true);
                 while(($pid=pcntl_wait($sigCode, WNOHANG))>0)
                 {//Handling all exited child with this 'while'
-                    $this->childExitedCallback($pid, pcntl_wexitstatus($sigCode));
+                    $this->sigchldCallback($pid, pcntl_wexitstatus($sigCode));
                 }
             break;
-            case SIGUSR1:
-                pcntl_signal(SIGUSR1, array($this,'signalHandler'),true);
-                $this->sigUsr1Callback();
-            break;
             default:
-                $sigName = array_search($sigCode,$this->availSigs);
-                pcntl_signal($sigName, array($this,'signalHandler'),true);
-                $callbackMethod = strtolower($sigName).'Callback';
-                call_user_func(array($this,$callbackMethod));
+                $sigName = array_keys($this->availSigs,$sigCode);
+                if(is_array($sigName))
+                {
+                    foreach($signame as $signal)
+                    {
+                        if(is_callable($this,strtolower($sigName).'Callback'))
+                        {
+                            pcntl_signal($sigCode, array($this,'signalHandler'),true);
+                            call_user_func(array($this,strtolower($sigName).'Callback'));
+                        }
+                    }
+                }
+                elseif($sigName !== false)
+                {
+                    pcntl_signal($sigCode, array($this,'signalHandler'),true);
+                    call_user_func(array($this,strtolower($sigName).'Callback'));
+                }
                 return;
         }
     }
@@ -311,29 +334,25 @@ abstract class Server implements Daemon{
      * @param integer $status  Exit status of the child process
      * @return void
      */
-    abstract protected function childExitedCallback($pid, $status){}
-
-    /**
-     * Callback function to handle SIGUSR1
-     *
-     * @return void
-     */
-    abstract protected function sigUsr1Callback(){}
+    abstract protected function sigchldCallback($pid, $status);
 
     /**
      * Destructor method
      *
-     * If there is a pidfile open, it will call expell()
+     * If we are the parent process and closing, will call expell();
      * @see Server::expell()
      *
      * @return void
      */
     public function __destruct()
     {
-        if($this->pidFile !== null)
+        if($this->role === 'parent' && is_resource($this->pidFile))
         {
             $this->expell();
         }
     }
+
+    abstract protected function onSummon();
+    abstract protected function onExpell();
 }
 ?>

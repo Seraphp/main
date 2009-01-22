@@ -21,7 +21,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
 
     function testEmptyConfigKeyIsInvalid()
     {
-        $this->assertFalse($this->conf->isExists('somekey'));
+        $this->assertFalse(isset($this->conf->somekey));
     }
 
     function testEmptyConfigKeyReturnsNull()
@@ -32,7 +32,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
     function testConfigyKeyValid()
     {
         $this->conf->somekey = array('foo'=>array('bar'=>'somevalue'));
-        $this->assertTrue($this->conf->isExists('somekey'));
+        $this->assertTrue(isset($this->conf->somekey));
     }
 
     function testIsChanged()

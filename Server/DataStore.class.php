@@ -43,12 +43,32 @@ class DataStore{
     /**
      * Checks if a key is exists in the store.
      *
+     * Magic method: called when asking isset() on a key.
+     *
      * @param string $key
      * @return boolean
+     * @since PHP 5.1.0
      */
-    public function isExists($key)
+    public function __isset($key)
     {
         return (array_key_exists($key, $this->store));
+    }
+
+    /**
+     * Unset a key is it exists.
+     *
+     * Magic method: called when fireing unset on a key.
+     *
+     * @param string $key
+     * @return void
+     * @since PHP 5.1.0
+     */
+    public function __unset($key)
+    {
+        if(isset($this->$key))
+        {
+            unset($this->store[$key]);
+        }
     }
 
     /**
@@ -63,13 +83,13 @@ class DataStore{
      */
     public function __set($key, $value)
     {
-        if($this->overwrigth === true)
+        if($this->overwrite === true)
         {
             $this->store[$key]=$value;
         }
         else
         {
-            if($this->isExists($key) === true)
+            if(isset($this->$key) === true)
             {
                  return false;
             }
@@ -90,7 +110,7 @@ class DataStore{
      */
     public function __get($key)
     {
-        if($this->isExists($key))
+        if(isset($this->$key))
         {
             return $this->store[$key];
         }

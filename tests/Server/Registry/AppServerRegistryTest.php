@@ -15,11 +15,16 @@ require_once 'Server/DefaultEngine.class.php';
 class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
 
     private $reg = null;
+    private $conf = null;
+    static $port = 8081;
 
     function setUp()
     {
         $this->reg = AppServerRegistry::getInstance();
-        $this->mockServer = $this->getMock('AppServer', array('getStatus'),array('mockery',new DefaultEngine));
+        $this->conf = new Config;
+        $this->conf->name = 'main';
+        $this->conf->instance= array('port'=>self::$port++);
+        $this->mockServer = $this->getMock('AppServer', array('getStatus'),array($this->conf));
     }
 
     function testRegistryIsSingleton()

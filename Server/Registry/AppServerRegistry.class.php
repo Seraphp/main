@@ -53,7 +53,7 @@ class AppServerRegistry extends Registry{
      */
     public function getAppStatus($appID)
     {
-        if($this->isExists($appID))
+        if(isset($this->$appID))
         {
             return $this->$appID->getStatus();
         }
@@ -71,7 +71,7 @@ class AppServerRegistry extends Registry{
      */
     public function getAppInstance($appID)
     {
-        if($this->isExists($appID))
+        if(isset($this->$appID))
         {
             return $this->$appID;
         }
@@ -89,12 +89,10 @@ class AppServerRegistry extends Registry{
      */
     public function removeApp($appID)
     {
-        if($this->isExists($appID))
+        if(isset($this->$appID))
         {
             $ref = $this->$appID;
-            //$tempArray = $this->store;
-            unset($this->store[$appID]);
-            //$this->store = $tempArray;
+            unset($this->$appID);
             return $ref;
         }
         else throw new RegistryException('AppServer instance '.$appID.' not exists in registry!');
@@ -110,7 +108,7 @@ class AppServerRegistry extends Registry{
      */
     public function addApp($appID, AppServer $appRef)
     {
-        if(!$this->isExists($appID))
+        if(!isset($this->$appID))
         {
             $this->$appID = $appRef;
             return true;
@@ -125,6 +123,5 @@ class AppServerRegistry extends Registry{
  * @package Server
  * @subpackage Registry
  */
-class RegistryException extends Exception{
-}
+class RegistryException extends Exception{}
 ?>

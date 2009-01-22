@@ -21,7 +21,7 @@ class DataStoreTest extends PHPUnit_Framework_TestCase{
 
     function testEmptyKeyIsInvalid()
     {
-        $this->assertFalse($this->store->isExists('somekey'));
+        $this->assertFalse(isset($this->store->somekey));
     }
 
     function testEmptyKeyReturnsNull()
@@ -32,7 +32,7 @@ class DataStoreTest extends PHPUnit_Framework_TestCase{
     function testKeyValid()
     {
         $this->store->somekey = array('foo'=>array('bar'=>'somevalue'));
-        $this->assertTrue($this->store->isExists('somekey'));
+        $this->assertTrue(isset($this->store->somekey));
     }
 
 

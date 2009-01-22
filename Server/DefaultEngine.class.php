@@ -24,7 +24,7 @@ class DefaultEngine implements AppEngine{
 
     function process(Request $req)
     {
-        return 200;
+        return 0;
     }
 }
 ?>
