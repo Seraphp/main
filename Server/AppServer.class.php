@@ -147,10 +147,14 @@ class AppServer extends Server{
             {//we are the new process
                 $this->accepting = false;
                 socket_close($this->socket);
-                socket_write($conn, 'Welcome at Phaser! ProcID:'.$this->pid."\n");
-                socket_close($conn);
-                exit(0);
-                exit($this->process(RequestFactory::create($sock)));
+                try {
+                    $result = $this->process(RequestFactory::create($sock));
+                }catch (Exception $e) {
+                    socket_write($sock, '500 Internal Server Error');
+                    socket_close($sock);
+                    $result = 500;
+                }
+                exit($result);
             }
         }
         return;
