@@ -51,11 +51,11 @@ class Socket{
     private $port = 0;
 
     /**
-     * Number of seconds to wait on socket connections before assuming
+     * Number of miliseconds to wait on socket connections before assuming
      * there's no more data. Defaults to no timeout.
-     * @var float $timeout
+     * @var integer $timeout
      */
-    private $timeout = 0.0;
+    private $timeout = 0;
 
     /**
      * Number of bytes to read at a time in readLine() and
@@ -71,18 +71,26 @@ class Socket{
     private $options = array();
 
     /**
+     * The type of socket to use, default is tcp
+     * @var string
+     */
+    private $type = 'tcp';
+
+    /**
      *
+     * @param string $type         Type of the socket to open(@see: Socket::supportedTransports())
      * @param string  $addr        IP address or host name.
      * @param integer $port        port number.
-     * @param boolean $persist    (optional, def: false) Whether the connection is
+     * @param boolean $persist     (optional, def: false) Whether the connection is
      *                             persistent (kept open between requests
      *                             by the web server).
      * @param integer $timeout     (optional, def:30s) How long to wait for data.
      * @param array   $options     See options for stream_context_create.
      * @return Socket
      */
-    public function __construct($addr, $port = 0, $persist = false, $timeout = 30, $options = null)
+    public function __construct($type, $addr, $port = 0, $persist = false, $timeout = 0, $options = null)
     {
+        $this->setType($type);
         $this->setAddress($addr);
         $this->setPort($port);
         $this->setPersitent($persist);
@@ -102,13 +110,13 @@ class Socket{
         {
         	throw new SocketException('Address cannot be empty!');
         }
-        elseif (strspn($addr, '.0123456789') == strlen($addr) || strstr($addr, '/') !== false)
+        elseif (strspn($addr, ':.0123456789abcdefABCDEF') == strlen($addr) || strstr($addr, '/') !== false)
         {
-            $this->addr = $addr;
+            $this->addr = inet_ntop( inet_pton( $addr ) );
         }
         else
         {
-            $this->addr = @gethostbyname($addr);
+            $this->addr = gethostbyname($addr);
         }
     }
 
@@ -132,7 +140,8 @@ class Socket{
         if( is_array($opt) )
         {
             $this->options = $opt;
-        }else throw new SocketExcepion('Option must be an array');
+        }
+        else throw new SocketExcepion('Option must be an array');
     }
 
     /**
@@ -144,6 +153,27 @@ class Socket{
          $this->persistent = (boolean) $persistent;
     }
 
+    public function setType($type)
+    {
+        if ( $this->isConnected() )
+        {
+            throw new SocketException('Cannot modify the type of an open socket');
+        }
+        if ( in_array( $type, self::supportedTransports() ) )
+        {
+            $this->type = $type;
+        }
+        else
+        {
+            throw new SocketException("Transport '$type' not supported!");
+        }
+    }
+
+    public static function supportedTransports()
+    {
+        return stream_get_transports();
+    }
+
     /**
      * Connect to the specified port. If called when the socket is
      * already connected, it disconnects and connects again.
@@ -153,9 +183,9 @@ class Socket{
      */
     public function connect()
     {
-        if (is_resource($this->fp)) {
-            @fclose($this->fp);
-            $this->fp = null;
+        if ($this->isConnected())
+        {
+            $this->disconnect();
         }
 
         $errno = 0;
@@ -170,7 +200,7 @@ class Socket{
             $context = null;
         }
         $flags = $this->persistent ? STREAM_CLIENT_PERSISTENT : STREAM_CLIENT_CONNECT;
-        $addr = $this->addr . ':' . $this->port;
+        $addr = $this->type.'://'.$this->addr . ':' . $this->port;
         $fp = stream_socket_client($addr, $errno, $errstr, $timeout/1000, $flags, $context);
 
         if (!$fp)
@@ -179,10 +209,10 @@ class Socket{
             {
                 $errstr = $php_errormsg;
             }
-            @ini_set('track_errors', $old_track_errors);
+            ini_set('track_errors', $old_track_errors);
             throw new SocketException( $errstr );
         }
-        @ini_set('track_errors', $old_track_errors);
+        ini_set('track_errors', $old_track_errors);
         $this->fp = $fp;
         return $this->setBlocking($this->blocking);
     }
@@ -199,7 +229,8 @@ class Socket{
         {
             throw new SocketException('Not connected!');
         }
-        @fclose($this->fp);
+        fflush($this->fp);
+        fclose($this->fp);
         $this->fp = null;
         return true;
     }
@@ -231,7 +262,7 @@ class Socket{
         }
 
         $this->blocking = $mode;
-        socket_set_blocking($this->fp, $this->blocking);
+        stream_set_blocking($this->fp, $this->blocking);
         return true;
     }
 
@@ -248,7 +279,7 @@ class Socket{
         $this->timeout = $second*1000 + $microsecond;
         if ( $this->isConnected() )
         {
-            return socket_set_timeout($this->fp, $seconds, $microseconds);
+            return stream_set_timeout($this->fp, $seconds, $microseconds);
         }
         return true;
     }
@@ -278,11 +309,18 @@ class Socket{
      * Returns information about an existing socket resource.
      * Currently returns four entries in the result array:
      *
-     * <p>
-     * timed_out (bool) - The socket timed out waiting for data<br>
-     * blocked (bool) - The socket was blocked<br>
-     * eof (bool) - Indicates EOF event<br>
-     * unread_bytes (int) - Number of bytes left in the socket buffer<br>
+     *
+     * - timed_out (bool) - The socket timed out waiting for data
+     * - blocked (bool) - The socket was blocked
+     * - eof (bool) - Indicates EOF event
+     * - unread_bytes (int) - Number of bytes left in the socket buffer
+     * - stream_type (string) - describes the underlying stream implementation
+     * - wrapper_type (string) - describes the protocol wrapper implementation layered over the stream
+     * - wrapper_data (mixed) - wrapper specific data attached to this stream
+     * - filters (array) - contains the names of any filters that have been stacked onto this stream
+     * - mode (string) - the type of access required for this stream
+     * - seekable (bool) - whether the current stream can be seeked
+     * - uri (string) - the URI/filename associated with this stream
      * </p>
      *
      * @return array Array containing information about existing socket resource
@@ -295,7 +333,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        return socket_get_status( $this->fp );
+        return stream_get_meta_data( $this->fp );
     }
 
     /**
@@ -310,7 +348,7 @@ class Socket{
         {
             throw new SocketException('Not connected');
         }
-        return @fgets($this->fp, $size);
+        return fgets($this->fp, $size);
     }
 
     /**
@@ -329,7 +367,7 @@ class Socket{
         {
             throw new SocketException('Not connected');
         }
-        return @fread( $this->fp, $size );
+        return fread( $this->fp, $size );
     }
 
     /**
@@ -351,7 +389,7 @@ class Socket{
         }
         if ( is_null($blocksize) && !OS_WINDOWS )
         {
-            return @fwrite( $this->fp, $data );
+            return fwrite( $this->fp, $data );
         }
         else
         {
@@ -410,7 +448,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        return ord( @fread( $this->fp, 1 ) );
+        return ord( fread( $this->fp, 1 ) );
     }
 
     /**
@@ -426,7 +464,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        $buf = @fread( $this->fp, 2 );
+        $buf = fread( $this->fp, 2 );
         return ( ord( $buf[0] ) + ( ord( $buf[1] ) << 8 ) );
     }
 
@@ -443,7 +481,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        $buf = @fread( $this->fp, 4 );
+        $buf = fread( $this->fp, 4 );
         return ( ord( $buf[0] ) +
                 ( ord( $buf[1] ) << 8 ) +
                 ( ord( $buf[2] ) << 16 ) +
@@ -464,7 +502,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
         $string = '';
-        while (( $char = @fread( $this->fp, 1 ) ) != "\x00" )
+        while (( $char = fread( $this->fp, 1 ) ) != "\x00" )
         {
             $string .= $char;
         }
@@ -484,7 +522,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        $buf = @fread( $this->fp, 4 );
+        $buf = fread( $this->fp, 4 );
         return sprintf( '%d.%d.%d.%d',
                         ord( $buf[0] ),
                         ord( $buf[1] ),
@@ -511,7 +549,7 @@ class Socket{
         $timeout = time() + $this->timeout;
         while ( !feof( $this->fp ) && ( !$this->timeout || time() < $timeout ) )
         {
-            $line .= @fgets( $this->fp, $this->lineLength );
+            $line .= fgets( $this->fp, $this->lineLength );
             if ( substr( $line, -1 ) == "\n" )
             {
                 return rtrim( $line, "\r\n" );
@@ -540,7 +578,7 @@ class Socket{
         $data = '';
         while ( !feof( $this->fp ) )
         {
-            $data .= @fread( $this->fp, $this->lineLength );
+            $data .= fread( $this->fp, $this->lineLength );
         }
         return $data;
     }
@@ -620,7 +658,7 @@ class Socket{
             {
                 throw new SocketException('Not connected');
             }
-            return @stream_socket_enable_crypto( $this->fp, $enabled, $type );
+            return stream_socket_enable_crypto( $this->fp, $enabled, $type );
         }
         else
         {
