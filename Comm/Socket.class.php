@@ -13,6 +13,7 @@
  * Bundles all socket related function into an object
  *
  * @package Comm
+ * @todo Test Socket class
  */
 class Socket{
 
