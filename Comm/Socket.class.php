@@ -72,14 +72,14 @@ class Socket{
     private $options = array();
 
     /**
-     * The type of socket to use, default is tcp
+     * The type of transport the socket will use; default is 'tcp'
      * @var string
      */
-    private $type = 'tcp';
+    private $transport = 'tcp';
 
     /**
      *
-     * @param string $type         Type of the socket to open(@see: Socket::supportedTransports())
+     * @param string $transport         Type of the socket to open(@see: Socket::supportedTransports())
      * @param string  $addr        IP address or host name.
      * @param integer $port        port number.
      * @param boolean $persist     (optional, def: false) Whether the connection is
@@ -89,14 +89,17 @@ class Socket{
      * @param array   $options     See options for stream_context_create.
      * @return Socket
      */
-    public function __construct($type, $addr, $port = 0, $persist = false, $timeout = 0, $options = null)
+    public function __construct($transport, $addr, $port = 0, $persist = false, $timeout = 0, $options = null)
     {
-        $this->setType($type);
+        $this->setTransp($transport);
         $this->setAddress($addr);
         $this->setPort($port);
-        $this->setPersitent($persist);
+        $this->setPersistent($persist);
         $this->setTimeout($timeout);
-        $this->setOptions($options);
+        if ( is_array( $options ) )
+        {
+        	$this->setOptions($options);
+        }
     }
 
     /**
@@ -109,26 +112,54 @@ class Socket{
     {
         if ( empty($addr) )
         {
-        	throw new SocketException('Address cannot be empty!');
+            throw new SocketException('Address cannot be empty!');
         }
-        elseif (strspn($addr, ':.0123456789abcdefABCDEF') == strlen($addr) || strstr($addr, '/') !== false)
+        switch ($this->transport)
         {
-            $this->addr = inet_ntop( inet_pton( $addr ) );
-        }
-        else
-        {
-            $this->addr = gethostbyname($addr);
+            case 'unix':
+                $this->addr = $addr;
+                break;
+            case 'tcp':
+            case 'udp':
+            default:
+                if(strspn($addr, ':.0123456789abcdefABCDEF') == strlen($addr) || strstr($addr, '/') !== false)
+                {
+                    $this->addr = inet_ntop( inet_pton( $addr ) );
+                }
+                else
+                {
+                    $this->addr = gethostbyname($addr);
+                }
+                break;
         }
     }
 
     /**
+     * @return string
+     */
+    public function getAddress()
+    {
+        return $this->addr;
+    }
+
+    /**
      * @param integer $port  The port number (max. 65535)
-     * @return void
+     * @return integer  Port number which set
      */
     public function setPort($port)
     {
         $this->port = $port % 65536;
+        return $this->port;
     }
+
+    /**
+     * @return integer
+     */
+    public function getPort()
+    {
+        return $this->port;
+    }
+
 
     /**
      * Sets context options for socket
@@ -142,34 +173,79 @@ class Socket{
         {
             $this->options = $opt;
         }
-        else throw new SocketExcepion('Option must be an array');
+        else throw new SocketException('Option must be an array');
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     /**
      * @param boolean $state
-     * @return void
+     * @return boolean
      */
     public function setPersistent($state = false)
     {
-         $this->persistent = (boolean) $persistent;
+        $this->persistent = (boolean) $state;
+        return $this->persistent;
     }
 
-    public function setType($type)
+    /**
+     * @return boolean
+     */
+    public function isPersistent()
+    {
+        return $this->persistent;
+    }
+
+    /**
+     * Set transport protocoll
+     * For available options @see Socket::supportedTranports()
+     *
+     * @param string $transport
+     * @return boolean
+     * @throws SocketException
+     */
+    public function setTransp($transport)
     {
         if ( $this->isConnected() )
         {
-            throw new SocketException('Cannot modify the type of an open socket');
+            throw new SocketException('Cannot modify the transport of an open socket');
         }
-        if ( in_array( $type, self::supportedTransports() ) )
+        if ( in_array( $transport, self::supportedTransports() ) )
         {
-            $this->type = $type;
+            $this->transport = $transport;
+            return true;
         }
         else
         {
-            throw new SocketException("Transport '$type' not supported!");
+            throw new SocketException("Transport '$transport' not supported!");
         }
     }
 
+    public function getTransp()
+    {
+        return $this->transport;
+    }
+
+    /**
+     * Find out the supported transports on this operating system and PHP installation
+     * An example list of from my system:
+     * - "tcp"
+     * - "udp"
+     * - "unix"
+     * - "udg"
+     * - "ssl" (req. PHP SSL extension)
+     * - "sslv3" (req. PHP SSL extension)
+     * - "sslv2" (req. PHP SSL extension)
+     * - "tls" (req. PHP SSL extension)
+     *
+     * @return array  Array of supported starnsports on the hosting operating system
+     */
     public static function supportedTransports()
     {
         return stream_get_transports();
@@ -184,38 +260,45 @@ class Socket{
      */
     public function connect()
     {
-        if ($this->isConnected())
+        if ( $this->isConnected() )
         {
             $this->disconnect();
         }
 
         $errno = 0;
         $errstr = '';
-        $old_track_errors = @ini_set('track_errors', 1);
+        $old_track_errors = @ini_set( 'track_errors', 1 );
         if ( $this->options !== array() )
         {
             $context = stream_context_create( $this->options );
         }
         else
         {
-            $context = null;
+            $context = stream_context_create( array() );
         }
         $flags = $this->persistent ? STREAM_CLIENT_PERSISTENT : STREAM_CLIENT_CONNECT;
-        $addr = $this->type.'://'.$this->addr . ':' . $this->port;
-        $fp = stream_socket_client($addr, $errno, $errstr, $timeout/1000, $flags, $context);
+        if ( $this->transport == 'unix' )
+        {
+            $addr = $this->transport.'://'.$this->addr;
+        }
+        else
+        {
+            $addr = $this->transport.'://'.$this->addr . ':' . $this->port;
+        }
+        $fp = stream_socket_client( $addr, $errno, $errstr, $this->timeout/1000000, $flags, $context );
 
-        if (!$fp)
+        if ( !is_resource( $fp ) )
         {
             if ( $errno == 0 && isset( $php_errormsg ) )
             {
                 $errstr = $php_errormsg;
             }
-            ini_set('track_errors', $old_track_errors);
+            ini_set( 'track_errors', $old_track_errors );
             throw new SocketException( $errstr );
         }
-        ini_set('track_errors', $old_track_errors);
+        ini_set( 'track_errors', $old_track_errors );
         $this->fp = $fp;
-        return $this->setBlocking($this->blocking);
+        return $this->setBlocking( $this->blocking );
     }
 
     /**
@@ -254,16 +337,14 @@ class Socket{
      *
      * @param boolean $mode  True for blocking sockets, false for nonblocking.
      * @return boolean true on success
-     * @throws SocketException
      */
     function setBlocking($mode)
     {
-        if (!$this->isConnected()) {
-            throw new SocketException('Not connected!');
-        }
-
         $this->blocking = $mode;
-        stream_set_blocking($this->fp, $this->blocking);
+        if ($this->isConnected())
+        {
+            stream_set_blocking($this->fp, $this->blocking);
+        }
         return true;
     }
 
@@ -277,12 +358,22 @@ class Socket{
      */
     function setTimeout($seconds, $microseconds=0)
     {
-        $this->timeout = $second*1000 + $microsecond;
+        $this->timeout = ($seconds * 1000000) + $microseconds;
         if ( $this->isConnected() )
         {
             return stream_set_timeout($this->fp, $seconds, $microseconds);
         }
         return true;
+    }
+
+    /**
+     * Returs timeout vale in microseconds
+     *
+     * @return integer
+     */
+    function getTimeout()
+    {
+        return $this->timeout;
     }
 
     /**
@@ -340,7 +431,10 @@ class Socket{
     /**
      * Get a specified line of data
      *
-     * @return $size bytes of data from the socket
+     * Retruns $size-1 byte of data from the stream,
+     * but stops at new line or EOF.
+     *
+     * @return $size-1 bytes of data from the socket
      * @throws SocketException if not connected
      */
     function gets( $size )
@@ -484,10 +578,10 @@ class Socket{
 
         $buf = fread( $this->fp, 4 );
         return ( ord( $buf[0] ) +
-                ( ord( $buf[1] ) << 8 ) +
-                ( ord( $buf[2] ) << 16 ) +
-                ( ord( $buf[3] ) << 24 )
-               );
+        ( ord( $buf[1] ) << 8 ) +
+        ( ord( $buf[2] ) << 16 ) +
+        ( ord( $buf[3] ) << 24 )
+        );
     }
 
     /**
@@ -525,11 +619,11 @@ class Socket{
 
         $buf = fread( $this->fp, 4 );
         return sprintf( '%d.%d.%d.%d',
-                        ord( $buf[0] ),
-                        ord( $buf[1] ),
-                        ord( $buf[2] ),
-                        ord( $buf[3] )
-                      );
+        ord( $buf[0] ),
+        ord( $buf[1] ),
+        ord( $buf[2] ),
+        ord( $buf[3] )
+        );
     }
 
     /**
@@ -644,7 +738,7 @@ class Socket{
      * @param bool    $enabled  Set this parameter to true to enable encryption
      *                          and false to disable encryption.
      * @param integer $type     Type of encryption. See
-     *                          http://se.php.net/manual/en/function.stream-socket-enable-crypto.php for values.
+     *                          http://www.php.net/manual/en/function.stream-socket-enable-crypto.php for values.
      *
      * @return false on error, true on success and 0 if there isn't enough data and the
      *         user should try again (non-blocking sockets only).
@@ -673,7 +767,17 @@ class Socket{
     {
         return is_resource( $this->fp );
     }
+
+    public function __desctruct()
+    {
+        if ( $this->isConnected() )
+        {
+            $this->disconnect();
+        }
+    }
 }
 
-class SocketException extends Exception{}
+class SocketException extends Exception{
+
+}
 ?>
