@@ -85,20 +85,20 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
     function testGetInitialPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
-        $this->assertEquals($PF->getPluginsDir(),'/home/peter/workspace/phaser/Policy');
+        $this->assertEquals($PF->getPluginsDir(),'/home/peter/workspace/seraphp/Policy');
     }
 
     function testInvalidPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
         $this->setExpectedException('PluginException');
-        $PF->setPluginsDir('/home/peter/workspace/phaser/tests/Policy');
+        $PF->setPluginsDir('/home/peter/workspace/seraphp/tests/Policy');
     }
 
     function testValidPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
-        $PF->setPluginsDir('/home/peter/workspace/phaser/Policy');
+        $PF->setPluginsDir('/home/peter/workspace/seraphp/Policy');
     }
 }
 ?>

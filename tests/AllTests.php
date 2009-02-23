@@ -1,5 +1,5 @@
 <?php
-ini_set('include_path',DEFAULT_INCLUDE_PATH.PATH_SEPARATOR.'/home/peter/workspace/phaser');
+ini_set('include_path',DEFAULT_INCLUDE_PATH.PATH_SEPARATOR.'/home/peter/workspace/seraphp');
 
 require_once 'PHPUnit/Framework.php';
 require_once 'tests/Policy/AllTests.php';
@@ -11,11 +11,11 @@ class AllTests
     public static function suite()
     {
         // @codeCoverageIgnoreStart
-        $suite = new PHPUnit_Framework_TestSuite('Phaser');
+        $suite = new PHPUnit_Framework_TestSuite('Seraphp');
         $suite->addTest(Policy_AllTests::suite());
         $suite->addTest(Server_AllTests::suite());
         $suite->addTest(Comm_AllTests::suite());
-        PHPUnit_Util_Filter::removeDirectoryFromWhiteList('/home/peter/workspace/phaser/tests/');
+        PHPUnit_Util_Filter::removeDirectoryFromWhiteList('/home/peter/workspace/seraphp/tests/');
         return $suite;
         // @codeCoverageIgnoreEnd
     }

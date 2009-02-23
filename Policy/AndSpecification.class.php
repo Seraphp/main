@@ -1,7 +1,7 @@
 <?php
 /**
- * Contains implementation of AndSpecification class 
- * 
+ * Contains implementation of AndSpecification class
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id:AndSpecification.class.php 234 2008-11-01 15:35:32Z peter $
  * @copyright Copyright (c) 2008, Peter Nagy
@@ -9,15 +9,15 @@
  * @filesource
  */
 /***/
-//namespace Phaser::Policy;
+//namespace Seraphp\Policy;
 require_once 'Policy/Specification.interface.php';
 /**
  * Implements "And" type specification policy
- * 
+ *
  * @package Policy
  */
 class AndSpecification implements Specification{
-    
+
     /**
      * @var Specification
      */
@@ -26,7 +26,7 @@ class AndSpecification implements Specification{
      * @var Specification
      */
     protected $spec2;
-    
+
     /**
      * Stores the specifications which will be related
      *
@@ -37,7 +37,7 @@ class AndSpecification implements Specification{
         $this->spec = $spec;
         $this->spec2 = $spec2;
     }
-    
+
     /**
      * Return true if the two specification are both satisfied
      */

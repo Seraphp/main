@@ -1,7 +1,7 @@
 <?php
 /**
  * Contains implementation of FieldEqualSpecification class
- * 
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2008, Peter Nagy
@@ -9,11 +9,11 @@
  * @filesource
  */
 /***/
-//namespace Phaser\Policy;
+//namespace Seraphp\Policy;
 require_once 'Policy/FieldSpecification.class.php';
 /**
  * Implements 'equal fields' policy.
- *  
+ *
  * @package Policy
  */
 class FieldEqualSpecification extends FieldSpecification
@@ -35,11 +35,11 @@ class FieldEqualSpecification extends FieldSpecification
     }
 
     /**
-     * Returns true if value is logicaly equal (==) with field's value 
+     * Returns true if value is logicaly equal (==) with field's value
      */
     public function isSatisfiedBy($src){
         return ($src->{$this->field} == $this->value);
     }
-    
+
 }
 ?>

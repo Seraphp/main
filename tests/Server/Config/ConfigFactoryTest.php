@@ -31,10 +31,10 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testGetMainConf()
     {
-        $this->cf->setXmlSrc(dirname(__FILE__).'/phaser_test_config.xml');
+        $this->cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
         $conf = $this->cf->getConf('main');
         $this->assertThat($conf,$this->IsInstanceOf('Config'));
-        $this->assertEquals('/home/peter/workspace/phaser',$conf->pidpath);
+        $this->assertEquals('/home/peter/workspace/seraphp',$conf->pidpath);
         $this->assertEquals(5,$conf->instance['maxchildren']);
         $this->assertEquals('127.0.0.1',$conf->instance['address']);
         $this->assertEquals(8123,$conf->instance['port']);
@@ -44,10 +44,10 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testGetSessionConf()
     {
-        $this->cf->setXmlSrc(dirname(__FILE__).'/phaser_test_config.xml');
+        $this->cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
         $conf = $this->cf->getConf('session');
         $this->assertThat($conf,$this->IsInstanceOf('Config'));
-        $this->assertEquals('/home/peter/workspace/phaser',$conf->pidpath);
+        $this->assertEquals('/home/peter/workspace/seraphp',$conf->pidpath);
         $this->assertEquals(5,$conf->instance['maxchildren']);
         $this->assertEquals('127.0.0.1',$conf->instance['address']);
         $this->assertEquals(8124,$conf->instance['port']);
@@ -57,10 +57,10 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testGetDBPoolConf()
     {
-        $this->cf->setXmlSrc(dirname(__FILE__).'/phaser_test_config.xml');
+        $this->cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
         $conf = $this->cf->getConf('dbpool');
         $this->assertThat($conf,$this->IsInstanceOf('Config'));
-        $this->assertEquals('/home/peter/workspace/phaser',$conf->pidpath);
+        $this->assertEquals('/home/peter/workspace/seraphp',$conf->pidpath);
         $this->assertEquals(5,$conf->instance['maxchildren']);
         $this->assertEquals('127.0.0.1',$conf->instance['address']);
         $this->assertEquals(8125,$conf->instance['port']);

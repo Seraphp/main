@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+//namespace Seraphp\Comm\JsonRpc;
 require_once "/Comm/JsonRpc/Request.class.php";
 require_once "/Comm/JsonRpc/Response.class.php";
 /**
@@ -107,9 +108,8 @@ class JsonRpcProxy{
         switch( $this->type )
         {
             case 'socket':
-                //@todo Refine Socket connection invocation after creating Socket class
-                require_once 'Socket.class.php';
-                $this->connection = new Socket();
+                require_once 'Comm/Socket.class.php';
+                $this->connection = new Socket('unix', '/tmp/interSeraphp.tmp');
             break;
         }
     }
@@ -124,9 +124,8 @@ class JsonRpcProxy{
         if( in_array( $name, $this->notifications ) )
         {
             $message = (string) new Request( $name, $arguments );
-            //@todo Revise this call after Socket is implemented
             try{
-                $this->connection->send( $dest, $message );
+                $this->connection->writeLine( $dest, $message );
             }catch(Exception $e)
             {
                 throw $e;
@@ -135,10 +134,9 @@ class JsonRpcProxy{
         else
         {
             $message = (string) new Request( $name, $arguments, self::getID() );
-            //@todo Revise this call after Socket is implemented
-            if ( $this->connection->send( $dest, $message ) )
+            if ( $this->connection->writeLine( $dest, $message ) )
             {
-                return $this->parseReply( $this->connection->read() );
+                return $this->parseReply( $this->connection->readLine() );
             }
         }
     }
@@ -181,8 +179,7 @@ class JsonRpcProxy{
         	if( $message->id !== null )
         	{
   	            $message = (string) new Response( $result, $error, $message->id);
-                //@todo Revise this call after Socket is implemented
-                $this->connection->send( $dest, $message );
+                $this->connection->writeLine( $dest, $message );
         	}
         }
     }
@@ -231,7 +228,7 @@ class JsonRpcProxy{
      */
     public function __destruct()
     {
-        $this->connection->close();
+        $this->connection->disconnect();
     }
 }
 ?>

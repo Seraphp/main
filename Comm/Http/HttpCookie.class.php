@@ -9,11 +9,12 @@
  * @subpackage Http
  * @filesource
  */
+ /***/
+ //namespace Seraphp\Comm\Http;
 /**
  * Class representing an HTTP cookie
  * @package Comm
  * @subpackage Http
- * @todo Implement HttpCookie class
  */
 class HttpCookie{
     public $name = '';

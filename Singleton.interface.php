@@ -4,12 +4,12 @@
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @filesource
- * @package Phaser
+ * @package Seraphp
  */
-//namespace Phaser;
+//namespace Seraphp;
 /**
  * Realize a class with only one existing instance.
- * @package Phaser 
+ * @package Seraphp
  */
 interface Singleton{
     /**

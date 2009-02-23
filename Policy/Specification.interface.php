@@ -8,12 +8,12 @@
  * @filesource
  */
 /***/
-//namespace Phaser\Policy;
+//namespace Seraphp\Policy;
 /**
  * Specification interface
- * 
+ *
  * Has a required method "isSatisfiedBy" which a data source as parameter.
- * 
+ *
  * @package Policy
  */
 interface Specification {

@@ -19,16 +19,16 @@ class IpcFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testPluginsDir()
     {
-        $this->assertEquals('/home/peter/workspace/phaser/Comm/Ipc',IpcFactory::getPluginsDir());
-        IpcFactory::setPluginsDir('/home/peter/workspace/phaser/Comm');
-        $this->assertEquals('/home/peter/workspace/phaser/Comm',IpcFactory::getPluginsDir());
-        $this->assertFalse(IpcFactory::setPluginsDir('/home/peter/workspace/phasere'));
-        $this->assertEquals('/home/peter/workspace/phaser/Comm',IpcFactory::getPluginsDir());
+        $this->assertEquals('/home/peter/workspace/seraphp/Comm/Ipc',IpcFactory::getPluginsDir());
+        IpcFactory::setPluginsDir('/home/peter/workspace/seraphp/Comm');
+        $this->assertEquals('/home/peter/workspace/seraphp/Comm',IpcFactory::getPluginsDir());
+        $this->assertFalse(IpcFactory::setPluginsDir('/home/peter/workspace/seraph'));
+        $this->assertEquals('/home/peter/workspace/seraphp/Comm',IpcFactory::getPluginsDir());
     }
 
     function testValidPlugin()
     {
-        IpcFactory::setPluginsDir('/home/peter/workspace/phaser/Comm/Ipc');
+        IpcFactory::setPluginsDir('/home/peter/workspace/seraphp/Comm/Ipc');
         $this->assertThat(IpcFactory::get('unixsockets',0),$this->IsInstanceOf('IpcAdapter'));
     }
 

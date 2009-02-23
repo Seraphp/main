@@ -757,7 +757,7 @@ class Socket{
         }
         else
         {
-            throw new Exception('Phaser::Comm::Socket::enableCrypto() requires php version >= 5.1.0');
+            throw new Exception('Seraphp::Comm::Socket::enableCrypto() requires php version >= 5.1.0');
         }
     }
     /**

@@ -1,7 +1,7 @@
 <?php
 /**
  * Contains implementation of NotSpecification class
- * 
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2008, Peter Nagy
@@ -9,11 +9,11 @@
  * @filesource
  */
 /***/
-//namespace Phaser::Policy;
+//namespace Seraphp\Policy;
 require_once 'Policy/Specification.interface.php';
 /**
  * Implements "Not" type specification policy
- * 
+ *
  * @package Policy
  */
 class NotSpecification implements Specification{
@@ -21,7 +21,7 @@ class NotSpecification implements Specification{
      * @var Specification
      */
     protected $spec;
-    
+
     /**
      * Stores the specification which will be negated
      *
@@ -30,7 +30,7 @@ class NotSpecification implements Specification{
     public function __construct(Specification $spec){
         $this->spec = $spec;
     }
-    
+
     /**
      * Returns negated result of coupled specification
      */

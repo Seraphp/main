@@ -4,7 +4,7 @@
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @filesource
- * @package Phaser
+ * @package Seraphp
  */
 /**
  * Observer interface definition
@@ -12,7 +12,7 @@
  * Classes implementing this interface will be able to receive
  * notification from classes implementing the Listener interface.
  *
- * @package Phaser
+ * @package Seraphp
  */
 interface Observer{
     /**
@@ -38,7 +38,7 @@ interface Observer{
  * Classes implementing this interface will be able to
  * notify classes implementing the Observer interface.
  *
- * @package Phaser
+ * @package Seraphp
  */
 interface Listener{
     /**

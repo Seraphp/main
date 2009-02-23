@@ -18,7 +18,7 @@ class Server_AllTests{
     public static function suite()
     {
         // @codeCoverageIgnoreStart
-        $suite = new PHPUnit_Framework_TestSuite('Phaser Server');
+        $suite = new PHPUnit_Framework_TestSuite('Seraphp Server');
         $suite->addTestSuite('AppServerTest');
         $suite->addTestSuite('DataStoreTest');
         $suite->addTest(Registry_AllTests::suite());

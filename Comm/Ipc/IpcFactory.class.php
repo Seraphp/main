@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+//namespace Seraphp\Comm\Ipc;
 require_once 'Comm/Ipc/IpcAdapter.interface.php';
 require_once 'Exceptions/PluginException.class.php';
 /**
@@ -39,7 +40,7 @@ class IpcFactory{
      * A pid can use only 1 instance, so factory will return the same instance
      * for the same pid.
      *
-     * TODO: Function needs testing
+     * @todo: Function needs testing
      *
      * @param string $type
      * @param integer $pid

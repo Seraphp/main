@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Phaser::Server::Config;
+//namespace Seraphp\Server\Config;
 require_once 'Singleton.interface.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Server/Registry/Registry.class.php';
@@ -32,7 +32,7 @@ class ConfigFactory implements Singleton{
     {
         $this->registry = $reg;
         $this->configPath = dirname(__FILE__);
-        $this->configFile = 'phaserConf.xml';
+        $this->configFile = 'seraphpConf.xml';
     }
 
 	/**

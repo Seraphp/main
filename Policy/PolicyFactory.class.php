@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Phaser::Policy;
+//namespace Seraphp\Policy;
 require_once 'Policy/Specification.interface.php';
 require_once 'Exceptions/PluginException.class.php';
 /**
@@ -20,7 +20,7 @@ require_once 'Exceptions/PluginException.class.php';
  * Should be static class but for this it will need PHP 5.3
  *
  * @package Policy
- * TODO: Refactor class to make it static using PHP 5.3 __staticCall feature
+ * @todo: Refactor class to make it static using PHP 5.3 __staticCall feature
  */
 class PolicyFactory {
     /**
@@ -138,7 +138,7 @@ class PolicyFactory {
      * Sets plugins directory
      *
      * Also deletes already registered plugins and reload the plugins list.
-     * TODO: Refactor class to make it able to simply add a new directory to the plugins'
+     * @todo: Refactor class to make it able to simply add a new directory to the plugins'
      * directory's lists.
      *
      * @param string $dir

@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Phaser::Server;
+//namespace Seraphp\Server;
 require_once 'Server/Server.class.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Comm/Request.interface.php';
@@ -22,7 +22,7 @@ require_once 'Comm/RequestFactory.class.php';
 class AppServer extends Server{
 
     protected $appID = '';
-    protected $pidFolder = '/home/peter/workspace/phaser';
+    protected $pidFolder = '/home/peter/workspace/seraphp';
     protected $appReg = null;
     protected $engine = null;
     private $includes = array();
@@ -139,7 +139,7 @@ class AppServer extends Server{
      */
     private function listen()
     {
-        if($conn = @socket_accept($this->socket))
+        if($conn = socket_accept($this->socket))
         {
             fputs(STDOUT, 'Connection accepted, spawning new child'."\n");
             $this->spawn();
@@ -232,5 +232,5 @@ class AppServer extends Server{
     }
 }
 
-class SocketException extends Exception{}
+
 ?>

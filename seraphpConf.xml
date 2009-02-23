@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phaser>
-	<servers pidpath="/home/peter/workspace/phaser">
+<seraphp>
+	<servers pidpath="/home/peter/workspace/seraphp">
 		<server id="main">
 			<urimap>
-				<url>/</url>
+				<url engine="default">/</url>
+				<url auth="internal" engine="admin">/admin/</url>
+				<url engine="static">/static/</url>
 			</urimap>
 			<resources>
 				<includes>
-					<path>/home/peter/workspace/phaser/Server/DefaultEngine.class.php</path>
+					<path>/home/peter/workspace/seraphp/Server/DefaultEngine.class.php</path>
 				</includes>
 			</resources>
 			<instance>
@@ -18,4 +20,4 @@
 			</instance>
 		</server>
 	</servers>
-</phaser>
+</seraphp>

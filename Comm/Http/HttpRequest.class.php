@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+//namespace Seraphp\Comm\Http;
 require_once 'Comm/Request.interface.php';
 require_once 'ObserverListener.interface.php';
 /**
@@ -186,7 +187,6 @@ class HttpRequest implements Request, Listener{
         if ( array_key_exists( 'Cookie', $this->httpHeaders ) )
         {
             $this->cookies = explode( ';', $this->httpHeaders[ 'Cookies' ] );
-            //@todo: create CookieFactory and the Cookie class
             $this->cookies = HttpFactory::getCookies($this->cookies);
         }
         //processing GET parameters

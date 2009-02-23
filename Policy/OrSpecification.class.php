@@ -1,7 +1,7 @@
 <?php
 /**
  * Contains implementation of OrSpecification class
- * 
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2008, Peter Nagy
@@ -9,15 +9,15 @@
  * @filesource
  */
 /***/
-//namespace Phaser::Policy;
+//namespace Seraphp\Policy;
 require_once 'Policy/Specification.interface.php';
 /**
  * Implements "Or" type specification policy
- * 
+ *
  * @package Policy
  */
 class OrSpecification implements Specification{
-    
+
     /**
      * @var Specification
      */
@@ -26,7 +26,7 @@ class OrSpecification implements Specification{
      * @var Specification
      */
     protected $spec2;
-    
+
     /**
      * Stores the specifications which will be related
      *

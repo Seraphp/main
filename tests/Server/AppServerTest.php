@@ -26,9 +26,8 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
     function testAppServerInstatiation()
     {
         $this->assertEquals('main',$this->server->getAppId());
-        var_dump($this->server);
         $this->assertTrue(is_numeric($this->server->summon()));
-        $this->assertFileExists('/home/peter/workspace/phaser/.phasermain.pid');
+        $this->assertFileExists('/home/peter/workspace/seraphp/.seraphpmain.pid');
         $this->assertEquals(5, $this->server->getMaxSpawns());
         $this->server->setMaxSpawns(10);
         $this->assertEquals(10, $this->server->getMaxSpawns());

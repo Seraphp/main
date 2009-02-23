@@ -16,7 +16,7 @@ class Policy_AllTests{
     public static function suite()
     {
         // @codeCoverageIgnoreStart
-        $suite = new PHPUnit_Framework_TestSuite('Phaser Policy');
+        $suite = new PHPUnit_Framework_TestSuite('Seraphp Policy');
         $suite->addTestSuite('PolicyFactoryTest');
         $suite->addTestSuite('SpecificationTest');
         return $suite;

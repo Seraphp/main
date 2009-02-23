@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.phaser.com/phaserConfig"
-	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.phaser.com/phaserConfig" attributeFormDefault="qualified">
+<xs:schema targetNamespace="http://www.seraphp.com/seraphpConfig"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.seraphp.com/seraphpConfig" attributeFormDefault="qualified">
 	<xs:element name="servers">
 		<xs:complexType>
 			<xs:sequence>
@@ -49,7 +49,7 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="url" type="xs:anyURI" />
+	<xs:element name="url" type="tns:urlType" />
 
 	<xs:element name="includes" type="tns:includesType" />
 
@@ -69,7 +69,7 @@
 
 	<xs:element name="port" type="xs:int" />
 
-    <xs:element name="phaser" type="tns:rootType"/>
+    <xs:element name="seraphp" type="tns:rootType"/>
 
 	<xs:complexType name="rootType">
 		<xs:sequence>
@@ -83,4 +83,17 @@
 	  </xs:restriction>
 	</xs:simpleType>
 
+
+	<xs:complexType name="urlType" mixed="true">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="auth" type="xs:string"
+					use="optional" default="none">
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+		<xs:attribute name="engine" use="optional" default="default"
+			type="xs:string">
+		</xs:attribute>
+	</xs:complexType>
 </xs:schema>

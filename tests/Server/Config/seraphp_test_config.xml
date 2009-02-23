@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phaser>
-	<servers pidpath='/home/peter/workspace/phaser'>
+<seraphp>
+	<servers pidpath='/home/peter/workspace/seraphp'>
 		<server id='main'>
 			<urimap>
 				<url>/</url>
@@ -14,7 +14,7 @@
 			<resources>
 				<includes>
 					<path>.</path>
-					<path>/home/peter/workspace/phaser</path>
+					<path>/home/peter/workspace/seraphp</path>
 				</includes>
 			</resources>
 		</server>
@@ -27,7 +27,7 @@
 			<resources>
 				<includes>
 					<path>.</path>
-					<path>/home/peter/workspace/phaser</path>
+					<path>/home/peter/workspace/seraphp</path>
 				</includes>
 			</resources>
 		</server>
@@ -40,10 +40,10 @@
 			<resources>
 				<includes>
 					<path>.</path>
-					<path>/home/peter/workspace/phaser</path>
+					<path>/home/peter/workspace/seraphp</path>
 					<file>dbPool.class.php</file>
 				</includes>
 			</resources>
 		</server>
 	</servers>
-</phaser>
+</seraphp>

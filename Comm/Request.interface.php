@@ -7,10 +7,10 @@
  * @copyright Copyright (c) 2008, Peter Nagy
  * @filesource
  */
-//namespace Phaser::Comm;
+//namespace Seraphp\Comm;
 /**
  * Class documentation
- * 
+ *
  * @package Comm
  */
 interface Request{

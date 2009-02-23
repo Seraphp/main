@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Phaser::Server;
+//namespace Seraphp\Server;
 /**
  * DataStore class for storing keys with values
  *

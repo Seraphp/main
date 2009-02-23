@@ -9,6 +9,7 @@
  * @filesource
  */
 /***/
+//namespace Seraphp\Server;
 require_once 'Server/Daemon.interface.php';
 require_once 'Comm/Ipc/IpcFactory.class.php';
 /**
@@ -157,7 +158,7 @@ abstract class Server implements Daemon{
      */
     private function savePid2File()
     {
-        $this->pidFile = fopen($this->pidFolder.'/.phaser'.$this->appID.'.pid', "a");
+        $this->pidFile = fopen($this->pidFolder.'/.seraphp'.$this->appID.'.pid', "a");
         if (!$this->pidFile || !flock($this->pidFile, LOCK_EX | LOCK_NB))
         {
             throw new Exception('Unable to get pid file lock!');
