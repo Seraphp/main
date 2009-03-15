@@ -28,11 +28,11 @@
  </target>
 
  <target name="phpcs">
-  <exec dir="${basedir}"
+  <exec dir="${basedir}/source"
         executable="phpcs"
         output="${basedir}/build/logs/checkstyle.xml"
         failonerror="false">
-   <arg line="--report=checkstyle --ignore=tests."/>
+   <arg line="--report=checkstyle --ignore=tests/ ."/>
   </exec>
  </target>
 
