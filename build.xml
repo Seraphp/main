@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SeraPhp" default="build" basedir=".">
+ <target name="checkout">
+  <exec executable="svn" dir="${basedir}/source">
+   <arg line="up" />
+  </exec>
+ </target>
+
+ <target name="clean">
+  <delete dir="${basedir}/build"/>
+  <delete dir="${basedir}/docs"/>
+ </target>
+
+ <target name="prepare">
+  <mkdir dir="${basedir}/build/logs"/>
+ </target>
+
+ <target name="PHPDocs">
+  <exec executable="phpdoc" dir="${basedir}/source">
+   <arg line="-ct type -ue on -t ${basedir}/build/api
+              -tb /usr/share/php/data/phpUnderControl/data/phpdoc 
+              -o HTML:Phpuc:phpuc -d ./" /> 
+  </exec>
+ </target>
+
+ <target name="phpcs">
+  <exec dir="${basedir}"
+        executable="phpcs"
+        output="${basedir}/build/logs/checkstyle.xml"
+        failonerror="false">
+   <arg line="--report=checkstyle ."/>
+  </exec>
+ </target>
+
+ <target name="phpcpd">
+  <exec dir="${basedir}"
+        executable="phpcpd"
+        failonerror="true">
+   <arg line="--log-pmd=${basedir}/build/logs/pmd-cpd.xml ."/>
+  </exec>
+ </target>
+
+ <target name="pdepend">
+  <exec dir="${basedir}"
+        executable="pdepend"
+        failonerror="false">
+   <arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml ."/>
+  </exec>
+ </target>
+
+ <target name="phpunit">
+  <exec dir="${basedir}/tests"
+        executable="phpunit"
+        failonerror="true">
+   <arg line="--log-xml ${basedir}/build/logs/phpunit.xml
+              --log-pmd ${basedir}/build/logs/phpunit.pmd.xml
+              --log-metrics ${basedir}/build/logs/phpunit.metrics.xml
+              --coverage-xml ${basedir}/build/logs/phpunit.coverage.xml
+              --coverage-html ${basedir}/build/coverage
+              phpucAllTests tests/AllTests.php"/>
+  </exec>
+ </target>
+
+ <target name="build"
+         depends="clean,prepare,checkout,PHPDocs,phpcs,phpcpd,pdepend,phpunit"/>
+</project>
