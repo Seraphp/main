@@ -1,10 +1,10 @@
 <?php
-ini_set('include_path',DEFAULT_INCLUDE_PATH.PATH_SEPARATOR.'/home/peter/workspace/seraphp');
+ini_set('include_path',DEFAULT_INCLUDE_PATH.PATH_SEPARATOR.'tests/');
 
 require_once 'PHPUnit/Framework.php';
-require_once 'tests/Policy/AllTests.php';
-require_once 'tests/Server/AllTests.php';
-require_once 'tests/Comm/AllTests.php';
+require_once 'Policy/AllTests.php';
+require_once 'Server/AllTests.php';
+require_once 'Comm/AllTests.php';
 
 class AllTests
 {
