@@ -32,7 +32,7 @@
         executable="phpcs"
         output="${basedir}/build/logs/checkstyle.xml"
         failonerror="false">
-   <arg line="--report=checkstyle ."/>
+   <arg line="--report=checkstyle --ignore=tests."/>
   </exec>
  </target>
 
