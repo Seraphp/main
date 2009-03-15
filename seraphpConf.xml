@@ -16,7 +16,7 @@
 				<ipc>unixsockets</ipc>
 				<maxChildren>4</maxChildren>
 				<address>127.0.0.1</address>
-				<port>8080</port>
+				<port>8088</port>
 			</instance>
 		</server>
 	</servers>
