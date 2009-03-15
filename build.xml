@@ -23,7 +23,11 @@
               -tb /usr/share/php/data/phpUnderControl/data/phpdoc 
               -o HTML:Phpuc:phpuc 
    			  -d ./
-   			  -c ${basedir}/source/phpdoc.ini" /> 
+   			  -pp on
+   			  -dc Seraphp
+   			  -dn Seraphp
+   			  -i tests/
+   			  -s on" /> 
   </exec>
  </target>
 
