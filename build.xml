@@ -49,7 +49,7 @@
  </target>
 
  <target name="phpunit">
-  <exec dir="${basedir}/tests"
+  <exec dir="${basedir}/source/tests"
         executable="phpunit"
         failonerror="true">
    <arg line="--log-xml ${basedir}/build/logs/phpunit.xml
