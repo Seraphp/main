@@ -85,14 +85,14 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
     function testGetInitialPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
-        $this->assertEquals($PF->getPluginsDir(),'/home/peter/workspace/seraphp/Policy');
+        $this->assertEquals($PF->getPluginsDir(),getcwd().'/Policy');
     }
 
     function testInvalidPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
         $this->setExpectedException('PluginException');
-        $PF->setPluginsDir('/home/peter/workspace/seraphp/tests/Policy');
+        $PF->setPluginsDir(getcwd().'/Policy');
     }
 
     function testValidPluginsDir()
