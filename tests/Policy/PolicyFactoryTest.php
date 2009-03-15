@@ -92,7 +92,7 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
     {
         $PF = PolicyFactory::getInstance();
         $this->setExpectedException('PluginException');
-        $PF->setPluginsDir(getcwd().'/Policy');
+        $PF->setPluginsDir(getcwd().'/Polic');
     }
 
     function testValidPluginsDir()
