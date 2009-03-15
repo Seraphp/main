@@ -17,9 +17,13 @@
 
  <target name="PHPDocs">
   <exec executable="phpdoc" dir="${basedir}/source">
-   <arg line="-ct type -ue on -t ${basedir}/build/api
+   <arg line="-ct type 
+   			  -ue on 
+   			  -t ${basedir}/build/api
               -tb /usr/share/php/data/phpUnderControl/data/phpdoc 
-              -o HTML:Phpuc:phpuc -d ./" /> 
+              -o HTML:Phpuc:phpuc 
+   			  -d ./
+   			  -c ${basedir}/source/phpdoc.ini" /> 
   </exec>
  </target>
 
