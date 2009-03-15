@@ -48,7 +48,7 @@
   <exec dir="${basedir}"
         executable="pdepend"
         failonerror="false">
-   <arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml ."/>
+   <arg line="--jdepend-xml=${basedir}/build/logs/phpdepend.xml ."/>
   </exec>
  </target>
 
@@ -66,5 +66,5 @@
  </target>
 
  <target name="build"
-         depends="clean,prepare,checkout,PHPDocs,phpcs,phpcpd,pdepend,phpunit"/>
+         depends="clean,prepare,checkout,phpcs,phpcpd,pdepend,PHPDocs,phpunit"/>
 </project>
