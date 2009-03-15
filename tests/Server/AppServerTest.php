@@ -19,7 +19,7 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
     {
         $this->conf = new Config;
         $this->conf->name = 'main';
-        $this->conf->instance = array('address'=>'127.0.0.1', 'port'=>8080);
+        $this->conf->instance = array('address'=>'127.0.0.1', 'port'=>8088);
         $this->server = new AppServer($this->conf);
     }
 
