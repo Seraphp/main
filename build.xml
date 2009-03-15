@@ -57,7 +57,7 @@
               --log-metrics ${basedir}/build/logs/phpunit.metrics.xml
               --coverage-xml ${basedir}/build/logs/phpunit.coverage.xml
               --coverage-html ${basedir}/build/coverage
-              phpucAllTests tests/AllTests.php"/>
+              phpucAllTests AllTests.php"/>
   </exec>
  </target>
 
