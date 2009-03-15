@@ -98,7 +98,7 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
     function testValidPluginsDir()
     {
         $PF = PolicyFactory::getInstance();
-        $PF->setPluginsDir('/home/peter/workspace/seraphp/Policy');
+        $PF->setPluginsDir('./Policy');
     }
 }
 ?>
