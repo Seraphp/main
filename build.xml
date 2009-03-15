@@ -8,7 +8,7 @@
 
  <target name="clean">
   <delete dir="${basedir}/build"/>
-  <delete dir="${basedir}/docs"/>
+  <delete dir="${basedir}/source/docs"/>
  </target>
 
  <target name="prepare">
@@ -53,7 +53,7 @@
  </target>
 
  <target name="phpunit">
-  <exec dir="${basedir}/source/tests"
+  <exec dir="${basedir}/source/"
         executable="phpunit"
         failonerror="true">
    <arg line="--log-xml ${basedir}/build/logs/phpunit.xml
