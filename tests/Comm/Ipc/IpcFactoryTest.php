@@ -19,7 +19,7 @@ class IpcFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testPluginsDir()
     {
-        $this->assertEquals('./Comm/Ipc',IpcFactory::getPluginsDir());
+        $this->assertEquals(getcwd().'/Comm/Ipc',IpcFactory::getPluginsDir());
         IpcFactory::setPluginsDir('./Comm');
         $this->assertEquals('./Comm',IpcFactory::getPluginsDir());
         $this->assertFalse(IpcFactory::setPluginsDir('./seraph'));
