@@ -1,10 +1,11 @@
 <?php
 /**
  * Hold Observer and Listener interface definitions
- * @author Peter Nagy <antronin@gmail.com>
+ *
  * @version $Id$
  * @filesource
  * @package Seraphp
+ * @author Peter Nagy  <antronin@gmail.com>
  */
 /**
  * Observer interface definition
@@ -14,7 +15,8 @@
  *
  * @package Seraphp
  */
-interface Observer{
+interface Observer
+{
     /**
      * Returns a unique name of the Observer instance
      *
@@ -40,7 +42,8 @@ interface Observer{
  *
  * @package Seraphp
  */
-interface Listener{
+interface Listener
+{
     /**
      * Attaches an observer
      *
@@ -73,4 +76,3 @@ interface Listener{
      */
     public function detach(Observer $instance);
 }
-?>
