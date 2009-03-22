@@ -64,7 +64,7 @@ class IpcRegistry extends Registry
 	*/
     public function getInstance()
     {
-        if (self::$_instance === null){
+        if (self::$_instance === null) {
             self::$_instance = new self;
         }
         return self::$_instance;
@@ -88,8 +88,7 @@ class IpcRegistry extends Registry
      */
     public function __set($key, $value)
     {
-        if (parent::__set($key, $value) === true)
-        {
+        if (parent::__set($key, $value) === true) {
             $this->_changedKeys[] = $key;
         }
     }
