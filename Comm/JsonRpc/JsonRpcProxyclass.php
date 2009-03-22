@@ -134,7 +134,8 @@ class JsonRpcProxy
     }
 
     /**
-     * Parse the JSON call's reply and throws Exception if an error was sent back
+     * Parse the JSON call's reply and throws Exception if
+     * an error was sent back
      *
      * @param string $reply  JSON text to parse
      * @return mixed
@@ -165,7 +166,7 @@ class JsonRpcProxy
             } catch(Exception $e)	{
                 $error = $e;
             }
-            if( $message->id !== null ) {
+            if ( $message->id !== null ) {
                 $message = (string) new Response($result,
                                                  $error,
                                                  $message->id);
@@ -188,7 +189,8 @@ class JsonRpcProxy
      * Returns an array of 2 arrays about methodes and notifications
      *
      * @param mixed $obj  Any object which has to be analized
-     * @return array  Methodes which are publicly available, marking which have no return value
+     * @return array  Methodes which are publicly available, marking which have
+     * no return value
      */
     public function analyzeClientMethods($obj)
     {
