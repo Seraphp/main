@@ -147,7 +147,7 @@ class HttpRequest implements Request, Listener
     {
         $this->message .= $this->_buffer;
         if ( $this->httpHeaders === array() &&
-             strpos( $this->message, "\r\n\r\n") !== false ) {
+             strpos($this->message, "\r\n\r\n") !== false ) {
                 //if received first time a datachunk containing an empty line,
                 //we arrived at the end of the http header
             list($this->httpRawHeaders, $this->message) =
@@ -166,12 +166,12 @@ class HttpRequest implements Request, Listener
     protected function _processHeaders()
     {
         $headers = array();
-        $requestLine = array_shift( $this->httpHeaders );
+        $requestLine = array_shift($this->httpHeaders);
         list ($this->method, $this->url, $this->httpVersion) =
             explode(' ', $requestLine);
         $this->httpVersion = substr($this->httpVersion, -3);
         foreach ( $this->httpHeaders as $row ) {
-            $item = explode (':', $row, 2);
+            $item = explode(':', $row, 2);
             if ( array_key_exists($item[0], $headers) ) {
                 $headers[$item[0]] .= ';'.trim($item[1]);
             } else {
@@ -205,8 +205,8 @@ class HttpRequest implements Request, Listener
         $rows = explode('&', urldecode($str));
         $params = array();
         $itemNum = count($rows);
-        for( $idx = 0; $idx < $itemNum; $idx++ ) {
-            $param = explode( '=', $rows[ $idx ], 2 );
+        for ( $idx = 0; $idx < $itemNum; $idx++ ) {
+            $param = explode('=', $rows[ $idx ], 2);
             unset($rows[ $idx ]);
             $params[ $param[0] ] = $param[1];
         }

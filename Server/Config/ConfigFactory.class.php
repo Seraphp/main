@@ -124,7 +124,7 @@ class ConfigFactory implements Singleton
                         $name,
                         $this->_configPath.DIRECTORY_SEPARATOR.
                         $this->_configFile));
-            }
+        }
         return $conf;
     }
 }
