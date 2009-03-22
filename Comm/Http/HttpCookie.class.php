@@ -42,14 +42,12 @@ class HttpCookie
     public function __toString()
     {
         ob_start();
-        setcookie(
-            $this->name,
-            $this->value,
-            $this->expireOn,
-            $this->path,
-            $this->domain,
-            $this->onlyHTTP
-        );
+        setcookie($this->name,
+                $this->value,
+                $this->expireOn,
+                $this->path,
+                $this->domain,
+                $this->onlyHTTP);
         $cookieStr = ob_get_contents();
         ob_end_clean();
         return $cookieStr;
