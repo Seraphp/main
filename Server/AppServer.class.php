@@ -23,7 +23,7 @@ class AppServer extends Server
 {
 
     protected $_appID = '';
-    protected $_pidFolder = '/home/peter/workspace/seraphp';
+    protected $_pidFolder = '.';
     protected $_appReg = null;
     protected $_engine = null;
     private $_includes = array();
