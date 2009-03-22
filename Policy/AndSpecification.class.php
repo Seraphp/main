@@ -26,18 +26,18 @@ class AndSpecification implements Specification
     /**
      * @var Specification
      */
-    protected $_spec2;
+    protected $_specSec;
 
     /**
      * Stores the specifications which will be related
      *
      * @param Specification $spec
-     * @param Specification $spec2
+     * @param Specification $specSec
      */
-    public function __construct(Specification $spec, Specification $spec2)
+    public function __construct(Specification $spec, Specification $specSec)
     {
         $this->_spec = $spec;
-        $this->_spec2 = $spec2;
+        $this->_specSec = $specSec;
     }
 
     /**
@@ -47,7 +47,7 @@ class AndSpecification implements Specification
     {
         return (
             $this->_spec->isSatisfiedBy($src)&&
-            $this->_spec2->isSatisfiedBy($src)
+            $this->_specSec->isSatisfiedBy($src)
         );
     }
 

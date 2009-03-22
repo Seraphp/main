@@ -109,9 +109,10 @@ class PolicyFactory
     /**
      * Registers policy implementation classes as callable functions
      *
-     * Classes has to be called <PolicyName>Specification.class.php to make PolicyFactory
-     * able to register them. If <PolicyName> does not start with "Field", the methodname
-     * will be postfixed with "_" to avoid name clashes with existing PHP native function.
+     * Classes has to be called <PolicyName>Specification.class.php to make
+     * PolicyFactory able to register them. If <PolicyName> does not start with
+     * "Field", the methodname will be postfixed with "_" to avoid name clashes
+     * with existing PHP native function.
      * For example:
      *   AndSpecification.class.php will be registered as "PolicyFactory::and_".
      *

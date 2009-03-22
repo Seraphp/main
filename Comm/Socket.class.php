@@ -93,7 +93,8 @@ class Socket
      * @param array   $options  See options for stream_context_create.
      * @return Socket
      */
-    public function __construct($transport, $addr, $port = 0, $persist = false, $timeout = 0, $options = null)
+    public function __construct($transport, $addr, $port = 0,
+        $persist = false, $timeout = 0, $options = null)
     {
         $this->setTransp($transport);
         $this->setAddress($addr);
@@ -211,7 +212,8 @@ class Socket
     public function setTransp($transport)
     {
         if ( $this->isConnected() ) {
-            throw new SocketException('Cannot modify the transport of an open socket');
+            throw new SocketException('Cannot modify the transport '.
+            'of an open socket');
         }
         if ( in_array($transport, self::supportedTransports()) ) {
             $this->_transport = $transport;
@@ -656,8 +658,8 @@ class Socket
      * @param integer $tvSec   Number of seconds for timeout.
      * @param integer $tvUsec  Number of microseconds for timeout.
      *
-     * @return False if select fails, integer describing which of read/write/error
-     *         are ready
+     * @return False if select fails, integer describing which of read
+     *          /write/error are ready
      * @throws SocketException if not connected
      */
     function select($state, $tvSec, $tvUsec = 0)
