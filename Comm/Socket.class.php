@@ -728,7 +728,7 @@ class Socket
      */
     public function isConnected()
     {
-        return is_resource($this->fp);
+        return is_resource($this->_fp);
     }
 
     public function __desctruct()
