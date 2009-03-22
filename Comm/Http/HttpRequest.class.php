@@ -16,6 +16,7 @@ require_once 'ObserverListener.interface.php';
 /**
  * Class represents an HTTP request, no matter
  * of the usage: sending or receiving it.
+ *
  * @package Comm
  * @subpackage Http
  * @todo Test HTTPRequest class
@@ -122,7 +123,7 @@ class HttpRequest implements Request, Listener{
     {
         if ( $this->isReceived === self::REQ_RECEIVED )
         {
-           while ( $this->buffer = socket_read( $this->socket ) )
+           while ( $this->buffer = @socket_read( $this->socket, 512 ) )
            {
                $this->save();
                if ( $this->httpHeaders !== array() )
@@ -152,9 +153,10 @@ class HttpRequest implements Request, Listener{
         if ( $this->httpHeaders === array() && strpos( $this->message, "\r\n\r\n") !== false )
         {//if received first time a datachunk containing an empty line,
          //we arrived at the end of the http header
-            list( $this->message, $this->httpRawHeaders ) = preg_split( '/(\r\n){2}/m', $this->message );
+            list( $this->httpRawHeaders, $this->message ) = preg_split( '/(\r\n){2}/m', $this->message );
             $this->httpRawHeaders = trim( $this->httpRawHeaders );
             $this->httpHeaders = explode( "\r\n", $this->httpRawHeaders );
+            var_dump(__CLASS__, __METHOD__, $this->message, $this->httpHeaders);
             $this->processHeaders();
         }
     }
@@ -175,11 +177,11 @@ class HttpRequest implements Request, Listener{
             $item = explode ( ':', $row, 2);
             if ( array_key_exists( $item[0], $headers ) )
             {
-                $headers[ $item[0] ] .= ';'.$item[1];
+                $headers[ $item[0] ] .= ';'.trim($item[1]);
             }
             else
             {
-                $headers[ $item[0] ] = $item[1];
+                $headers[ $item[0] ] = trim($item[1]);
             }
         }
         $this->httpHeaders = $headers;
@@ -195,9 +197,9 @@ class HttpRequest implements Request, Listener{
         	$this->getParams = $this->params2array( substr( $this->url, $pos+1 ) );
         }
         //Setting Referer
-        if (array_key_exists( 'Referer', $this->httHeaders ) )
+        if (array_key_exists( 'Referer', $this->httpHeaders ) )
         {
-            $this->referer = $this->httHeaders['Referer'];
+            $this->referer = $this->httpHeaders['Referer'];
         }
     }
 
@@ -356,6 +358,15 @@ class HttpRequest implements Request, Listener{
             return $response;
         }
         else throw new HttpException('HttpRequest instance is received not to be send out!');
+    }
+
+    public function respond($msg)
+    {
+        if ( $this->isReceived === self::REQ_RECEIVED )
+        {
+            $response = HttpFactory::create('response');
+        }
+        else throw new HttpException('HttpRequest instance is to be send out: cannot be responded!');
     }
 }
 

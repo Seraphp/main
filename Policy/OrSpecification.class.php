@@ -16,16 +16,17 @@ require_once 'Policy/Specification.interface.php';
  *
  * @package Policy
  */
-class OrSpecification implements Specification{
+class OrSpecification implements Specification
+{
 
     /**
      * @var Specification
      */
-    protected $spec;
+    protected $_spec;
     /**
      * @var Specification
      */
-    protected $spec2;
+    protected $_spec2;
 
     /**
      * Stores the specifications which will be related
@@ -33,17 +34,19 @@ class OrSpecification implements Specification{
      * @param Specification $spec
      * @param Specification $spec2
      */
-    public function __construct(Specification $spec, Specification $spec2){
-        $this->spec = $spec;
-        $this->spec2 = $spec2;
+    public function __construct(Specification $spec, Specification $spec2)
+    {
+        $this->_spec = $spec;
+        $this->_spec2 = $spec2;
     }
     /**
      * Return true if one of the two specification is satisfied
      */
-    public function isSatisfiedBy($src){
+    public function isSatisfiedBy($src)
+    {
         return (
-            $this->spec->isSatisfiedBy($src)||
-            $this->spec2->isSatisfiedBy($src)
+            $this->_spec->isSatisfiedBy($src)||
+            $this->_spec2->isSatisfiedBy($src)
         );
     }
 

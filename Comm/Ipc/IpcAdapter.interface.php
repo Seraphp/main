@@ -9,12 +9,16 @@
  * @subpackage Ipc
  * @filesource
  */
+/***/
+//namespace Seraphp\Comm\Ipc;
 /**
  * IpcAdapter interface definition
+ *
  * @package Comm
  * @subpackage Ipc
  */
-interface IpcAdapter{
+interface IpcAdapter
+{
 
     function init($pid, $role);
     function read();
@@ -23,4 +27,3 @@ interface IpcAdapter{
     function getRole();
     function close();
 }
-?>

@@ -13,10 +13,12 @@
  //namespace Seraphp\Comm\Http;
 /**
  * Class representing an HTTP cookie
+ *
  * @package Comm
  * @subpackage Http
  */
-class HttpCookie{
+class HttpCookie
+{
     public $name = '';
     public $value = null;
     public $expireOn = null;
@@ -45,4 +47,3 @@ class HttpCookie{
         return $cookieStr;
     }
 }
-?>

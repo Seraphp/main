@@ -26,20 +26,22 @@ require_once 'Policy/NotSpecification.class.php';
  * @package Policy
  * @abstract
  */
-abstract class FieldSpecification implements Specification{
+abstract class FieldSpecification implements Specification
+{
 
     /**
      * @var string
      */
-    protected $field='';
+    protected $_field = '';
 
     /**
      * Stores field name for later use.
      *
      * @param string $field
      */
-    public function __construct($field){
-        $this->field = $field;
+    public function __construct($field)
+    {
+        $this->_field = $field;
     }
 
     /**
@@ -48,7 +50,8 @@ abstract class FieldSpecification implements Specification{
      * @param Specification $spec
      * @return AndSpecification
      */
-    public function and_(Specification $spec){
+    public function and_(Specification $spec)
+    {
         return new AndSpecification($this, $spec);
     }
 
@@ -58,7 +61,8 @@ abstract class FieldSpecification implements Specification{
      * @param Specification $spec
      * @return OrSpecification
      */
-    public function or_(Specification $spec){
+    public function or_(Specification $spec)
+    {
         return new OrSpecification($this, $spec);
     }
 
@@ -68,8 +72,8 @@ abstract class FieldSpecification implements Specification{
      * @param Specification $spec
      * @return NotSpecificationn
      */
-    public function not_(Specification $spec){
+    public function not_(Specification $spec)
+    {
         return new NotSpecification($spec);
     }
 }
-?>

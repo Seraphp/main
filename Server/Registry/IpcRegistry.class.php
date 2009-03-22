@@ -17,26 +17,28 @@ require_once 'Comm/Ipc/IpcAdapter.interface.php';
  *
  * Setting a value stored in the registry will be propagated to the parent
  * process which is connected to the same IPC channel through IpcAdapter class.
+ *
  * @package Server
  * @subpackage Registry
  * @todo Test the class
  */
-class IpcRegistry extends Registry{
+class IpcRegistry extends Registry
+{
 
     /**
      * The IpcAdapter class to perform interprocess communication
      *
      * @var IpcAdapter
      */
-    protected $ipc = null;
+    protected $_ipc = null;
     /**
      * Array holding keys of changed values in registry
      *
      * @var array
      */
-    protected $changedKeys = array();
+    protected $_changedKeys = array();
 
-    private static $instance = null;
+    private static $_instance = null;
 
     /**
      * Disabled constructor
@@ -61,10 +63,10 @@ class IpcRegistry extends Registry{
 	*/
     public function getInstance()
     {
-        if(self::$instance === null){
-            self::$instance = new self;
+        if(self::$_instance === null){
+            self::$_instance = new self;
         }
-        return self::$instance;
+        return self::$_instance;
     }
 
     /**
@@ -74,7 +76,7 @@ class IpcRegistry extends Registry{
      */
     public function useIpc(IpcAdapter $ipc)
     {
-        $this->ipc = $ipc;
+        $this->_ipc = $ipc;
     }
 
     /**
@@ -87,38 +89,37 @@ class IpcRegistry extends Registry{
     {
         if(parent::__set($key, $value) === true)
         {
-            $this->changedKeys[] = $key;
+            $this->_changedKeys[] = $key;
         }
     }
 
     public function mergeChanges()
     {
-        $changes = unserialize($this->ipc->read());
-        if(is_array($changes))
-        {
-            $this->store = array_merge($this->store, $changes);
+        $changes = unserialize($this->_ipc->read());
+        if(is_array($changes)) {
+            $this->_store = array_merge($this->_store, $changes);
             return count($changes);
         }
         else return 0;
     }
     /**
-     * Method send all the changed values to the parent process and sets to default the dirty flag.
+     * Method send all the changed values to the parent process and sets to
+     * default the dirty flag.
      *
      * @return integer  Number of changed values in registry
      */
     public function save($changes = null)
     {
-        if($this->dirty === true)
-        {
-            $num = count($this->changedKeys);
+        if($this->_dirty === true) {
+            $num = count($this->_changedKeys);
             $changed = array();
-            for ($idx = 0; $idx<$num; $idx++)
-            {
-                $changed[$this->changedKeys[$idx]] = $this->store[$this->changedKeys[$idx]];
+            for ($idx = 0; $idx<$num; $idx++) {
+                $changed[$this->_changedKeys[$idx]] =
+                $this->_store[$this->_changedKeys[$idx]];
             }
-            $this->ipc->write($changed);
-            $this->dirty = false;
-            $this->changedKeys = array();
+            $this->_ipc->write($changed);
+            $this->_dirty = false;
+            $this->_changedKeys = array();
             return $num;
         }
         else return 0;
@@ -129,4 +130,3 @@ class IpcRegistry extends Registry{
         $this->save();
     }
 }
-?>

@@ -13,20 +13,22 @@
 //namespace Seraphp\Server\Registry;
 require_once 'Server/Registry/Registry.class.php';
 require_once 'Server/AppServer.class.php';
+require_once 'Exceptions/RegistryException.class.php';
 /**
  * Registry class of running AppServer instances
  *
  * @package Server
  * @subpackage Registry
  */
-class AppServerRegistry extends Registry{
+class AppServerRegistry extends Registry
+{
 
     /**
      * Holds self reference
      *
      * @var Registry
      */
-    static private $instance = null;
+    static private $_instance = null;
 
     private function __construct(){}
     /**
@@ -36,10 +38,10 @@ class AppServerRegistry extends Registry{
      */
     public function getInstance()
     {
-        if(self::$instance === null){
-            self::$instance = new self;
+        if(self::$_instance === null) {
+            self::$_instance = new self;
         }
-        return self::$instance;
+        return self::$_instance;
     }
 
 	/**
@@ -53,11 +55,9 @@ class AppServerRegistry extends Registry{
      */
     public function getAppStatus($appID)
     {
-        if(isset($this->$appID))
-        {
+        if(isset($this->$appID)) {
             return $this->$appID->getStatus();
-        }
-        else return null;
+        } else return null;
     }
 
     /**
@@ -71,11 +71,9 @@ class AppServerRegistry extends Registry{
      */
     public function getAppInstance($appID)
     {
-        if(isset($this->$appID))
-        {
+        if(isset($this->$appID)) {
             return $this->$appID;
-        }
-        else return null;
+        } else return null;
     }
 
     /**
@@ -89,13 +87,15 @@ class AppServerRegistry extends Registry{
      */
     public function removeApp($appID)
     {
-        if(isset($this->$appID))
-        {
+        if(isset($this->$appID)) {
             $ref = $this->$appID;
             unset($this->$appID);
             return $ref;
+        } else {
+            throw new RegistryException(
+                'AppServer instance '.$appID.' not exists in registry!'
+            );
         }
-        else throw new RegistryException('AppServer instance '.$appID.' not exists in registry!');
     }
 
     /**
@@ -108,20 +108,13 @@ class AppServerRegistry extends Registry{
      */
     public function addApp($appID, AppServer $appRef)
     {
-        if(!isset($this->$appID))
-        {
+        if(!isset($this->$appID)) {
             $this->$appID = $appRef;
             return true;
+        } else {
+            throw new RegistryException(
+                'AppServer already registered: '.$appID
+            );
         }
-        else throw new RegistryException('AppServer already registered: '.$appID);
     }
 }
-
-/**
- * RegistryException class
- *
- * @package Server
- * @subpackage Registry
- */
-class RegistryException extends Exception{}
-?>

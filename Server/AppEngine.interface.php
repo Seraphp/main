@@ -18,11 +18,10 @@ require_once 'Comm/Request.interface.php';
 interface AppEngine{
 
     /**
-     * MEthod to process the received Request
+     * Method to process the received Request
      *
      * @param Request $req
      * @return integer
      */
     function process(Request $req);
 }
-?>

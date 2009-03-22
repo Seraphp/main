@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+//namescape Seraphp\Comm\Http;
 require_once 'ObserverListener.interface.php';
 /**
  * Class represents an HTTP request, no matter
@@ -18,7 +19,7 @@ require_once 'ObserverListener.interface.php';
  * @subpackage Http
  * @todo Implement HttpResponse class
  */
-class HttpResponse implements Listener{
+class HttpResponse
+{
 
 }
-?>

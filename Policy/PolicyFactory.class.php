@@ -22,33 +22,35 @@ require_once 'Exceptions/PluginException.class.php';
  * @package Policy
  * @todo: Refactor class to make it static using PHP 5.3 __staticCall feature
  */
-class PolicyFactory {
+class PolicyFactory
+{
     /**
      * Stores usable plugins
      *
      * @var array
      */
-    private $plugins = array();
+    private $_plugins = array();
     /**
      * Stores directory path to search for policy plugins
      *
      * @var string
      */
-    private $pluginsDir = '';
+    private $_pluginsDir = '';
     /**
      * Stores selfreference for Singleton pattern implementation
      *
      * @var PolicyFactory
      */
-    private static $instance = null;
+    private static $_instance = null;
     /**
      * Private constructor to force singleton/static usage
      *
      * Any call to constructor will result reading in plugins from
      * default directory, which is the same dir as this file is located.
      */
-    private function __construct(){
-        $this->readPlugins();
+    private function __construct()
+    {
+        $this->_readPlugins();
     }
 
     /**
@@ -56,11 +58,12 @@ class PolicyFactory {
      *
      * @return PolicyFactory
      */
-    public function getInstance(){
-        if(self::$instance == null){
-            self::$instance = new self;
+    public function getInstance()
+    {
+        if ( self::$_instance == null ) {
+            self::$_instance = new self;
         }
-        return self::$instance;
+        return self::$_instance;
     }
 
     /**
@@ -72,11 +75,10 @@ class PolicyFactory {
      */
     public function __call($func, $params)
     {
-        $this->readPlugins();
-        if(array_key_exists($func, $this->plugins))
-        {
-            $class = new ReflectionClass($this->plugins[$func]);
-            return ($class->newInstanceArgs($params));
+        $this->_readPlugins();
+        if ( array_key_exists($func, $this->_plugins) ) {
+            $class = new ReflectionClass( $this->_plugins[$func] );
+            return ( $class->newInstanceArgs($params) );
         }
         else throw new PluginException('No plugin mapped to function '.$func);
     }
@@ -85,13 +87,17 @@ class PolicyFactory {
      * Read plugins from directory
      *
      */
-    private function readPlugins()
+    private function _readPlugins()
     {
-        if($this->plugins === array()){
-            $this->pluginsDir = ($this->pluginsDir === '')?dirname(__FILE__):$this->pluginsDir;
-            $d = dir($this->pluginsDir);
-            while (false !== ($entry = $d->read())) {
-                if($entry != '.' && $entry != '..'){
+        if($this->_plugins === array()) {
+            if ($this->_pluginsDir === '') {
+                $this->_pluginsDir = dirname(__FILE__);
+            } else {
+                $this->_pluginsDir = $this->_pluginsDir;
+            }
+            $d = dir($this->_pluginsDir);
+            while ( false !== ( $entry = $d->read() ) ) {
+                if($entry != '.' && $entry != '..') {
                     $this->registerPlugin($entry);
                 }
             }
@@ -112,26 +118,27 @@ class PolicyFactory {
      * @param string $plugin
      * @throws PolicyPluginException
      */
-    private function registerPlugin($plugin){
+    private function registerPlugin($plugin)
+    {
         $nameMatch = preg_match('/^(.+)Specification.class.php$/',$plugin, $matches);
-        if( $nameMatch !== FALSE && $nameMatch > 0)
-        {
-            require_once $this->pluginsDir.'/'.$plugin;
+        if( $nameMatch !== FALSE && $nameMatch > 0) {
+            require_once $this->_pluginsDir.'/'.$plugin;
             $className = substr($plugin,0,-10);
             $class = new ReflectionClass($className);
-            if($class->implementsInterface('Specification'))
-            {
-                if(strpos($matches[1],'Field') === 0)
-                {
+            if ( $class->implementsInterface('Specification') ) {
+                if ( strpos($matches[1],'Field') === 0 ) {
                     $key = substr($matches[1],5);
-                }else{
+                } else {
                     $key = $matches[1].'_';
                 }
-                if(!empty($key)){
-                    $this->plugins[strtolower($key)] =  $className;
+                if ( !empty($key) ) {
+                    $this->_plugins[strtolower($key)] =  $className;
                 }
+            } else {
+                throw new PluginException(
+                    'Specification interface not implemented in '.$plugin
+                );
             }
-            else throw new PluginException('Specification interface not implemented in '.$plugin);
         }
     }
     /**
@@ -143,10 +150,11 @@ class PolicyFactory {
      *
      * @param string $dir
      */
-    public function setPluginsDir($dir){
-        $this->pluginsDir = $dir;
-        $this->plugins = array();
-        $this->readPlugins();
+    public function setPluginsDir($dir)
+    {
+        $this->_pluginsDir = $dir;
+        $this->_plugins = array();
+        $this->_readPlugins();
     }
 
     /**
@@ -154,8 +162,9 @@ class PolicyFactory {
      *
      * @return string
      */
-    public function getPluginsDir(){
-        return $this->pluginsDir;
+    public function getPluginsDir()
+    {
+        return $this->_pluginsDir;
     }
 
     /**
@@ -163,9 +172,9 @@ class PolicyFactory {
      *
      * @return array
      */
-    public function getPlugins(){
-        $this->readPlugins();
-        return (array_keys($this->plugins));
+    public function getPlugins()
+    {
+        $this->_readPlugins();
+        return ( array_keys($this->_plugins) );
     }
 }
-?>

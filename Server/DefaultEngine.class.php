@@ -20,11 +20,12 @@ require_once 'Server/AppEngine.interface.php';
  * @package Server
  * @todo Implement Request handling
  */
-class DefaultEngine implements AppEngine{
+class DefaultEngine implements AppEngine
+{
 
     function process(Request $req)
     {
+        var_dump(__CLASS__, __METHOD__,$req);
         return 0;
     }
 }
-?>

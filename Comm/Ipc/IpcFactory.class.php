@@ -20,19 +20,21 @@ require_once 'Exceptions/PluginException.class.php';
  * classes, depending on the given type. Class checks if the requested
  * implementation type is exists in the filesystem. Requesting such not
  * implemented types results throwing Exception.
+ *
  * @package Comm
  * @subpackage Ipc
  */
-class IpcFactory{
+class IpcFactory
+{
 
-    private static $pluginsDir  = '';
+    private static $_pluginsDir  = '';
 
     /**
      * Stores which pid is using which Ipc class instance.
      *
      * @var array
      */
-    private static $IpcArray = array();
+    private static $_IpcArray = array();
 
     /**
      * Returns a object which implements Ipc interface.
@@ -50,17 +52,13 @@ class IpcFactory{
      */
     static function get($type,$pid)
     {
-        if(self::isValidIpc($type))
-        {
-            if(array_key_exists($pid, self::$IpcArray))
-            {
-                return self::$IpcArray[$pid];
-            }
-            else
-            {
+        if(self::isValidIpc($type)) {
+            if(array_key_exists($pid, self::$_IpcArray)) {
+                return self::$_IpcArray[$pid];
+            } else {
                 $className = self::getClassName($type);
                 $class = new $className;
-                self::$IpcArray[$pid] = $class;
+                self::$_IpcArray[$pid] = $class;
                 $class->init($pid, 'child');
                 return $class;
             }
@@ -74,25 +72,21 @@ class IpcFactory{
 
     static function setPluginsDir($dir = '')
     {
-        if(empty($dir))
-        {
+        if(empty($dir)) {
             $dir = dirname(__FILE__);
         }
-        if(is_dir($dir))
-        {
-            self::$pluginsDir = $dir;
+        if(is_dir($dir)) {
+            self::$_pluginsDir = $dir;
             return true;
-        }
-        else return false;
+        } else return false;
     }
 
     static function getPluginsDir()
     {
-        if(empty(self::$pluginsDir))
-        {
+        if(empty(self::$_pluginsDir)) {
             self::setPluginsDir();
         }
-        return self::$pluginsDir;
+        return self::$_pluginsDir;
     }
 
     /**
@@ -108,22 +102,28 @@ class IpcFactory{
      */
     private static function isValidIpc($type)
     {
-        if(empty(self::$pluginsDir))
-        {
+        if(empty(self::$_pluginsDir)) {
             self::setPluginsDir();
         }
-        $pluginFile = sprintf('%s/%s.class.php',self::$pluginsDir,self::getClassName($type));
-        if(is_file($pluginFile))
-        {
+        $pluginFile = sprintf(
+            '%s/%s.class.php',
+            self::$_pluginsDir,
+            self::getClassName($type)
+        );
+        if(is_file($pluginFile)) {
             require_once $pluginFile;
             $class = new ReflectionClass(self::getClassName($type));
-            if($class->implementsInterface('IpcAdapter'))
-            {
+            if($class->implementsInterface('IpcAdapter')) {
                 return true;
+            } else {
+                throw new PluginException(
+                    'IpcAdapter interface not implemented in '.$type
+                );
             }
-            else throw new PluginException('IpcAdapter interface not implemented in '.$type);
+        } else {
+            throw new PluginException(
+                self::getClassName($type).'.class.php not exists!'
+            );
         }
-        else throw new PluginException(self::getClassName($type).'.class.php not exists!');
     }
 }
-?>

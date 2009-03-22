@@ -11,10 +11,10 @@
  * Realize a class with only one existing instance.
  * @package Seraphp
  */
-interface Singleton{
+interface Singleton
+{
     /**
      * Returns with an instance from the implementing class
      */
     public function getInstance();
 }
-?>

@@ -14,11 +14,11 @@
  * @package Server
  *
  */
-interface Daemon{
+interface Daemon
+{
     public function summon();
     public function spawn();
     public function expell();
     public function setMaxSpawns($num);
     public function getMaxSpawns();
 }
-?>

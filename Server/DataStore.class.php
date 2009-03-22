@@ -13,32 +13,34 @@
 /**
  * DataStore class for storing keys with values
  *
- * The class is capable of storing any kind of value with a key, in an obejct based modell
+ * The class is capable of storing any kind of value with a key, in an object
+ * based modell
  *
  * @package Server
  */
-class DataStore{
+class DataStore
+{
 
 	/**
      * Stores key=>value pairs of registry entries
      *
      * @var array
      */
-    protected $store = array();
+    protected $_store = array();
 
     /**
      * Enter description here...
      *
      * @var boolean
      */
-    protected $dirty = false;
+    protected $_dirty = false;
 
     /**
      * Overwright flag for existing data writing in the registry
      *
      * @var boolean
      */
-    protected $overwrite = true;
+    protected $_overwrite = true;
 
     /**
      * Checks if a key is exists in the store.
@@ -51,7 +53,7 @@ class DataStore{
      */
     public function __isset($key)
     {
-        return (array_key_exists($key, $this->store));
+        return (array_key_exists($key, $this->_store));
     }
 
     /**
@@ -65,9 +67,8 @@ class DataStore{
      */
     public function __unset($key)
     {
-        if(isset($this->$key))
-        {
-            unset($this->store[$key]);
+        if(isset($this->$key)) {
+            unset($this->_store[$key]);
         }
     }
 
@@ -83,22 +84,16 @@ class DataStore{
      */
     public function __set($key, $value)
     {
-        if($this->overwrite === true)
-        {
-            $this->store[$key]=$value;
-        }
-        else
-        {
-            if(isset($this->$key) === true)
-            {
+        if($this->_overwrite === true) {
+            $this->_store[$key]=$value;
+        } else {
+            if(isset($this->$key) === true) {
                  return false;
-            }
-            else
-            {
-                $this->store[$key]=$value;
+            } else {
+                $this->_store[$key]=$value;
             }
         }
-        $this->dirty = true;
+        $this->_dirty = true;
         return true;
     }
 
@@ -110,11 +105,9 @@ class DataStore{
      */
     public function __get($key)
     {
-        if(isset($this->$key))
-        {
-            return $this->store[$key];
-        }
-        else return null;
+        if(isset($this->$key)) {
+            return $this->_store[$key];
+        } else return null;
     }
 
     /**
@@ -125,7 +118,6 @@ class DataStore{
      */
     public function setOverwrite($flag)
     {
-        $this->overwrite = (boolean) $flag;
+        $this->_overwrite = (boolean) $flag;
     }
 }
-?>

@@ -21,14 +21,15 @@ require_once 'Server/DataStore.class.php';
  * @package Server
  * @subpackage Registry
  */
-class Registry extends DataStore implements Singleton{
+class Registry extends DataStore implements Singleton
+{
 
     /**
      * Holds self reference
      *
      * @var Registry
      */
-    static private $instance = null;
+    static private $_instance = null;
 
     /**
      * Disabled constructor
@@ -53,10 +54,9 @@ class Registry extends DataStore implements Singleton{
      */
     public function getInstance()
     {
-        if(self::$instance === null){
-            self::$instance = new self;
+        if(self::$_instance === null) {
+            self::$_instance = new self;
         }
-        return self::$instance;
+        return self::$_instance;
     }
 }
-?>

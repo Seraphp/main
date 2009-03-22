@@ -21,7 +21,7 @@ class FieldEqualSpecification extends FieldSpecification
     /**
      * @var mixed
      */
-    protected $value;
+    protected $_value;
 
     /**
      * Stores field and value for later use
@@ -29,17 +29,18 @@ class FieldEqualSpecification extends FieldSpecification
      * @param string $field
      * @param mixed $value
      */
-    public function __construct($field, $value){
-        $this->value = $value;
+    public function __construct($field, $value)
+    {
+        $this->_value = $value;
         parent::__construct($field);
     }
 
     /**
      * Returns true if value is logicaly equal (==) with field's value
      */
-    public function isSatisfiedBy($src){
-        return ($src->{$this->field} == $this->value);
+    public function isSatisfiedBy($src)
+    {
+        return ($src->{$this->_field} == $this->_value);
     }
 
 }
-?>

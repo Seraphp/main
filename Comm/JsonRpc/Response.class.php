@@ -9,6 +9,8 @@
  * @subpackage JsonRpc
  * @filesource
  */
+/***/
+//namespace Seraphp\Comm;
 /**
  * Implements simple JSON-RPC Response class
  *
@@ -16,19 +18,17 @@
  * @subpackage JsonRpc
  * @since JSON-RPC 1.0
  */
-class Response{
+class Response
+{
     public $result = null;
     public $error = null;
     public $id = null;
 
     public function __construct($result, $error = null, $id = null)
     {
-        if ( $result === null && $error === null )
-        {
+        if ( $result === null && $error === null ) {
         	throw new Exception('Either a result or an error should be set!');
-        }
-        else
-        {
+        } else {
             $this->error = $error;
           	$this->result = $result;
           	$this->id = $id;
@@ -40,4 +40,3 @@ class Response{
         return json_encode($this);
     }
 }
-?>

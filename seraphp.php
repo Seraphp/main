@@ -10,4 +10,3 @@ $cf = ConfigFactory::getInstance();
 $cf->setXmlSrc('/home/peter/workspace/seraphp/seraphpConf.xml');
 $mainServer = new AppServer($cf->getConf('main'));
 $procID = $mainServer->summon();
-?>

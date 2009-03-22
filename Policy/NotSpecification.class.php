@@ -16,27 +16,29 @@ require_once 'Policy/Specification.interface.php';
  *
  * @package Policy
  */
-class NotSpecification implements Specification{
+class NotSpecification implements Specification
+{
     /**
      * @var Specification
      */
-    protected $spec;
+    protected $_spec;
 
     /**
      * Stores the specification which will be negated
      *
      * @param Specification $spec
      */
-    public function __construct(Specification $spec){
-        $this->spec = $spec;
+    public function __construct(Specification $spec)
+    {
+        $this->_spec = $spec;
     }
 
     /**
      * Returns negated result of coupled specification
      */
-    public function isSatisfiedBy($src){
-        return (!$this->spec->isSatisfiedBy($src));
+    public function isSatisfiedBy($src)
+    {
+        return (!$this->_spec->isSatisfiedBy($src));
     }
 
 }
-?>

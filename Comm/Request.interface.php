@@ -1,6 +1,7 @@
 <?php
 /**
  * Contains Request interface declaration
+ *
  * @author Peter Nagy <antronin@gmail.com>
  * @package Comm
  * @version $Id$
@@ -13,7 +14,7 @@
  *
  * @package Comm
  */
-interface Request{
+interface Request
+{
 
 }
-?>

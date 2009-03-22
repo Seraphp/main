@@ -9,6 +9,9 @@
  * @package Comm
  * @filesource
  */
+//namespace Seraphp\Comm;
+/***/
+require_once 'Exceptions/SocketException.class.php';
 /**
  * Bundles all socket related function into an object
  *
@@ -25,57 +28,57 @@ class Socket{
      * Socket file pointer.
      * @var resource $fp
      */
-    private $fp = null;
+    private $_fp = null;
 
     /**
      * Whether the socket is blocking. Defaults to true.
      * @var boolean $blocking
      */
-    private $blocking = true;
+    private $_blocking = true;
 
     /**
      * Whether the socket is persistent. Defaults to false.
      * @var boolean $persistent
      */
-    private $persistent = false;
+    private $_persistent = false;
 
     /**
      * The IP address to connect to.
      * @var string $addr
      */
-    private $addr = '';
+    private $_addr = '';
 
     /**
      * The port number to connect to.
      * @var integer $port
      */
-    private $port = 0;
+    private $_port = 0;
 
     /**
      * Number of miliseconds to wait on socket connections before assuming
      * there's no more data. Defaults to no timeout.
      * @var integer $timeout
      */
-    private $timeout = 0;
+    private $_timeout = 0;
 
     /**
      * Number of bytes to read at a time in readLine() and
      * readAll(). Defaults to 2048.
      * @var integer $lineLength
      */
-    private $lineLength = 2048;
+    private $_lineLength = 2048;
 
     /**
      * Options for the socket connection
      * @var array
      */
-    private $options = array();
+    private $_options = array();
 
     /**
      * The type of transport the socket will use; default is 'tcp'
      * @var string
      */
-    private $transport = 'tcp';
+    private $_transport = 'tcp';
 
     /**
      *
@@ -96,8 +99,7 @@ class Socket{
         $this->setPort($port);
         $this->setPersistent($persist);
         $this->setTimeout($timeout);
-        if ( is_array( $options ) )
-        {
+        if ( is_array($options) ) {
         	$this->setOptions($options);
         }
     }
@@ -110,25 +112,22 @@ class Socket{
      */
     public function setAddress($addr)
     {
-        if ( empty($addr) )
-        {
+        if ( empty($addr) ) {
             throw new SocketException('Address cannot be empty!');
         }
-        switch ($this->transport)
-        {
+        switch ($this->_transport) {
             case 'unix':
-                $this->addr = $addr;
+                $this->_addr = $addr;
                 break;
             case 'tcp':
             case 'udp':
             default:
-                if(strspn($addr, ':.0123456789abcdefABCDEF') == strlen($addr) || strstr($addr, '/') !== false)
-                {
-                    $this->addr = inet_ntop( inet_pton( $addr ) );
-                }
-                else
-                {
-                    $this->addr = gethostbyname($addr);
+                if( strspn($addr, ':.0123456789abcdefABCDEF') == strlen($addr)||
+                    strstr($addr, '/') !== false
+                  ) {
+                    $this->_addr = inet_ntop( inet_pton( $addr ) );
+                } else {
+                    $this->_addr = gethostbyname($addr);
                 }
                 break;
         }
@@ -139,7 +138,7 @@ class Socket{
      */
     public function getAddress()
     {
-        return $this->addr;
+        return $this->_addr;
     }
 
     /**
@@ -148,8 +147,8 @@ class Socket{
      */
     public function setPort($port)
     {
-        $this->port = $port % 65536;
-        return $this->port;
+        $this->_port = $port % 65536;
+        return $this->_port;
     }
 
     /**
@@ -157,7 +156,7 @@ class Socket{
      */
     public function getPort()
     {
-        return $this->port;
+        return $this->_port;
     }
 
 
@@ -169,11 +168,9 @@ class Socket{
      */
     public function setOptions($opt)
     {
-        if( is_array($opt) )
-        {
-            $this->options = $opt;
-        }
-        else throw new SocketException('Option must be an array');
+        if( is_array($opt) ) {
+            $this->_options = $opt;
+        } else throw new SocketException('Option must be an array');
     }
 
     /**
@@ -181,7 +178,7 @@ class Socket{
      */
     public function getOptions()
     {
-        return $this->options;
+        return $this->_options;
     }
 
     /**
@@ -190,8 +187,8 @@ class Socket{
      */
     public function setPersistent($state = false)
     {
-        $this->persistent = (boolean) $state;
-        return $this->persistent;
+        $this->_persistent = (boolean) $state;
+        return $this->_persistent;
     }
 
     /**
@@ -199,7 +196,7 @@ class Socket{
      */
     public function isPersistent()
     {
-        return $this->persistent;
+        return $this->_persistent;
     }
 
     /**
@@ -212,24 +209,22 @@ class Socket{
      */
     public function setTransp($transport)
     {
-        if ( $this->isConnected() )
-        {
-            throw new SocketException('Cannot modify the transport of an open socket');
+        if ( $this->isConnected() ) {
+            throw new SocketException(
+                'Cannot modify the transport of an open socket'
+            );
         }
-        if ( in_array( $transport, self::supportedTransports() ) )
-        {
-            $this->transport = $transport;
+        if ( in_array( $transport, self::supportedTransports() ) ) {
+            $this->_transport = $transport;
             return true;
-        }
-        else
-        {
+        } else {
             throw new SocketException("Transport '$transport' not supported!");
         }
     }
 
     public function getTransp()
     {
-        return $this->transport;
+        return $this->_transport;
     }
 
     /**
@@ -260,45 +255,47 @@ class Socket{
      */
     public function connect()
     {
-        if ( $this->isConnected() )
-        {
+        if ( $this->isConnected() ) {
             $this->disconnect();
         }
 
         $errno = 0;
         $errstr = '';
         $old_track_errors = @ini_set( 'track_errors', 1 );
-        if ( $this->options !== array() )
-        {
-            $context = stream_context_create( $this->options );
-        }
-        else
-        {
+        if ( $this->_options !== array() ) {
+            $context = stream_context_create( $this->_options );
+        } else {
             $context = stream_context_create( array() );
         }
-        $flags = $this->persistent ? STREAM_CLIENT_PERSISTENT : STREAM_CLIENT_CONNECT;
-        if ( $this->transport == 'unix' )
-        {
-            $addr = $this->transport.'://'.$this->addr;
+        if ($this->_persistent) {
+            $flags = STREAM_CLIENT_PERSISTENT;
+        } else {
+            $flags = STREAM_CLIENT_CONNECT;
         }
-        else
-        {
-            $addr = $this->transport.'://'.$this->addr . ':' . $this->port;
+        if ( $this->_transport == 'unix' ) {
+            $addr = $this->_transport.'://'.$this->_addr;
+        } else {
+            $addr = $this->_transport.'://'.$this->_addr . ':' . $this->_port;
         }
-        $fp = stream_socket_client( $addr, $errno, $errstr, $this->timeout/1000000, $flags, $context );
+        $fp = stream_socket_client(
+                $addr,
+                $errno,
+                $errstr,
+                $this->_timeout/1000000,
+                $flags,
+                $context
+            );
 
-        if ( !is_resource( $fp ) )
-        {
-            if ( $errno == 0 && isset( $php_errormsg ) )
-            {
+        if ( !is_resource( $fp ) ) {
+            if ( $errno == 0 && isset( $php_errormsg ) ) {
                 $errstr = $php_errormsg;
             }
             ini_set( 'track_errors', $old_track_errors );
             throw new SocketException( $errstr );
         }
         ini_set( 'track_errors', $old_track_errors );
-        $this->fp = $fp;
-        return $this->setBlocking( $this->blocking );
+        $this->_fp = $fp;
+        return $this->setBlocking( $this->_blocking );
     }
 
     /**
@@ -309,13 +306,12 @@ class Socket{
      */
     function disconnect()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected!');
         }
-        fflush($this->fp);
-        fclose($this->fp);
-        $this->fp = null;
+        fflush($this->_fp);
+        fclose($this->_fp);
+        $this->_fp = null;
         return true;
     }
 
@@ -326,7 +322,7 @@ class Socket{
      */
     function isBlocking()
     {
-        return $this->blocking;
+        return $this->_blocking;
     }
 
     /**
@@ -340,10 +336,9 @@ class Socket{
      */
     function setBlocking($mode)
     {
-        $this->blocking = $mode;
-        if ($this->isConnected())
-        {
-            stream_set_blocking($this->fp, $this->blocking);
+        $this->_blocking = $mode;
+        if ($this->isConnected()) {
+            stream_set_blocking($this->_fp, $this->_blocking);
         }
         return true;
     }
@@ -358,10 +353,9 @@ class Socket{
      */
     function setTimeout($seconds, $microseconds=0)
     {
-        $this->timeout = ($seconds * 1000000) + $microseconds;
-        if ( $this->isConnected() )
-        {
-            return stream_set_timeout($this->fp, $seconds, $microseconds);
+        $this->_timeout = ($seconds * 1000000) + $microseconds;
+        if ( $this->isConnected() ) {
+            return stream_set_timeout($this->_fp, $seconds, $microseconds);
         }
         return true;
     }
@@ -373,7 +367,7 @@ class Socket{
      */
     function getTimeout()
     {
-        return $this->timeout;
+        return $this->_timeout;
     }
 
     /**
@@ -385,13 +379,11 @@ class Socket{
      */
     function setWriteBuffer($size)
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        $returned = stream_set_write_buffer( $this->fp, $size );
-        if ($returned == 0)
-        {
+        $returned = stream_set_write_buffer( $this->_fp, $size );
+        if ($returned == 0) {
             return true;
         }
         throw new SocketException('Cannot set write buffer.');
@@ -413,19 +405,17 @@ class Socket{
      * - mode (string) - the type of access required for this stream
      * - seekable (bool) - whether the current stream can be seeked
      * - uri (string) - the URI/filename associated with this stream
-     * </p>
      *
      * @return array Array containing information about existing socket resource
      * @throws SocketException if not connected
      */
     function getStatus()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
 
-        return stream_get_meta_data( $this->fp );
+        return stream_get_meta_data( $this->_fp );
     }
 
     /**
@@ -439,11 +429,10 @@ class Socket{
      */
     function gets( $size )
     {
-        if (!$this->isConnected())
-        {
+        if (!$this->isConnected()) {
             throw new SocketException('Not connected');
         }
-        return fgets($this->fp, $size);
+        return fgets($this->_fp, $size);
     }
 
     /**
@@ -458,11 +447,10 @@ class Socket{
      */
     function read( $size )
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        return fread( $this->fp, $size );
+        return fread( $this->_fp, $size );
     }
 
     /**
@@ -478,23 +466,17 @@ class Socket{
      */
     function write( $data, $blocksize = 1024 )
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        if ( is_null($blocksize) && !OS_WINDOWS )
-        {
-            return fwrite( $this->fp, $data );
-        }
-        else
-        {
+        if ( is_null($blocksize) && !OS_WINDOWS ) {
+            return fwrite( $this->_fp, $data );
+        } else {
             $pos = 0;
             $size = strlen($data);
-            while ($pos < $size)
-            {
-                $written = @fwrite( $this->fp, substr( $data, $pos, $blocksize ) );
-                if ($written === false)
-                {
+            while ($pos < $size) {
+                $written = @fwrite( $this->_fp, substr( $data, $pos, $blocksize ) );
+                if ($written === false) {
                     return false;
                 }
                 $pos += $written;
@@ -511,11 +493,10 @@ class Socket{
      */
     function writeLine($data)
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        return fwrite( $this->fp, $data . "\r\n" );
+        return fwrite( $this->_fp, $data . "\r\n" );
     }
 
     /**
@@ -527,7 +508,7 @@ class Socket{
      */
     function eof()
     {
-        return ( !$this->isConnected() || feof( $this->fp ) );
+        return ( !$this->isConnected() || feof( $this->_fp ) );
     }
 
     /**
@@ -538,12 +519,10 @@ class Socket{
      */
     function readByte()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-
-        return ord( fread( $this->fp, 1 ) );
+        return ord( fread( $this->_fp, 1 ) );
     }
 
     /**
@@ -554,12 +533,11 @@ class Socket{
      */
     function readWord()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
 
-        $buf = fread( $this->fp, 2 );
+        $buf = fread( $this->_fp, 2 );
         return ( ord( $buf[0] ) + ( ord( $buf[1] ) << 8 ) );
     }
 
@@ -571,16 +549,16 @@ class Socket{
      */
     function readInt()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
 
-        $buf = fread( $this->fp, 4 );
-        return ( ord( $buf[0] ) +
-        ( ord( $buf[1] ) << 8 ) +
-        ( ord( $buf[2] ) << 16 ) +
-        ( ord( $buf[3] ) << 24 )
+        $buf = fread( $this->_fp, 4 );
+        return (
+            ord( $buf[0] ) +
+            ( ord( $buf[1] ) << 8 ) +
+            ( ord( $buf[2] ) << 16 ) +
+            ( ord( $buf[3] ) << 24 )
         );
     }
 
@@ -592,13 +570,11 @@ class Socket{
      */
     function readString()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
         $string = '';
-        while (( $char = fread( $this->fp, 1 ) ) != "\x00" )
-        {
+        while (( $char = fread( $this->_fp, 1 ) ) != "\x00" ) {
             $string .= $char;
         }
         return $string;
@@ -612,17 +588,16 @@ class Socket{
      */
     function readIPAddress()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
 
-        $buf = fread( $this->fp, 4 );
+        $buf = fread( $this->_fp, 4 );
         return sprintf( '%d.%d.%d.%d',
-        ord( $buf[0] ),
-        ord( $buf[1] ),
-        ord( $buf[2] ),
-        ord( $buf[3] )
+            ord( $buf[0] ),
+            ord( $buf[1] ),
+            ord( $buf[2] ),
+            ord( $buf[3] )
         );
     }
 
@@ -636,17 +611,17 @@ class Socket{
      */
     function readLine()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
         $line = '';
-        $timeout = time() + $this->timeout;
-        while ( !feof( $this->fp ) && ( !$this->timeout || time() < $timeout ) )
-        {
-            $line .= fgets( $this->fp, $this->lineLength );
-            if ( substr( $line, -1 ) == "\n" )
-            {
+        $timeout = time() + $this->_timeout;
+        while (
+            !feof( $this->_fp ) &&
+            ( !$this->_timeout || time() < $timeout )
+        ) {
+            $line .= fgets( $this->_fp, $this->_lineLength );
+            if ( substr( $line, -1 ) == "\n" ) {
                 return rtrim( $line, "\r\n" );
             }
         }
@@ -666,14 +641,12 @@ class Socket{
      */
     function readAll()
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
         $data = '';
-        while ( !feof( $this->fp ) )
-        {
-            $data .= fread( $this->fp, $this->lineLength );
+        while ( !feof( $this->_fp ) ) {
+            $data .= fread( $this->_fp, $this->_lineLength );
         }
         return $data;
     }
@@ -692,41 +665,36 @@ class Socket{
      */
     function select($state, $tv_sec, $tv_usec = 0)
     {
-        if ( !$this->isConnected() )
-        {
+        if ( !$this->isConnected() )  {
             throw new SocketException('Not connected');
         }
         $read = null;
         $write = null;
         $except = null;
-        if ( $state & self::READ )
-        {
+        if ( $state & self::READ )  {
             $read[] = $this->fp;
         }
-        if ( $state & self::WRITE )
-        {
+        if ( $state & self::WRITE ) {
             $write[] = $this->fp;
         }
-        if ( $state & self::ERROR )
-        {
+        if ( $state & self::ERROR ) {
             $except[] = $this->fp;
         }
-        if ( false === ( $sr = stream_select($read, $write, $except, $tv_sec, $tv_usec ) ) )
-        {
+        if ( false === (
+                $sr = stream_select($read, $write, $except, $tv_sec, $tv_usec )
+              )
+            ) {
             return false;
         }
 
         $result = 0;
-        if ( count( $read ) )
-        {
+        if ( count( $read ) ) {
             $result |= self::READ;
         }
-        if ( count( $write ) )
-        {
+        if ( count( $write ) ) {
             $result |= self::WRITE;
         }
-        if ( count( $except ) )
-        {
+        if ( count( $except ) ) {
             $result |= self::ERROR;
         }
         return $result;
@@ -747,19 +715,16 @@ class Socket{
      */
     function enableCrypto($enabled, $type)
     {
-        if ( version_compare( phpversion(), "5.1.0", ">=" ) )
-        {
-            if ( !$this->isConnected() )
-            {
+        if ( version_compare( phpversion(), "5.1.0", ">=" ) ) {
+            if ( !$this->isConnected() ) {
                 throw new SocketException('Not connected');
             }
             return stream_socket_enable_crypto( $this->fp, $enabled, $type );
-        }
-        else
-        {
+        } else {
             throw new Exception('Seraphp::Comm::Socket::enableCrypto() requires php version >= 5.1.0');
         }
     }
+
     /**
      * @return boolean
      */
@@ -770,14 +735,8 @@ class Socket{
 
     public function __desctruct()
     {
-        if ( $this->isConnected() )
-        {
+        if ( $this->isConnected() ) {
             $this->disconnect();
         }
     }
 }
-
-class SocketException extends Exception{
-
-}
-?>

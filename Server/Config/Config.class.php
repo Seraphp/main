@@ -21,9 +21,10 @@ require_once 'Server/DataStore.class.php';
  * @package Server
  * @subpackage Config
  */
-class Config extends DataStore{
+class Config extends DataStore
+{
 
-    protected $dirty = false;
+    protected $_dirty = false;
 
     /**
      * Registers a value with a key in the registry.
@@ -35,19 +36,18 @@ class Config extends DataStore{
     public function __set($key, $value)
     {
         parent::__set($key,$value);
-        $this->dirty = true;
+        $this->_dirty = true;
     }
 
     public function isChanged()
     {
-        return ($this->dirty);
+        return ($this->_dirty);
     }
 
     public function clearState()
     {
-        $this->dirty = false;
+        $this->_dirty = false;
     }
 }
 
 class ConfigException extends Exception{}
-?>

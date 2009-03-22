@@ -21,10 +21,11 @@ class FieldGreaterSpecification extends FieldSpecification{
     /**
      * @var mixed
      */
-    protected $value;
+    protected $_value;
 
-    public function __construct($field, $value){
-        $this->value = $value;
+    public function __construct($field, $value)
+    {
+        $this->_value = $value;
         parent::__construct($field);
     }
 
@@ -32,7 +33,6 @@ class FieldGreaterSpecification extends FieldSpecification{
      * Returns true if datasource's field is bigger than the given value
      */
     public function isSatisfiedBy($src){
-        return ($src->{$this->field} > $this->value);
+        return ($src->{$this->_field} > $this->_value);
     }
 }
-?>

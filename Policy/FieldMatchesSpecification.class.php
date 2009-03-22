@@ -18,16 +18,18 @@ require_once 'Policy/FieldSpecification.class.php';
  *
  * @package Policy
  */
-class FieldMatchesSpecification extends FieldSpecification{
+class FieldMatchesSpecification extends FieldSpecification
+{
     /**
      * Stores the pattern string with delimiters
      *
      * @var string
      */
-    protected $pattern = '';
+    protected $_pattern = '';
 
-    public function __construct($field, $pattern){
-        $this->pattern = $pattern;
+    public function __construct($field, $pattern)
+    {
+        $this->_pattern = $pattern;
         parent::__construct($field);
     }
 
@@ -36,8 +38,8 @@ class FieldMatchesSpecification extends FieldSpecification{
      *
      * Pattern should contains delimiters also, like: /\d{2}/
      */
-    public function isSatisfiedBy($src){
-        return (preg_match($this->pattern, $src->{$this->field})==1);
+    public function isSatisfiedBy($src)
+    {
+        return ( preg_match($this->_pattern, $src->{$this->_field}) == 1 );
     }
 }
-?>

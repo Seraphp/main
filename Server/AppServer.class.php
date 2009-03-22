@@ -19,20 +19,21 @@ require_once 'Comm/RequestFactory.class.php';
  *
  * @package Server
  */
-class AppServer extends Server{
+class AppServer extends Server
+{
 
-    protected $appID = '';
-    protected $pidFolder = '/home/peter/workspace/seraphp';
-    protected $appReg = null;
-    protected $engine = null;
-    private $includes = array();
-    private $address = null;
-    private $port = null;
-    private $socket = null;
-    private $accepting = false;
+    protected $_appID = '';
+    protected $_pidFolder = '/home/peter/workspace/seraphp';
+    protected $_appReg = null;
+    protected $_engine = null;
+    private $_includes = array();
+    private $_address = null;
+    private $_port = null;
+    private $_socket = null;
+    private $_accepting = false;
 
     const DEFAULT_ADDRESS = '127.0.0.1';
-    const DEFAULT_PORT = 8080;
+    const DEFAULT_PORT = 8085;
 
     /**
      * Constructor method fo initializing with a Config object
@@ -42,58 +43,58 @@ class AppServer extends Server{
      */
     public function __construct(Config $conf)
     {
-        $this->appID = $conf->name;
+        $this->_appID = $conf->name;
         //Requireing all the files which are in the Config xml
-        if((isset($conf->includes)))
-        {
-            foreach($conf->includes as $key=>$resource)
-            {
-                if(require_once $resource)
-                {
-                    array_push($this->includes, $resource);
+        if((isset($conf->includes))) {
+            foreach($conf->includes as $key=>$resource) {
+                if(require_once $resource) {
+                    array_push($this->_includes, $resource);
                 }
-
             }
         }
         //Calling parent's constructor to initalize IPC if any
-        if(isset($conf->instance))
-        {
+        if(isset($conf->instance)) {
             $instance = $conf->instance;
             //Calling Parent's constructor...
-            (isset($instance['ipc']))?parent::__construct($instance['ipc']):parent::__construct();
-            //Setting up server engine
-            if(isset($instance['engine']))
-            {
-                //Class should be already "required-in" above
-                $this->engine = new $engine;
+            if (isset($instance['ipc'])) {
+                parent::__construct($instance['ipc']);
+            } else {
+                parent::__construct();
             }
-            else
-            {
+            //Setting up server engine
+            if(isset($instance['engine'])) {
+                //Class should be already "required-in" above
+                $this->_engine = new $engine;
+            } else {
                 require_once 'Server/DefaultEngine.class.php';
-                $this->engine = new DefaultEngine;
+                $this->_engine = new DefaultEngine;
             }
             //Setting up socket address and port
-            $this->address = (isset($instance['address']))?$instance['address']:self::DEFAULT_ADDRESS;
-            $this->port = (isset($instance['port']))?$instance['port']:self::DEFAULT_PORT;
+            if (isset($instance['address'])) {
+                $this->_address = $instance['address'];
+            } else {
+                $this->_address = self::DEFAULT_ADDRESS;
+            }
+            if (isset($instance['port'])) {
+                $this->_port = $instance['port'];
+            } else {
+                $this->_port = self::DEFAULT_PORT;
+            }
         }
         //Setting up Application registry
-        if($this->ipcType !== '')
-        {
+        if($this->ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
-            $this->appReg = IpcRegistry::getInstance();
-        }
-        else
-        {
+            $this->_appReg = IpcRegistry::getInstance();
+        } else {
             require_once 'Server/Registry/Registry.class.php';
-            $this->appReg = Registry::getInstance();
+            $this->_appReg = Registry::getInstance();
         }
     }
 
     protected function onSummon()
     {
-        if($this->ipcType !== '')
-        {
-            $this->appReg->useIpc($this->ipc);
+        if($this->ipcType !== '') {
+            $this->_appReg->useIpc($this->ipc);
         }
         //Initalizing socket listening to
         $this->initSocket();
@@ -106,7 +107,7 @@ class AppServer extends Server{
      */
     public function getAppId()
     {
-        return $this->appID;
+        return $this->_appID;
     }
 
 
@@ -119,8 +120,7 @@ class AppServer extends Server{
      */
     protected function hartBeat()
     {
-        if($this->accepting === true)
-        {
+        if($this->_accepting === true) {
             $this->listen();
         }
         usleep(200);
@@ -139,19 +139,18 @@ class AppServer extends Server{
      */
     private function listen()
     {
-        if($conn = socket_accept($this->socket))
-        {
+        if($conn = @socket_accept($this->_socket)) {
             fputs(STDOUT, 'Connection accepted, spawning new child'."\n");
             $this->spawn();
-            if($this->role == 'child')
-            {//we are the new process
-                $this->accepting = false;
-                socket_close($this->socket);
+            if($this->role == 'child') {//we are the new process
+                $this->_accepting = false;
+                @socket_close($this->_socket);
+                @socket_set_nonblock($conn);
                 try {
-                    $result = $this->process(RequestFactory::create($sock));
+                    $result = $this->process(RequestFactory::create($conn));
                 }catch (Exception $e) {
-                    socket_write($sock, '500 Internal Server Error');
-                    socket_close($sock);
+                    socket_write($conn, '500 Internal Server Error');
+                    socket_close($conn);
                     $result = 500;
                 }
                 exit($result);
@@ -170,21 +169,23 @@ class AppServer extends Server{
      */
     private function initSocket()
     {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, getprotobyname('TCP'));
-        if(!is_resource($this->socket))
-        {
-            throw new SocketException('Unable to open socket:'.socket_strerror(socket_last_error()));
+        $this->_socket = socket_create(
+            AF_INET,
+            SOCK_STREAM,
+            getprotobyname('TCP')
+        );
+        if(!is_resource($this->_socket)) {
+            throw new SocketException('Unable to open socket:'
+                .socket_strerror(socket_last_error()));
         }
-        if( socket_bind($this->socket, $this->address, $this->port) &&
-            socket_listen($this->socket, $this->getMaxSpawns()*2) &&
-            socket_set_nonblock($this->socket))
-        {
-            $this->accepting = true;
+        if( socket_bind($this->_socket, $this->_address, $this->_port) &&
+            socket_listen($this->_socket, $this->getMaxSpawns()*2) &&
+            socket_set_nonblock($this->_socket)) {
+            $this->_accepting = true;
             return true;
-        }
-        else
-        {
-            throw new SocketException('Unable to open socket:'.socket_strerror(socket_last_error()));
+        } else {
+            throw new SocketException('Unable to open socket:'
+                .socket_strerror(socket_last_error()));
         }
     }
 
@@ -199,7 +200,7 @@ class AppServer extends Server{
      */
     public function process(Request $req)
     {
-        return $this->engine->process($req);
+        return $this->_engine->process($req);
     }
 
     /* (non-PHPdoc)
@@ -207,8 +208,10 @@ class AppServer extends Server{
      */
     public function onExpell()
     {
-        fputs(STDOUT, 'closing down socket on '.$this->address.':'.$this->port."\n");
-        socket_close($this->socket);
+        fputs(STDOUT, 'closing down socket on '
+                .$this->_address.':'
+                .$this->_port."\n");
+        socket_close($this->_socket);
     }
 
     /**
@@ -224,13 +227,9 @@ class AppServer extends Server{
     protected function sigchldCallback($pid, $status)
     {
         fputs(STDOUT, 'child exited: '.$pid.' with status:'.$status."\n");
-        if($this->ipc !== null)
-        {
-            $this->appReg->mergeChanges();
+        if($this->ipc !== null) {
+            $this->_appReg->mergeChanges();
         }
         unset($this->spawns[$pid]);
     }
 }
-
-
-?>

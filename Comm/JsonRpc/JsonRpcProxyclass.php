@@ -22,45 +22,46 @@ require_once "/Comm/JsonRpc/Response.class.php";
  * will be thrown if error occurs.
  * Same class handles incoming RPC method calls by maintaining
  * the channel with any listener.
+ *
  * @package Comm
  * @subpackage JsonRpc
  * @todo Test the class
  */
-class JsonRpcProxy{
-
+class JsonRpcProxy
+{
     /**
      * @var mixed  Reference of proxied object
      */
-    private $src = null;
+    private $_src = null;
     /**
      * @var mixed  Reference for callable JSON-RPC object
      */
-    private $dest = null;
+    private $_dest = null;
     /**
      * @var string  Connection type to use for RPC
      */
-    private $type = 'socket';
+    private $_type = 'socket';
     /**
      * @var string  Connection's direction to allow
      */
-    private $dir = 'both';
+    private $_dir = 'both';
     /**
      * @var mixed  Reference for connection object
      */
-    private $connection = null;
+    private $_connection = null;
     /**
      * @var array  Callable methods on our side
      */
-    private $allowedMethods = array();
+    private $_allowedMethods = array();
     /**
      * @var array  Methodes at destianation which will have no return value
      */
-    private $notifications = array();
+    private $_notifications = array();
 
     /**
      * @var integer Message ID counter
      */
-    private static $id = 0;
+    private static $_id = 0;
 
     /**
      * Sets up the class before opening any connection
@@ -74,27 +75,21 @@ class JsonRpcProxy{
      */
     public function __construct($src, $dest, $type='socket', $srcMethods = array(), $destNotifications = array())
     {
-        $this->src = $src;
-        $this->dest = $dest;
-        $this->type = $type;
-        $this->dir = $direction;
-        if ( $srcMethods !== array() )
-        {
-            $this->allowedMethods = $srcMethods;
+        $this->_src = $src;
+        $this->_dest = $dest;
+        $this->_type = $type;
+        $this->_dir = $direction;
+        if ( $srcMethods !== array() ) {
+            $this->_allowedMethods = $srcMethods;
+        } else {
+            $list = $this->analyzeClientMethods($this->_src);
+            $this->_allowedMethods = $list['methods'];
         }
-        else
-        {
-            $list = $this->analyzeClientMethods($this->src);
-            $this->allowedMethods = $list['methods'];
-        }
-        if ( $destNotifications !== array() )
-        {
-            $this->notifications = $destNotifications;
-        }
-        else
-        {
-            $list = $this->analyzeClientMethods($this->dest);
-            $this->notifications = $list['notifications'];
+        if ( $destNotifications !== array() ) {
+            $this->_notifications = $destNotifications;
+        } else {
+            $list = $this->analyzeClientMethods($this->_dest);
+            $this->_notifications = $list['notifications'];
         }
     }
 
@@ -105,11 +100,10 @@ class JsonRpcProxy{
      */
     public function init()
     {
-        switch( $this->type )
-        {
+        switch( $this->_type ) {
             case 'socket':
                 require_once 'Comm/Socket.class.php';
-                $this->connection = new Socket('unix', '/tmp/interSeraphp.tmp');
+                $this->_connection = new Socket('unix', '/tmp/interSeraphp.tmp');
             break;
         }
     }
@@ -121,22 +115,17 @@ class JsonRpcProxy{
      */
     public function __call( $name, $arguments = array() )
     {
-        if( in_array( $name, $this->notifications ) )
-        {
+        if( in_array( $name, $this->_notifications ) ) {
             $message = (string) new Request( $name, $arguments );
-            try{
-                $this->connection->writeLine( $dest, $message );
-            }catch(Exception $e)
-            {
+            try {
+                $this->_connection->writeLine( $_dest, $message );
+            } catch(Exception $e) {
                 throw $e;
             }
-        }
-        else
-        {
+        } else {
             $message = (string) new Request( $name, $arguments, self::getID() );
-            if ( $this->connection->writeLine( $dest, $message ) )
-            {
-                return $this->parseReply( $this->connection->readLine() );
+            if ( $this->_connection->writeLine( $_dest, $message ) ) {
+                return $this->parseReply( $this->_connection->readLine() );
             }
         }
     }
@@ -150,12 +139,9 @@ class JsonRpcProxy{
     private function parseReply($reply)
     {
         $message = json_decode($reply);
-        if ( isset( $message->error ) )
-        {
+        if ( isset( $message->error ) ) {
             throw new Exception($message->error);
-        }
-        else
-        {
+        } else {
             return $message->result;
         }
     }
@@ -167,19 +153,25 @@ class JsonRpcProxy{
     public function parseRequest($msg)
     {
         $message = json_decode($msg);
-        if (is_callable($src, $message->method))
-        {
+        if (is_callable($this->_src, $message->method)) {
         	$error = null;
             try {
-        	    $result = call_user_func_array( array( $src, $message->method ), $message->params );
-        	} catch( Exception $e )
-        	{
+        	    $result = call_user_func_array(
+        	       array( $this->src,
+        	              $message->method
+        	       ),
+        	       $message->params
+        	    );
+        	} catch( Exception $e )	{
         	    $error = $e;
         	}
-        	if( $message->id !== null )
-        	{
-  	            $message = (string) new Response( $result, $error, $message->id);
-                $this->connection->writeLine( $dest, $message );
+        	if( $message->id !== null ) {
+  	            $message = (string) new Response(
+  	                                     $result,
+  	                                     $error,
+  	                                     $message->id
+  	                                );
+                $this->_connection->writeLine( $_dest, $message );
         	}
         }
     }
@@ -191,7 +183,7 @@ class JsonRpcProxy{
      */
     static function getID()
     {
-        return self::$id++;
+        return self::$_id++;
     }
 
     /**
@@ -206,16 +198,13 @@ class JsonRpcProxy{
         $pubNotifs = array();
         $analyzer = new ReflectionObject($obj);
         $methods = $analyzer->getMethods();
-        for ( $idx = 0; $idx < count( $methods ); $idx++ )
-        {
-        	if ( $methods[$idx]->isPublic() && !$methods[$idx]->isConstructor())
-        	{
-        	    if ( strpos( $methods[$idx]->getDocComment(), '@return void' ) )
-        	    {
+        for ( $idx = 0; $idx < count( $methods ); $idx++ ) {
+        	if ( $methods[$idx]->isPublic() &&
+        	   !$methods[$idx]->isConstructor()
+        	) {
+        	    if ( strpos($methods[$idx]->getDocComment(), '@return void') ) {
         	        $pubNotifs[] = $methods[$idx]->getName();
-        	    }
-        	    else
-        	    {
+        	    } else {
         	        $pubMethods[] = $methods[$idx]->getName();
         	    }
         	}
@@ -228,7 +217,6 @@ class JsonRpcProxy{
      */
     public function __destruct()
     {
-        $this->connection->disconnect();
+        $this->_connection->disconnect();
     }
 }
-?>

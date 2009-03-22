@@ -13,5 +13,5 @@
  *
  * @package Exceptions
  */
-class PluginException extends Exception{}
-?>
+class PluginException extends Exception
+{}

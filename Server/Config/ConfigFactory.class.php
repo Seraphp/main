@@ -22,17 +22,17 @@ require_once 'Server/Registry/Registry.class.php';
  */
 class ConfigFactory implements Singleton{
 
-    private static $instance = null;
-    private $registry = null;
-    private $configPath = '';
-    private $configFile = '';
-    private $xml = null;
+    private static $_instance = null;
+    private $_registry = null;
+    private $_configPath = '';
+    private $_configFile = '';
+    private $_xml = null;
 
     private function __construct(Registry $reg)
     {
-        $this->registry = $reg;
-        $this->configPath = dirname(__FILE__);
-        $this->configFile = 'seraphpConf.xml';
+        $this->_registry = $reg;
+        $this->_configPath = dirname(__FILE__);
+        $this->_configFile = 'seraphpConf.xml';
     }
 
 	/**
@@ -46,20 +46,20 @@ class ConfigFactory implements Singleton{
 
     public function getConf($name)
     {
-        if($this->registry->$name === null)
+        if($this->_registry->$name === null)
         {
-            $this->registry->$name = $this->parse($name);
+            $this->_registry->$name = $this->parse($name);
         }
-        return $this->registry->$name;
+        return $this->_registry->$name;
     }
 
     public function getInstance()
     {
-        if(self::$instance === null)
+        if(self::$_instance === null)
         {
-            self::$instance = new self(Registry::getInstance());
+            self::$_instance = new self(Registry::getInstance());
         }
-        return self::$instance;
+        return self::$_instance;
     }
 
     private function load($xmlFile='')
@@ -68,13 +68,13 @@ class ConfigFactory implements Singleton{
         {
             $this->setXmlSrc($xmlFile);
         }
-        $this->xml = simplexml_load_file($this->configPath.DIRECTORY_SEPARATOR.$this->configFile);
+        $this->_xml = simplexml_load_file($this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile);
         //Fetch all namespaces
-        $namespaces = $this->xml->getNamespaces(true);
+        $namespaces = $this->_xml->getNamespaces(true);
         //Register them with their prefixes
         foreach ($namespaces as $prefix => $ns)
         {
-            $this->xml->registerXPathNamespace($prefix, $ns);
+            $this->_xml->registerXPathNamespace($prefix, $ns);
         }
     }
 
@@ -82,23 +82,23 @@ class ConfigFactory implements Singleton{
     {
         if(is_file($xmlFile))
         {
-            $this->configPath = dirname($xmlFile);
-            $this->configFile = basename($xmlFile);
+            $this->_configPath = dirname($xmlFile);
+            $this->_configFile = basename($xmlFile);
         }
         else throw new Exception("$xmlFile cannot be loaded!");
     }
 
     private function parse($name)
     {
-        if($this->xml === null)
+        if($this->_xml === null)
         {
             $this->load();
         }
-        $serverConfXML = $this->xml->xpath('//servers/server[@id="'.$name.'"]');
+        $serverConfXML = $this->_xml->xpath('//servers/server[@id="'.$name.'"]');
         switch (count($serverConfXML))
         {
             case 0:
-                throw new ConfigException(sprintf("Server ID: '%s' not exists in config file %s!",$name,$this->configPath.DIRECTORY_SEPARATOR.$this->configFile));
+                throw new ConfigException(sprintf("Server ID: '%s' not exists in config file %s!",$name,$this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile));
             break;
             case 1:
                 $props = array_keys((array)$serverConfXML[0]->children());
@@ -120,9 +120,8 @@ class ConfigFactory implements Singleton{
                 }
             break;
             default:
-                throw new ConfigException(sprintf("Server ID: '%s' exists several times in config file %s!",$name,$this->configPath.DIRECTORY_SEPARATOR.$this->configFile));
+                throw new ConfigException(sprintf("Server ID: '%s' exists several times in config file %s!",$name,$this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile));
         }
         return $conf;
     }
 }
-?>
