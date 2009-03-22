@@ -105,22 +105,26 @@ class ConfigFactory implements Singleton
                 $conf = new Config;
                 $conf->name = (string) $serverConfXML[0]->attributes()->id;
                 $conf->pidpath = (string) $parentNode[0]->attributes()->pidpath;
-                if (in_array('urimap',$props)) {
-                    $conf->urimap = (array) $serverConfXML[0]->urimap->children();
+                if (in_array('urimap', $props)) {
+                  $conf->urimap = (array) $serverConfXML[0]->urimap->children();
                 }
-                if (in_array('instance',$props)) {
-                    $conf->instance = (array) $serverConfXML[0]->instance->children();
+                if (in_array('instance', $props)) {
+                    $conf->instance =
+                        (array) $serverConfXML[0]->instance->children();
                 }
-                if (in_array('resources',$props)) {
-                    $conf->includes = (array) $serverConfXML[0]->resources->includes->children();
+                if (in_array('resources', $props)) {
+                    $conf->includes =
+                     (array) $serverConfXML[0]->resources->includes->children();
                 }
                 break;
             default:
                 throw new ConfigException(
-                    sprintf("Server ID: '%s' exists several times in config file %s!",
+                    sprintf("Server ID: '%s' exists several ".
+                        "times in config file %s!",
                         $name,
-                        $this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile));
-        }
+                        $this->_configPath.DIRECTORY_SEPARATOR.
+                        $this->_configFile));
+            }
         return $conf;
     }
 }
