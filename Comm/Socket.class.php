@@ -284,7 +284,7 @@ class Socket
                                    $this->_timeout/1000000,
                                    $flags,
                                    $context);
-        if ( !is_resource( $fp ) ) {
+        if ( !is_resource($fp) ) {
             if ( $errno == 0 && isset($php_errormsg) ) {
                 $errstr = $php_errormsg;
             }
@@ -538,7 +538,7 @@ class Socket
         }
 
         $buf = fread($this->_fp, 2);
-        return (ord($buf[0] ) + (ord($buf[1]) << 8));
+        return (ord($buf[0]) + (ord($buf[1]) << 8));
     }
 
     /**
@@ -590,7 +590,7 @@ class Socket
             throw new SocketException('Not connected');
         }
 
-        $buf = fread( $this->_fp, 4 );
+        $buf = fread($this->_fp, 4);
         return sprintf('%d.%d.%d.%d',
                         ord($buf[0]),
                         ord($buf[1]),
@@ -653,14 +653,14 @@ class Socket
      * with a timeout specified by tv_sec and tv_usec.
      *
      * @param integer $state    Which of read/write/error to check for.
-     * @param integer $tv_sec   Number of seconds for timeout.
-     * @param integer $tv_usec  Number of microseconds for timeout.
+     * @param integer $tvSec   Number of seconds for timeout.
+     * @param integer $tvUsec  Number of microseconds for timeout.
      *
      * @return False if select fails, integer describing which of read/write/error
      *         are ready
      * @throws SocketException if not connected
      */
-    function select($state, $tv_sec, $tv_usec = 0)
+    function select($state, $tvSec, $tvUsec = 0)
     {
         if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
@@ -678,7 +678,7 @@ class Socket
             $except[] = $this->fp;
         }
         if ( false ===
-                ($sr = stream_select($read, $write, $except, $tv_sec, $tv_usec))
+                ($sr = stream_select($read, $write, $except, $tvSec, $tvUsec))
             ) {
             return false;
         }
