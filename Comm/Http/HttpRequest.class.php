@@ -13,6 +13,7 @@
 //namespace Seraphp\Comm\Http;
 require_once 'Comm/Request.interface.php';
 require_once 'ObserverListener.interface.php';
+require_once 'Exceptions/HttpException.class.php';
 /**
  * Class represents an HTTP request, no matter
  * of the usage: sending or receiving it.
@@ -21,8 +22,8 @@ require_once 'ObserverListener.interface.php';
  * @subpackage Http
  * @todo Test HTTPRequest class
  */
-class HttpRequest implements Request, Listener{
-
+class HttpRequest implements Request, Listener
+{
     const REQ_TOSEND = false;
     const REQ_RECEIVED = true;
     /**
@@ -81,19 +82,19 @@ class HttpRequest implements Request, Listener{
      * Communication socket
      * @var null|resource
      */
-    private $socket = null;
+    private $_socket = null;
 
     /**
      * Internal buffer for reading socket
      * @var string
      */
-    private $buffer = null;
+    private $_buffer = null;
 
     /**
      * Array of objects listening for status change
      * @var array
      */
-    private $observers = array();
+    private $_observers = array();
 
     /**
      * Constructor method
@@ -106,34 +107,29 @@ class HttpRequest implements Request, Listener{
      */
     public function __construct( $sock = null )
     {
-        if ( $sock !== null && is_resource( $sock ) )
-        {//If parameter is a resource, it means the class will represent a
+        if ( $sock !== null && is_resource( $sock ) ) {
+         //If parameter is a resource, it means the class will represent a
          //received request
-            $this->socket = $sock;
+            $this->_socket = $sock;
             $this->isReceived = self::REQ_RECEIVED;
-        }
-        else
-        {
+        } else {
              $this->isReceived = self::REQ_TOSEND;
         }
-        $this->parse();
+        $this->_parse();
     }
 
-    protected function parse()
+    protected function _parse()
     {
-        if ( $this->isReceived === self::REQ_RECEIVED )
-        {
-           while ( $this->buffer = @socket_read( $this->socket, 512 ) )
-           {
-               $this->save();
-               if ( $this->httpHeaders !== array() )
-               {//We notify only when all headers are received
+        if ( $this->isReceived === self::REQ_RECEIVED ) {
+           while ( $this->_buffer = @socket_read( $this->_socket, 512 ) ) {
+               $this->_save();
+               if ( $this->httpHeaders !== array() ) {
+               //We notify only when all headers are received
                    $this->notify();
                }
            }
            //Body also arrived, searching for post
-           if ( $this->method == 'POST' )
-           {
+           if ( $this->method == 'POST' ) {
                $this->postParams = $this->params2array($this->message);
            }
         }
@@ -147,17 +143,20 @@ class HttpRequest implements Request, Listener{
      *
      * @return void
      */
-    protected function save()
+    protected function _save()
     {
-        $this->message .= $this->buffer;
-        if ( $this->httpHeaders === array() && strpos( $this->message, "\r\n\r\n") !== false )
-        {//if received first time a datachunk containing an empty line,
-         //we arrived at the end of the http header
-            list( $this->httpRawHeaders, $this->message ) = preg_split( '/(\r\n){2}/m', $this->message );
+        $this->message .= $this->_buffer;
+        if ( $this->httpHeaders === array() &&
+             strpos( $this->message, "\r\n\r\n") !== false ) {
+                //if received first time a datachunk containing an empty line,
+                //we arrived at the end of the http header
+            list(
+                $this->httpRawHeaders,
+                $this->message
+            ) = preg_split( '/(\r\n){2}/m', $this->message );
             $this->httpRawHeaders = trim( $this->httpRawHeaders );
             $this->httpHeaders = explode( "\r\n", $this->httpRawHeaders );
-            var_dump(__CLASS__, __METHOD__, $this->message, $this->httpHeaders);
-            $this->processHeaders();
+            $this->_processHeaders();
         }
     }
 
@@ -166,39 +165,36 @@ class HttpRequest implements Request, Listener{
      *
      * @return void
      */
-    protected function processHeaders()
+    protected function _processHeaders()
     {
         $headers = array();
         $requestLine = array_shift( $this->httpHeaders );
-        list ( $this->method, $this->url, $this->httpVersion ) = explode( ' ', $requestLine );
+        list (
+            $this->method,
+            $this->url,
+            $this->httpVersion
+        ) = explode( ' ', $requestLine );
         $this->httpVersion = substr( $this->httpVersion, -3 );
-        foreach ( $this->httpHeaders as $row )
-        {
+        foreach ( $this->httpHeaders as $row ) {
             $item = explode ( ':', $row, 2);
-            if ( array_key_exists( $item[0], $headers ) )
-            {
+            if ( array_key_exists( $item[0], $headers ) ) {
                 $headers[ $item[0] ] .= ';'.trim($item[1]);
-            }
-            else
-            {
+            } else {
                 $headers[ $item[0] ] = trim($item[1]);
             }
         }
         $this->httpHeaders = $headers;
         //set up get, cookies (post will be in the body)
-        if ( array_key_exists( 'Cookie', $this->httpHeaders ) )
-        {
+        if ( array_key_exists( 'Cookie', $this->httpHeaders ) ) {
             $this->cookies = explode( ';', $this->httpHeaders[ 'Cookies' ] );
             $this->cookies = HttpFactory::getCookies($this->cookies);
         }
         //processing GET parameters
-        if ( $pos = strpos( $this->url, '?' ) )
-        {
-        	$this->getParams = $this->params2array( substr( $this->url, $pos+1 ) );
+        if ( $pos = strpos( $this->url, '?' ) ) {
+        	$this->getParams = $this->params2array( substr($this->url, $pos+1));
         }
         //Setting Referer
-        if (array_key_exists( 'Referer', $this->httpHeaders ) )
-        {
+        if (array_key_exists('Referer', $this->httpHeaders) ) {
             $this->referer = $this->httpHeaders['Referer'];
         }
     }
@@ -209,13 +205,12 @@ class HttpRequest implements Request, Listener{
      * @param string $str
      * @return array
      */
-    private function params2array($str)
+    private function _params2array($str)
     {
         $rows = explode( '&', urldecode( $str ) );
         $params = array();
         $itemNum = count($rows);
-        for( $idx = 0; $idx<$itemNum; $idx++ )
-        {
+        for( $idx = 0; $idx < $itemNum; $idx++ ) {
             $param = explode( '=', $rows[ $idx ], 2 );
             unset( $rows[ $idx ] );
             $params[ $param[0] ] = $param[1];
@@ -231,24 +226,20 @@ class HttpRequest implements Request, Listener{
      * @param string $sep  (optional) Separator string to pőut between encoded keys (default '&')
      * @return string
      */
-    private function array2params($params, $parentKey = null, $sep = '&')
+    private function _array2params($params, $parentKey = null, $sep = '&')
     {
         $items = array();
-        foreach ( $params as $key => $value )
-        {
-        	if ( is_array( $value ) )
-        	{
-        	    array_push( $items, $this->array2params($value, $key, $sep) );
-        	}
-        	else
-        	{
-        	    if ( $parentKey !== null )
-        	    {
-        	        array_push( $items, sprintf( '%s[%s]=%s' ), $parentKey, $key, $value );
-        	    }
-        	    else
-        	    {
-        	        array_push( $items, sprintf( '%s=%s' ), $key, $value );
+        foreach ( $params as $key => $value ) {
+        	if ( is_array( $value ) ) {
+        	    array_push( $items, $this->_array2params($value, $key, $sep) );
+        	} else {
+        	    if ( $parentKey !== null ) {
+        	        array_push(
+        	            $items,
+        	            sprintf( '%s[%s]=%s', $parentKey, $key, $value )
+        	        );
+        	    } else {
+        	        array_push( $items, sprintf( '%s=%s', $key, $value ));
         	    }
         	}
         }
@@ -266,33 +257,26 @@ class HttpRequest implements Request, Listener{
 
     public function notify()
     {
-        foreach ( $this->observers as $observer )
-        {
+        foreach ( $this->_observers as $observer ) {
             $observer->update( $this );
         }
     }
 
     public function attach( Observer $observer )
     {
-        if ( !array_key_exists( $observer->getName() ) )
-        {
-            return $this->observers[ $observer->getName() ] = $observer;
-        }
-        else
-        {
+        if ( !array_key_exists( $observer->getName() ) ) {
+            return $this->_observers[ $observer->getName() ] = $observer;
+        } else {
             return false;
         }
     }
 
     public function detach( Observer $observer )
     {
-        if ( array_key_exists($observer->getName()) )
-        {
-            unset ( $this->observers[ $observer->getName() ] );
+        if ( array_key_exists($observer->getName()) ) {
+            unset ( $this->_observers[ $observer->getName() ] );
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -304,71 +288,64 @@ class HttpRequest implements Request, Listener{
     public function send()
     {
         //@todo Implement HttpRequest sending
-        if ( $this->isReceived === self::REQ_TOSEND )
-        {
+        if ( $this->isReceived === self::REQ_TOSEND ) {
             $curlObj = curl_init( $this->url );
             $options = array(
                 CURLOPT_CUSTOMREQUEST => ( empty( $this->method) )?'GET':$this->method,
                 CURLOPT_RETURNTRANSFER => true,
             );
             //Setting HTTP version for Curl
-            switch( $this->httpVersion )
-            {
+            switch( $this->httpVersion ) {
                 case '1.0':
                     $options[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_1_0;
-                break;
+                    break;
                 case '1.1':
                     $options[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_1_1;
-                break;
+                    break;
                 default:
                     $options[CURLOPT_HTTP_VERSION] = CURL_HTTP_VERSION_NONE;
-                break;
+                    break;
             }
             //Setting Cookies for curl
-            if ($this->cookies !== array() )
-            {
+            if ($this->cookies !== array() ) {
             	$setCookieStr = '';
-                foreach( $this->cookies as $cookie )
-            	{
+                foreach( $this->cookies as $cookie ) {
             	    $setCookieStr .= $cookie->__toString().';';
             	}
             	$options[CURLOPT_COOKIE] = $setCookieStr;
             	unset($setCookieStr);
             }
             //Setting up POST parameters for curl
-            if ($this->postParams !== array() )
-            {
-            	$options[CURLOPT_POSTFIELDS] = $this->array2params($this->postParams);
+            if ($this->postParams !== array() ) {
+            	$options[CURLOPT_POSTFIELDS] = $this->_array2params(
+            	                                   $this->postParams
+            	                               );
             }
             //Setting up GET parameters for curl
-            if ($this->getParams !== array() )
-            {
-            	if ( strpos( $this->url, '?' ) !== false )
-            	{
-            		$options[CURLOPT_URL] = $this->url . urlencode( '&'. $this->array2params($this->getParams) );
-            	}
-            	else
-            	{
-            	    $options[CURLOPT_URL] = $this->url .'?'. urlencode( $this->array2params($this->getParams) );
+            if ($this->getParams !== array() ) {
+            	if ( strpos( $this->url, '?' ) !== false ) {
+            		$options[CURLOPT_URL] = $this->url .
+            		     urlencode( '&'.$this->_array2params($this->getParams));
+            	} else {
+            	    $options[CURLOPT_URL] = $this->url .
+            	        '?'. urlencode( $this->_array2params($this->getParams));
             	}
             }
             curl_setopt_array( $curlObj, $options);
             $response = curl_exec($curlObj);
             curl_close($curlObj);
             return $response;
-        }
-        else throw new HttpException('HttpRequest instance is received not to be send out!');
+        } else throw new HttpException(
+                'HttpRequest instance is received not to be send out!'
+            );
     }
 
     public function respond($msg)
     {
-        if ( $this->isReceived === self::REQ_RECEIVED )
-        {
+        if ( $this->isReceived === self::REQ_RECEIVED ) {
             $response = HttpFactory::create('response');
-        }
-        else throw new HttpException('HttpRequest instance is to be send out: cannot be responded!');
+        } else throw new HttpException(
+                'HttpRequest instance is to be send out: cannot be responded!'
+            );
     }
 }
-
-class HttpException extends Exception{}
-?>

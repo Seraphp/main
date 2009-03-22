@@ -21,7 +21,7 @@
 class DataStore
 {
 
-	/**
+    /**
      * Stores key=>value pairs of registry entries
      *
      * @var array
@@ -67,7 +67,7 @@ class DataStore
      */
     public function __unset($key)
     {
-        if(isset($this->$key)) {
+        if (isset($this->$key)) {
             unset($this->_store[$key]);
         }
     }
@@ -84,10 +84,10 @@ class DataStore
      */
     public function __set($key, $value)
     {
-        if($this->_overwrite === true) {
+        if ($this->_overwrite === true) {
             $this->_store[$key]=$value;
         } else {
-            if(isset($this->$key) === true) {
+            if (isset($this->$key) === true) {
                  return false;
             } else {
                 $this->_store[$key]=$value;
@@ -105,7 +105,7 @@ class DataStore
      */
     public function __get($key)
     {
-        if(isset($this->$key)) {
+        if (isset($this->$key)) {
             return $this->_store[$key];
         } else return null;
     }

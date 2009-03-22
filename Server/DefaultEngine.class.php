@@ -25,7 +25,7 @@ class DefaultEngine implements AppEngine
 
     function process(Request $req)
     {
-        var_dump(__CLASS__, __METHOD__,$req);
+        var_dump(__CLASS__, __METHOD__, $req);
         return 0;
     }
 }

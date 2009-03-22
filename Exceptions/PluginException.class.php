@@ -14,4 +14,5 @@
  * @package Exceptions
  */
 class PluginException extends Exception
-{}
+{
+}

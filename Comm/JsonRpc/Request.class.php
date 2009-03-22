@@ -27,7 +27,7 @@ class Request implements Request
 
      public function __construct($method, $params = array(), $id = null)
      {
-         if( empty( $method ) ) {
+         if ( empty($method) ) {
              throw new Exception('Method has to be defined!');
          } else {
              $this->method = $method;

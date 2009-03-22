@@ -21,7 +21,8 @@ require_once 'Comm/Http/HttpResponse.class.php';
  * @package Comm
  * @subpackage Http
  */
-class HttpFactory{
+class HttpFactory
+{
 
     /**
      * @param array $array  An array of cookie settings
@@ -30,10 +31,17 @@ class HttpFactory{
     public function getCookies($array)
     {
         $result = array();
-        foreach($array as $cookieParams)
-        {
+        foreach($array as $cookieParams) {
             extract($cookieParams);
-            $result[] = new HttpCookie($name, $value, $expireOn, $path, $domain, $secure, $onlyHTTP);
+            $result[] = new HttpCookie(
+                            $name,
+                            $value,
+                            $expireOn,
+                            $path,
+                            $domain,
+                            $secure,
+                            $onlyHTTP
+                        );
         }
         return $result;
     }
@@ -50,10 +58,10 @@ class HttpFactory{
         {
             case 'request':
                 return new HttpRequest($sock);
-            break;
+                break;
             case 'response':
                 return new HttpResponse();
-            break;
+                break;
         }
     }
 

@@ -12,6 +12,7 @@
 /***/
 //namespace Seraphp\Server\Config;
 require_once 'Server/DataStore.class.php';
+require_once 'Exceptions/ConfigException.class.php';
 /**
  * Config class decoates DataStore
  *
@@ -35,7 +36,7 @@ class Config extends DataStore
      */
     public function __set($key, $value)
     {
-        parent::__set($key,$value);
+        parent::__set($key, $value);
         $this->_dirty = true;
     }
 
@@ -49,5 +50,3 @@ class Config extends DataStore
         $this->_dirty = false;
     }
 }
-
-class ConfigException extends Exception{}

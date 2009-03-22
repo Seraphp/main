@@ -34,7 +34,7 @@ class IpcFactory
      *
      * @var array
      */
-    private static $_IpcArray = array();
+    private static $_ipcArray = array();
 
     /**
      * Returns a object which implements Ipc interface.
@@ -52,13 +52,13 @@ class IpcFactory
      */
     static function get($type,$pid)
     {
-        if(self::isValidIpc($type)) {
-            if(array_key_exists($pid, self::$_IpcArray)) {
-                return self::$_IpcArray[$pid];
+        if (self::isValidIpc($type)) {
+            if (array_key_exists($pid, self::$_ipcArray)) {
+                return self::$_ipcArray[$pid];
             } else {
                 $className = self::getClassName($type);
                 $class = new $className;
-                self::$_IpcArray[$pid] = $class;
+                self::$_ipcArray[$pid] = $class;
                 $class->init($pid, 'child');
                 return $class;
             }
@@ -67,15 +67,15 @@ class IpcFactory
 
     static function getClassName($type)
     {
-        return sprintf('Ipc%s',ucfirst($type));
+        return sprintf('Ipc%s', sucfirst($type));
     }
 
     static function setPluginsDir($dir = '')
     {
-        if(empty($dir)) {
+        if (empty($dir)) {
             $dir = dirname(__FILE__);
         }
-        if(is_dir($dir)) {
+        if (is_dir($dir)) {
             self::$_pluginsDir = $dir;
             return true;
         } else return false;
@@ -83,7 +83,7 @@ class IpcFactory
 
     static function getPluginsDir()
     {
-        if(empty(self::$_pluginsDir)) {
+        if (empty(self::$_pluginsDir)) {
             self::setPluginsDir();
         }
         return self::$_pluginsDir;
@@ -102,7 +102,7 @@ class IpcFactory
      */
     private static function isValidIpc($type)
     {
-        if(empty(self::$_pluginsDir)) {
+        if (empty(self::$_pluginsDir)) {
             self::setPluginsDir();
         }
         $pluginFile = sprintf(
@@ -110,10 +110,10 @@ class IpcFactory
             self::$_pluginsDir,
             self::getClassName($type)
         );
-        if(is_file($pluginFile)) {
+        if (is_file($pluginFile)) {
             require_once $pluginFile;
             $class = new ReflectionClass(self::getClassName($type));
-            if($class->implementsInterface('IpcAdapter')) {
+            if ($class->implementsInterface('IpcAdapter')) {
                 return true;
             } else {
                 throw new PluginException(

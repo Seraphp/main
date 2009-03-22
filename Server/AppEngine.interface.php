@@ -15,7 +15,8 @@ require_once 'Comm/Request.interface.php';
  *
  * @package Server
  */
-interface AppEngine{
+interface AppEngine
+{
 
     /**
      * Method to process the received Request

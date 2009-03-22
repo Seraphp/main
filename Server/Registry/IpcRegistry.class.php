@@ -45,9 +45,10 @@ class IpcRegistry extends Registry
      *
      */
     private function __construct()
-    {}
+    {
+    }
 
-	/**
+    /**
      * Disabled cloning facility to preserve only 1 instance
      * @throws Exception  if used
      */
@@ -63,7 +64,7 @@ class IpcRegistry extends Registry
 	*/
     public function getInstance()
     {
-        if(self::$_instance === null){
+        if (self::$_instance === null){
             self::$_instance = new self;
         }
         return self::$_instance;
@@ -87,7 +88,7 @@ class IpcRegistry extends Registry
      */
     public function __set($key, $value)
     {
-        if(parent::__set($key, $value) === true)
+        if (parent::__set($key, $value) === true)
         {
             $this->_changedKeys[] = $key;
         }
@@ -96,7 +97,7 @@ class IpcRegistry extends Registry
     public function mergeChanges()
     {
         $changes = unserialize($this->_ipc->read());
-        if(is_array($changes)) {
+        if (is_array($changes)) {
             $this->_store = array_merge($this->_store, $changes);
             return count($changes);
         }
@@ -110,7 +111,7 @@ class IpcRegistry extends Registry
      */
     public function save($changes = null)
     {
-        if($this->_dirty === true) {
+        if ($this->_dirty === true) {
             $num = count($this->_changedKeys);
             $changed = array();
             for ($idx = 0; $idx<$num; $idx++) {

@@ -89,7 +89,7 @@ class PolicyFactory
      */
     private function _readPlugins()
     {
-        if($this->_plugins === array()) {
+        if ($this->_plugins === array()) {
             if ($this->_pluginsDir === '') {
                 $this->_pluginsDir = dirname(__FILE__);
             } else {
@@ -97,8 +97,8 @@ class PolicyFactory
             }
             $d = dir($this->_pluginsDir);
             while ( false !== ( $entry = $d->read() ) ) {
-                if($entry != '.' && $entry != '..') {
-                    $this->registerPlugin($entry);
+                if ($entry != '.' && $entry != '..') {
+                    $this->_registerPlugin($entry);
                 }
             }
             $d->close();
@@ -118,16 +118,18 @@ class PolicyFactory
      * @param string $plugin
      * @throws PolicyPluginException
      */
-    private function registerPlugin($plugin)
+    private function _registerPlugin($plugin)
     {
-        $nameMatch = preg_match('/^(.+)Specification.class.php$/',$plugin, $matches);
-        if( $nameMatch !== FALSE && $nameMatch > 0) {
+        $nameMatch = preg_match('/^(.+)Specification.class.php$/',
+                                $plugin,
+                                $matches);
+        if ( $nameMatch !== FALSE && $nameMatch > 0) {
             require_once $this->_pluginsDir.'/'.$plugin;
-            $className = substr($plugin,0,-10);
+            $className = substr($plugin, 0, -10);
             $class = new ReflectionClass($className);
             if ( $class->implementsInterface('Specification') ) {
-                if ( strpos($matches[1],'Field') === 0 ) {
-                    $key = substr($matches[1],5);
+                if ( strpos($matches[1], 'Field') === 0 ) {
+                    $key = substr($matches[1], 5);
                 } else {
                     $key = $matches[1].'_';
                 }
@@ -145,8 +147,8 @@ class PolicyFactory
      * Sets plugins directory
      *
      * Also deletes already registered plugins and reload the plugins list.
-     * @todo: Refactor class to make it able to simply add a new directory to the plugins'
-     * directory's lists.
+     * @todo: Refactor class to make it able to simply add a new directory to
+     * the plugins' directory's lists.
      *
      * @param string $dir
      */

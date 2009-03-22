@@ -30,7 +30,9 @@ class AppServerRegistry extends Registry
      */
     static private $_instance = null;
 
-    private function __construct(){}
+    private function __construct()
+    {
+    }
     /**
      * Returns instance of class
      *
@@ -38,13 +40,13 @@ class AppServerRegistry extends Registry
      */
     public function getInstance()
     {
-        if(self::$_instance === null) {
+        if (self::$_instance === null) {
             self::$_instance = new self;
         }
         return self::$_instance;
     }
 
-	/**
+    /**
      * Gives back status of AppServer instance
      *
      * Return status string from AppServer instance if given key is
@@ -55,7 +57,7 @@ class AppServerRegistry extends Registry
      */
     public function getAppStatus($appID)
     {
-        if(isset($this->$appID)) {
+        if (isset($this->$appID)) {
             return $this->$appID->getStatus();
         } else return null;
     }
@@ -71,7 +73,7 @@ class AppServerRegistry extends Registry
      */
     public function getAppInstance($appID)
     {
-        if(isset($this->$appID)) {
+        if (isset($this->$appID)) {
             return $this->$appID;
         } else return null;
     }
@@ -87,7 +89,7 @@ class AppServerRegistry extends Registry
      */
     public function removeApp($appID)
     {
-        if(isset($this->$appID)) {
+        if (isset($this->$appID)) {
             $ref = $this->$appID;
             unset($this->$appID);
             return $ref;
@@ -108,7 +110,7 @@ class AppServerRegistry extends Registry
      */
     public function addApp($appID, AppServer $appRef)
     {
-        if(!isset($this->$appID)) {
+        if (!isset($this->$appID)) {
             $this->$appID = $appRef;
             return true;
         } else {

@@ -27,7 +27,8 @@ class HttpCookie
     public $secure = false;
     public $onlyHTTP = false;
 
-    public function __construct($name, $value=false, $expireOn = 0, $path='/', $domain='null', $secure = false, $onlyHTTP=false)
+    public function __construct( $name, $value=false, $expireOn = 0, $path='/',
+        $domain='null', $secure = false, $onlyHTTP=false)
     {
         $this->name = $name;
         $this->value = $value;
@@ -41,7 +42,14 @@ class HttpCookie
     public function __toString()
     {
         ob_start();
-        setcookie($this->name, $this->value, $this->expireOn, $this->path, $this->domain, $this->onlyHTTP);
+        setcookie(
+            $this->name,
+            $this->value,
+            $this->expireOn,
+            $this->path,
+            $this->domain,
+            $this->onlyHTTP
+        );
         $cookieStr = ob_get_contents();
         ob_end_clean();
         return $cookieStr;

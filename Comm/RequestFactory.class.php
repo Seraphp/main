@@ -18,10 +18,12 @@
 class RequestFactory
 {
     private function __construct()
-    {}
+    {
+    }
 
     private function __clone()
-    {}
+    {
+    }
 
     /**
      * Returns an object reference which is implements Request interface
@@ -33,7 +35,7 @@ class RequestFactory
         //using socket_recv with MSF_PEEK to examin the first part
         //of the message without removing it form the socket.
         $result = socket_recv($socket, $peek, 100, MSG_PEEK);
-        if( $result !== false ) {
+        if ( $result !== false ) {
             if ($peek !== null) {
                 if ( $result == 0 ) {
                     throw new IOException('No data on line!');
@@ -42,7 +44,7 @@ class RequestFactory
                         case 'http':
                             require_once 'Comm/Http/HttpFactory.class.php';
                             return HttpFactory::getMessage('request', $socket);
-                        break;
+                            break;
                     }
                 }
             }

@@ -36,9 +36,10 @@ class Registry extends DataStore implements Singleton
      *
      */
     private function __construct()
-    {}
+    {
+    }
 
-	/**
+    /**
      * Disabled cloning facility to preserve only 1 instance
      * @throws Exception  if used
      */
@@ -54,7 +55,7 @@ class Registry extends DataStore implements Singleton
      */
     public function getInstance()
     {
-        if(self::$_instance === null) {
+        if (self::$_instance === null) {
             self::$_instance = new self;
         }
         return self::$_instance;

@@ -45,15 +45,15 @@ class AppServer extends Server
     {
         $this->_appID = $conf->name;
         //Requireing all the files which are in the Config xml
-        if((isset($conf->includes))) {
-            foreach($conf->includes as $key=>$resource) {
-                if(require_once $resource) {
+        if ( isset($conf->includes) ) {
+            foreach ($conf->includes as $key => $resource) {
+                if (require_once $resource) {
                     array_push($this->_includes, $resource);
                 }
             }
         }
         //Calling parent's constructor to initalize IPC if any
-        if(isset($conf->instance)) {
+        if (isset($conf->instance)) {
             $instance = $conf->instance;
             //Calling Parent's constructor...
             if (isset($instance['ipc'])) {
@@ -62,7 +62,7 @@ class AppServer extends Server
                 parent::__construct();
             }
             //Setting up server engine
-            if(isset($instance['engine'])) {
+            if (isset($instance['engine'])) {
                 //Class should be already "required-in" above
                 $this->_engine = new $engine;
             } else {
@@ -82,7 +82,7 @@ class AppServer extends Server
             }
         }
         //Setting up Application registry
-        if($this->ipcType !== '') {
+        if ($this->ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
             $this->_appReg = IpcRegistry::getInstance();
         } else {
@@ -93,7 +93,7 @@ class AppServer extends Server
 
     protected function onSummon()
     {
-        if($this->ipcType !== '') {
+        if ($this->ipcType !== '') {
             $this->_appReg->useIpc($this->ipc);
         }
         //Initalizing socket listening to
@@ -120,8 +120,8 @@ class AppServer extends Server
      */
     protected function hartBeat()
     {
-        if($this->_accepting === true) {
-            $this->listen();
+        if ($this->_accepting === true) {
+            $this->_listen();
         }
         usleep(200);
     }
@@ -137,12 +137,12 @@ class AppServer extends Server
      *
      * @return void
      */
-    private function listen()
+    private function _listen()
     {
-        if($conn = @socket_accept($this->_socket)) {
+        if ($conn = @socket_accept($this->_socket)) {
             fputs(STDOUT, 'Connection accepted, spawning new child'."\n");
             $this->spawn();
-            if($this->role == 'child') {//we are the new process
+            if ($this->role == 'child') {//we are the new process
                 $this->_accepting = false;
                 @socket_close($this->_socket);
                 @socket_set_nonblock($conn);
@@ -169,20 +169,18 @@ class AppServer extends Server
      */
     private function initSocket()
     {
-        $this->_socket = socket_create(
-            AF_INET,
-            SOCK_STREAM,
-            getprotobyname('TCP')
-        );
-        if(!is_resource($this->_socket)) {
+        $this->_socket = socket_create(AF_INET,
+                                        SOCK_STREAM,
+                                        getprotobyname('TCP'));
+        if (!is_resource($this->_socket)) {
             throw new SocketException('Unable to open socket:'
                 .socket_strerror(socket_last_error()));
         }
-        if( socket_bind($this->_socket, $this->_address, $this->_port) &&
+        if ( socket_bind($this->_socket, $this->_address, $this->_port) &&
             socket_listen($this->_socket, $this->getMaxSpawns()*2) &&
             socket_set_nonblock($this->_socket)) {
-            $this->_accepting = true;
-            return true;
+                $this->_accepting = true;
+                return true;
         } else {
             throw new SocketException('Unable to open socket:'
                 .socket_strerror(socket_last_error()));
@@ -227,7 +225,7 @@ class AppServer extends Server
     protected function sigchldCallback($pid, $status)
     {
         fputs(STDOUT, 'child exited: '.$pid.' with status:'.$status."\n");
-        if($this->ipc !== null) {
+        if ($this->ipc !== null) {
             $this->_appReg->mergeChanges();
         }
         unset($this->spawns[$pid]);

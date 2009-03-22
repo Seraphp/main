@@ -1,6 +1,6 @@
 <?php
 /**
- * Holds IOException implementation
+ * Holds HttpException implementation
  *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
@@ -9,10 +9,10 @@
  * @filesource
  */
 /**
- * IOException class
+ * HttpException class
  *
  * @package Exceptions
  */
-class IOException extends Exception
+class HttpException extends Exception
 {
 }

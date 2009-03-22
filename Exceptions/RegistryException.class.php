@@ -14,4 +14,5 @@
  * @package Exceptions
  */
 class RegistryException extends Exception
-{}
+{
+}

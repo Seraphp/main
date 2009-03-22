@@ -33,12 +33,11 @@ class IpcUnixsockets implements IpcAdapter
         $this->close();
         //opening a pair of unix sockets, which are indistinguishable and
         // connected
-        $sockets = stream_socket_pair(
-            STREAM_PF_UNIX,
+        $sockets = stream_socket_pair(STREAM_PF_UNIX,
             STREAM_SOCK_STREAM,
-            STREAM_IPPROTO_IP
-        );
-        foreach($sockets as $sock) {//setting socket to non-blocking mode
+            STREAM_IPPROTO_IP);
+        foreach ($sockets as $sock) {
+            //setting socket to non-blocking mode
             stream_set_blocking($sock, 0);
         }
         $this->_sockChild = $sockets[0];
@@ -55,7 +54,7 @@ class IpcUnixsockets implements IpcAdapter
 
     public function setRole($role)
     {
-        if($this->_role != ($role == 'child')) {
+        if ($this->_role != ($role == 'child')) {
               $this->_role = ($role == 'child');
               $this->roleChange();
         }
@@ -69,27 +68,23 @@ class IpcUnixsockets implements IpcAdapter
 
     public function read()
     {
-        return stream_get_line(
-            ($this->_role)?$this->_sockChild:$this->_sockParent,
+        return stream_get_line(($this->_role)?$this->_sockChild:$this->_sockParent,
             self::MAX_MESSAGE_LENGTH,
-            $this->_ln
-        );
+            $this->_ln);
     }
 
     public function write($to, $message)
     {
-        return fwrite(
-            ($this->_role)?$this->_sockChild:$this->_sockParent,
-            $message.$this->_ln
-        );
+        return fwrite(($this->_role)?$this->_sockChild:$this->_sockParent,
+            $message.$this->_ln);
     }
 
     public function close()
     {
-        if(is_resource($this->_sockChild)) {
+        if (is_resource($this->_sockChild)) {
             fclose($this->_sockChild);
         }
-        if(is_resource($this->_sockParent)) {
+        if (is_resource($this->_sockParent)) {
             fclose($this->_sockParent);
         }
     }

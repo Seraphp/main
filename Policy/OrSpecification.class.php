@@ -51,4 +51,3 @@ class OrSpecification implements Specification
     }
 
 }
-?>

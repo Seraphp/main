@@ -16,7 +16,8 @@ require_once 'Policy/FieldSpecification.class.php';
  *
  * @package Policy
  */
-class FieldGreaterSpecification extends FieldSpecification{
+class FieldGreaterSpecification extends FieldSpecification
+{
 
     /**
      * @var mixed

@@ -1,7 +1,7 @@
 <?php
 /**
- * This file is a modified version of Pear/Net_Socket. All copyrights of the original file
- * goes to it's authors.
+ * This file is a modified version of Pear/Net_Socket. All copyrights of the
+ * original file goes to it's authors.
  *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
@@ -18,8 +18,8 @@ require_once 'Exceptions/SocketException.class.php';
  * @package Comm
  * @todo Test Socket class
  */
-class Socket{
-
+class Socket
+{
     const READ=1;
     const WRITE=2;
     const ERROR=4;
@@ -82,14 +82,15 @@ class Socket{
 
     /**
      *
-     * @param string $transport         Type of the socket to open(@see: Socket::supportedTransports())
-     * @param string  $addr        IP address or host name.
-     * @param integer $port        port number.
-     * @param boolean $persist     (optional, def: false) Whether the connection is
-     *                             persistent (kept open between requests
-     *                             by the web server).
-     * @param integer $timeout     (optional, def:30s) How long to wait for data.
-     * @param array   $options     See options for stream_context_create.
+     * @param string $transport  Type of the socket to open
+     * (@see: Socket::supportedTransports())
+     * @param string  $addr     IP address or host name.
+     * @param integer $port     port number.
+     * @param boolean $persist  (optional, def: false) Whether the connection is
+     *                          persistent (kept open between requests by the
+     *                          web server).
+     * @param integer $timeout  (optional, def:30s) How long to wait for data.
+     * @param array   $options  See options for stream_context_create.
      * @return Socket
      */
     public function __construct($transport, $addr, $port = 0, $persist = false, $timeout = 0, $options = null)
@@ -100,7 +101,7 @@ class Socket{
         $this->setPersistent($persist);
         $this->setTimeout($timeout);
         if ( is_array($options) ) {
-        	$this->setOptions($options);
+            $this->setOptions($options);
         }
     }
 
@@ -122,10 +123,10 @@ class Socket{
             case 'tcp':
             case 'udp':
             default:
-                if( strspn($addr, ':.0123456789abcdefABCDEF') == strlen($addr)||
+                if (strspn($addr, ':.0123456789abcdefABCDEF') == strlen($addr)||
                     strstr($addr, '/') !== false
-                  ) {
-                    $this->_addr = inet_ntop( inet_pton( $addr ) );
+                ) {
+                    $this->_addr = inet_ntop(inet_pton($addr));
                 } else {
                     $this->_addr = gethostbyname($addr);
                 }
@@ -168,7 +169,7 @@ class Socket{
      */
     public function setOptions($opt)
     {
-        if( is_array($opt) ) {
+        if ( is_array($opt) ) {
             $this->_options = $opt;
         } else throw new SocketException('Option must be an array');
     }
@@ -210,11 +211,9 @@ class Socket{
     public function setTransp($transport)
     {
         if ( $this->isConnected() ) {
-            throw new SocketException(
-                'Cannot modify the transport of an open socket'
-            );
+            throw new SocketException('Cannot modify the transport of an open socket');
         }
-        if ( in_array( $transport, self::supportedTransports() ) ) {
+        if ( in_array($transport, self::supportedTransports()) ) {
             $this->_transport = $transport;
             return true;
         } else {
@@ -228,7 +227,8 @@ class Socket{
     }
 
     /**
-     * Find out the supported transports on this operating system and PHP installation
+     * Find out the supported transports on this operating system and PHP
+     * installation
      * An example list of from my system:
      * - "tcp"
      * - "udp"
@@ -239,7 +239,8 @@ class Socket{
      * - "sslv2" (req. PHP SSL extension)
      * - "tls" (req. PHP SSL extension)
      *
-     * @return array  Array of supported starnsports on the hosting operating system
+     * @return array  Array of supported starnsports on the hosting
+     * operating system
      */
     public static function supportedTransports()
     {
@@ -261,11 +262,11 @@ class Socket{
 
         $errno = 0;
         $errstr = '';
-        $old_track_errors = @ini_set( 'track_errors', 1 );
+        $oldTrackErrors = @ini_set('track_errors', 1);
         if ( $this->_options !== array() ) {
-            $context = stream_context_create( $this->_options );
+            $context = stream_context_create($this->_options);
         } else {
-            $context = stream_context_create( array() );
+            $context = stream_context_create(array());
         }
         if ($this->_persistent) {
             $flags = STREAM_CLIENT_PERSISTENT;
@@ -277,25 +278,22 @@ class Socket{
         } else {
             $addr = $this->_transport.'://'.$this->_addr . ':' . $this->_port;
         }
-        $fp = stream_socket_client(
-                $addr,
-                $errno,
-                $errstr,
-                $this->_timeout/1000000,
-                $flags,
-                $context
-            );
-
+        $fp = stream_socket_client($addr,
+                                   $errno,
+                                   $errstr,
+                                   $this->_timeout/1000000,
+                                   $flags,
+                                   $context);
         if ( !is_resource( $fp ) ) {
-            if ( $errno == 0 && isset( $php_errormsg ) ) {
+            if ( $errno == 0 && isset($php_errormsg) ) {
                 $errstr = $php_errormsg;
             }
-            ini_set( 'track_errors', $old_track_errors );
-            throw new SocketException( $errstr );
+            ini_set('track_errors', $oldTrackErrors);
+            throw new SocketException($errstr);
         }
-        ini_set( 'track_errors', $old_track_errors );
+        ini_set('track_errors', $oldTrackErrors);
         $this->_fp = $fp;
-        return $this->setBlocking( $this->_blocking );
+        return $this->setBlocking($this->_blocking);
     }
 
     /**
@@ -382,11 +380,11 @@ class Socket{
         if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        $returned = stream_set_write_buffer( $this->_fp, $size );
+        $returned = stream_set_write_buffer($this->_fp, $size);
         if ($returned == 0) {
             return true;
         }
-        throw new SocketException('Cannot set write buffer.');
+        throw new SocketException('Cannot set write buffer');
     }
 
     /**
@@ -399,9 +397,11 @@ class Socket{
      * - eof (bool) - Indicates EOF event
      * - unread_bytes (int) - Number of bytes left in the socket buffer
      * - stream_type (string) - describes the underlying stream implementation
-     * - wrapper_type (string) - describes the protocol wrapper implementation layered over the stream
+     * - wrapper_type (string) - describes the protocol wrapper implementation
+     * layered over the stream
      * - wrapper_data (mixed) - wrapper specific data attached to this stream
-     * - filters (array) - contains the names of any filters that have been stacked onto this stream
+     * - filters (array) - contains the names of any filters that have been
+     * stacked onto this stream
      * - mode (string) - the type of access required for this stream
      * - seekable (bool) - whether the current stream can be seeked
      * - uri (string) - the URI/filename associated with this stream
@@ -415,7 +415,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        return stream_get_meta_data( $this->_fp );
+        return stream_get_meta_data($this->_fp);
     }
 
     /**
@@ -427,7 +427,7 @@ class Socket{
      * @return $size-1 bytes of data from the socket
      * @throws SocketException if not connected
      */
-    function gets( $size )
+    function gets($size)
     {
         if (!$this->isConnected()) {
             throw new SocketException('Not connected');
@@ -445,12 +445,12 @@ class Socket{
      * @return $size bytes of data from the socket
      * @throws SocketException if not connected
      */
-    function read( $size )
+    function read($size)
     {
         if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        return fread( $this->_fp, $size );
+        return fread($this->_fp, $size);
     }
 
     /**
@@ -464,18 +464,18 @@ class Socket{
      *               If the write fails, returns false.
      * @throws SocketException if not connected
      */
-    function write( $data, $blocksize = 1024 )
+    function write($data, $blocksize = 1024)
     {
         if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
         if ( is_null($blocksize) && !OS_WINDOWS ) {
-            return fwrite( $this->_fp, $data );
+            return fwrite($this->_fp, $data);
         } else {
             $pos = 0;
             $size = strlen($data);
             while ($pos < $size) {
-                $written = @fwrite( $this->_fp, substr( $data, $pos, $blocksize ) );
+                $written = @fwrite($this->_fp, substr($data, $pos, $blocksize));
                 if ($written === false) {
                     return false;
                 }
@@ -496,7 +496,7 @@ class Socket{
         if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        return fwrite( $this->_fp, $data . "\r\n" );
+        return fwrite($this->_fp, $data . "\r\n");
     }
 
     /**
@@ -508,7 +508,7 @@ class Socket{
      */
     function eof()
     {
-        return ( !$this->isConnected() || feof( $this->_fp ) );
+        return (!$this->isConnected() || feof($this->_fp));
     }
 
     /**
@@ -522,7 +522,7 @@ class Socket{
         if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
-        return ord( fread( $this->_fp, 1 ) );
+        return ord(fread($this->_fp, 1));
     }
 
     /**
@@ -537,8 +537,8 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        $buf = fread( $this->_fp, 2 );
-        return ( ord( $buf[0] ) + ( ord( $buf[1] ) << 8 ) );
+        $buf = fread($this->_fp, 2);
+        return (ord($buf[0] ) + (ord($buf[1]) << 8));
     }
 
     /**
@@ -553,13 +553,11 @@ class Socket{
             throw new SocketException('Not connected');
         }
 
-        $buf = fread( $this->_fp, 4 );
-        return (
-            ord( $buf[0] ) +
-            ( ord( $buf[1] ) << 8 ) +
-            ( ord( $buf[2] ) << 16 ) +
-            ( ord( $buf[3] ) << 24 )
-        );
+        $buf = fread($this->_fp, 4);
+        return (ord($buf[0]) +
+               (ord($buf[1]) << 8) +
+               (ord($buf[2]) << 16) +
+               (ord($buf[3]) << 24));
     }
 
     /**
@@ -574,7 +572,7 @@ class Socket{
             throw new SocketException('Not connected');
         }
         $string = '';
-        while (( $char = fread( $this->_fp, 1 ) ) != "\x00" ) {
+        while (( $char = fread($this->_fp, 1) ) != "\x00" ) {
             $string .= $char;
         }
         return $string;
@@ -593,12 +591,11 @@ class Socket{
         }
 
         $buf = fread( $this->_fp, 4 );
-        return sprintf( '%d.%d.%d.%d',
-            ord( $buf[0] ),
-            ord( $buf[1] ),
-            ord( $buf[2] ),
-            ord( $buf[3] )
-        );
+        return sprintf('%d.%d.%d.%d',
+                        ord($buf[0]),
+                        ord($buf[1]),
+                        ord($buf[2]),
+                        ord($buf[3]));
     }
 
     /**
@@ -617,12 +614,12 @@ class Socket{
         $line = '';
         $timeout = time() + $this->_timeout;
         while (
-            !feof( $this->_fp ) &&
+            !feof($this->_fp) &&
             ( !$this->_timeout || time() < $timeout )
         ) {
-            $line .= fgets( $this->_fp, $this->_lineLength );
-            if ( substr( $line, -1 ) == "\n" ) {
-                return rtrim( $line, "\r\n" );
+            $line .= fgets($this->_fp, $this->_lineLength);
+            if ( substr($line, -1) == "\n" ) {
+                return rtrim($line, "\r\n");
             }
         }
         return $line;
@@ -645,8 +642,8 @@ class Socket{
             throw new SocketException('Not connected');
         }
         $data = '';
-        while ( !feof( $this->_fp ) ) {
-            $data .= fread( $this->_fp, $this->_lineLength );
+        while ( !feof($this->_fp) ) {
+            $data .= fread($this->_fp, $this->_lineLength);
         }
         return $data;
     }
@@ -665,13 +662,13 @@ class Socket{
      */
     function select($state, $tv_sec, $tv_usec = 0)
     {
-        if ( !$this->isConnected() )  {
+        if ( !$this->isConnected() ) {
             throw new SocketException('Not connected');
         }
         $read = null;
         $write = null;
         $except = null;
-        if ( $state & self::READ )  {
+        if ( $state & self::READ ) {
             $read[] = $this->fp;
         }
         if ( $state & self::WRITE ) {
@@ -680,21 +677,20 @@ class Socket{
         if ( $state & self::ERROR ) {
             $except[] = $this->fp;
         }
-        if ( false === (
-                $sr = stream_select($read, $write, $except, $tv_sec, $tv_usec )
-              )
+        if ( false ===
+                ($sr = stream_select($read, $write, $except, $tv_sec, $tv_usec))
             ) {
             return false;
         }
 
         $result = 0;
-        if ( count( $read ) ) {
+        if ( count($read) ) {
             $result |= self::READ;
         }
-        if ( count( $write ) ) {
+        if ( count($write) ) {
             $result |= self::WRITE;
         }
-        if ( count( $except ) ) {
+        if ( count($except) ) {
             $result |= self::ERROR;
         }
         return $result;
@@ -705,23 +701,25 @@ class Socket{
      *
      * @param bool    $enabled  Set this parameter to true to enable encryption
      *                          and false to disable encryption.
-     * @param integer $type     Type of encryption. See
-     *                          http://www.php.net/manual/en/function.stream-socket-enable-crypto.php for values.
+     * @param integer $type     Type of encryption.
+     * See http://www.php.net/manual/en/function.stream-socket-enable-crypto.php
+     *  for values.
      *
-     * @return false on error, true on success and 0 if there isn't enough data and the
-     *         user should try again (non-blocking sockets only).
+     * @return false on error, true on success and 0 if there isn't enough data
+     *          and the user should try again (non-blocking sockets only).
      * @throws SocketException if not connected
      * @throws Exception if PHP version below 5.1.0
      */
     function enableCrypto($enabled, $type)
     {
-        if ( version_compare( phpversion(), "5.1.0", ">=" ) ) {
+        if ( version_compare(phpversion(), "5.1.0", ">=") ) {
             if ( !$this->isConnected() ) {
                 throw new SocketException('Not connected');
             }
-            return stream_socket_enable_crypto( $this->fp, $enabled, $type );
+            return stream_socket_enable_crypto($this->fp, $enabled, $type);
         } else {
-            throw new Exception('Seraphp::Comm::Socket::enableCrypto() requires php version >= 5.1.0');
+            throw new Exception('Seraphp::Comm::Socket::enableCrypto()'.
+            'requires php version >= 5.1.0');
         }
     }
 
@@ -730,7 +728,7 @@ class Socket{
      */
     public function isConnected()
     {
-        return is_resource( $this->fp );
+        return is_resource($this->fp);
     }
 
     public function __desctruct()

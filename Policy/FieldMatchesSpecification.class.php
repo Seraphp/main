@@ -34,7 +34,8 @@ class FieldMatchesSpecification extends FieldSpecification
     }
 
     /**
-     * Returns true if given pattern result in minimum 1 match with field's value.
+     * Returns true if given pattern result in minimum 1 match with field's
+     * value.
      *
      * Pattern should contains delimiters also, like: /\d{2}/
      */
