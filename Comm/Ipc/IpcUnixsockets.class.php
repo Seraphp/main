@@ -68,9 +68,10 @@ class IpcUnixsockets implements IpcAdapter
 
     public function read()
     {
-        return stream_get_line(($this->_role)?$this->_sockChild:$this->_sockParent,
-            self::MAX_MESSAGE_LENGTH,
-            $this->_ln);
+        return
+          stream_get_line(($this->_role)?$this->_sockChild:$this->_sockParent,
+                            self::MAX_MESSAGE_LENGTH,
+                            $this->_ln);
     }
 
     public function write($to, $message)
