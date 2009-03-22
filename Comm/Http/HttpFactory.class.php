@@ -31,7 +31,7 @@ class HttpFactory
     public function getCookies($array)
     {
         $result = array();
-        foreach($array as $cookieParams) {
+        foreach ($array as $cookieParams) {
             extract($cookieParams);
             $result[] = new HttpCookie(
                             $name,
