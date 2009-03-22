@@ -324,7 +324,7 @@ abstract class Server implements Daemon
                                         strtolower($sigName).'Callback'));
                 }
                 return;
-        }
+            }
     }
 
 
