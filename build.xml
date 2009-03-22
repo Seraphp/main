@@ -36,7 +36,7 @@
         executable="phpcs"
         output="${basedir}/build/logs/checkstyle.xml"
         failonerror="false">
-   <arg line="--report=checkstyle --ignore=*/tests/* ."/>
+   <arg line="--report=checkstyle --standard=zend --ignore=*/tests/* ."/>
   </exec>
  </target>
 
