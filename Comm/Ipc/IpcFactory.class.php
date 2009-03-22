@@ -67,7 +67,7 @@ class IpcFactory
 
     static function getClassName($type)
     {
-        return sprintf('Ipc%s', sucfirst($type));
+        return sprintf('Ipc%s', ucfirst($type));
     }
 
     static function setPluginsDir($dir = '')
