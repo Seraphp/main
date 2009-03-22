@@ -93,7 +93,7 @@ class AppServer extends Server
 
     protected function onSummon()
     {
-        if ($this->ipcType !== '') {
+        if ($this->_ipcType !== '') {
             $this->_appReg->useIpc($this->_ipc);
         }
         //Initalizing socket listening to
