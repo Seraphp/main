@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<seraphp>
+<seraphp xmlns="http://www.seraphp.com/seraphpConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.seraphp.com/seraphpConfig ../../../seraphpConfig.xsd ">
 	<servers pidpath='/home/peter/workspace/seraphp'>
 		<server id='main'>
-			<urimap>
-				<url>/</url>
-				<url>/admin/</url>
-			</urimap>
 			<instance>
-				<maxchildren>5</maxchildren>
+				<maxChildren>5</maxChildren>
 				<address>127.0.0.1</address>
 				<port>8123</port>
 			</instance>
+			<urimap>
+				<url engine="default">/</url>
+				<url engine="admin">/admin/</url>
+			</urimap>
 			<resources>
 				<includes>
 					<path>.</path>
@@ -18,9 +19,9 @@
 				</includes>
 			</resources>
 		</server>
-		<server id='session' internal='true'>
+		<server id='session'>
 			<instance>
-				<maxchildren>5</maxchildren>
+				<maxChildren>5</maxChildren>
 				<address>127.0.0.1</address>
 				<port>8124</port>
 			</instance>
@@ -31,9 +32,9 @@
 				</includes>
 			</resources>
 		</server>
-		<server id='dbpool' internal='true'>
+		<server id='dbpool'>
 			<instance>
-				<maxchildren>5</maxchildren>
+				<maxChildren>5</maxChildren>
 				<address>127.0.0.1</address>
 				<port>8125</port>
 			</instance>
@@ -41,7 +42,6 @@
 				<includes>
 					<path>.</path>
 					<path>/home/peter/workspace/seraphp</path>
-					<file>dbPool.class.php</file>
 				</includes>
 			</resources>
 		</server>

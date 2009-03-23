@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<seraphp>
-	<servers pidpath="/home/peter/workspace/seraphp">
-		<server id="main">
-			<urimap>
-				<url engine="default">/</url>
-				<url auth="internal" engine="admin">/admin/</url>
-				<url engine="static">/static/</url>
-			</urimap>
-			<resources>
-				<includes>
-					<path>/home/peter/workspace/seraphp/Server/DefaultEngine.class.php</path>
-				</includes>
-			</resources>
-			<instance>
-				<ipc>unixsockets</ipc>
-				<maxChildren>4</maxChildren>
-				<address>127.0.0.1</address>
-				<port>8088</port>
-			</instance>
-		</server>
-	</servers>
+<seraphp xmlns="http://www.seraphp.com/seraphpConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.seraphp.com/seraphpConfig seraphpConfig.xsd ">
+    <servers pidpath="/home/peter/workspace/seraphp">
+        <server id="main">
+            <instance>
+                <ipc>unixsockets</ipc>
+                <maxChildren>4</maxChildren>
+                <address>127.0.0.1</address>
+                <port>8088</port>
+                <timeout>60</timeout>
+            </instance>
+            <urimap>
+                <url engine="default">/</url>
+                <url engine="admin" auth="internal">/admin/</url>
+                <url engine="static">/static/</url>
+                <url engine="dispatch" target="test">/test/</url>
+            </urimap>
+            <resources>
+                <includes>
+                    <path>/home/peter/workspace/seraphp/Server/DefaultEngine.class.php</path>
+                </includes>
+                <static>
+                    <path>/home/peter/workspace/seraphp/</path>
+                </static>
+                <auth>
+                    <users>
+                        <user role="admin">peter</user>
+                    </users>
+                    <rules type="xml">
+                        <path>/home/peter/workspace/seraphp/Auth/rules/</path>
+                    </rules>
+                </auth>
+            </resources>
+        </server>
+        <server id="test">
+            <instance>
+                <address>127.0.0.1</address>
+                <port>8090</port>
+            </instance>
+            <urimap>
+                <url engine="default">/test/</url>
+            </urimap>
+        </server>
+    </servers>
 </seraphp>
