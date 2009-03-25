@@ -10,17 +10,18 @@ require_once 'tests/Server/Config/ConfigTest.php';
 require_once 'tests/Server/Config/ConfigFactoryTest.php';
 /**
  * Class documentation
+ * // @codeCoverageIgnoreStart
  */
 class Config_AllTests{
 
     public static function suite()
     {
-        // @codeCoverageIgnoreStart
+
         $suite = new PHPUnit_Framework_TestSuite('Config facilities');
+        $suite->addTestSuite('ConfigXmlValidityTest');
         $suite->addTestSuite('ConfigTest');
         $suite->addTestSuite('ConfigFactoryTest');
         return $suite;
-        // @codeCoverageIgnoreEnd
     }
 }
-?>
+// @codeCoverageIgnoreEnd
