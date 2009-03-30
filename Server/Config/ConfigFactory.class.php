@@ -29,6 +29,7 @@ class ConfigFactory implements Singleton
     private $_configPath = '';
     private $_configFile = '';
     private $_xml = null;
+    private $_namespaces = array();
 
     private function __construct(Registry $reg)
     {
@@ -71,11 +72,17 @@ class ConfigFactory implements Singleton
                                             DIRECTORY_SEPARATOR.
                                             $this->_configFile);
         //Fetch all namespaces
-        $namespaces = $this->_xml->getNamespaces(true);
+        $this->_namespaces = $this->_xml->getNamespaces(true);
+    }
+
+    public function xsearch($xpath, $node = null)
+    {
+        $node = ($node === null)?$this->_xml:$node;
         //Register them with their prefixes
-        foreach ($namespaces as $prefix => $ns) {
-            $this->_xml->registerXPathNamespace($prefix, $ns);
+        foreach ($this->_namespaces as $prefix => $ns) {
+            $node->registerXPathNamespace($prefix, $ns);
         }
+        return $node->xpath($xpath);
     }
 
     public function setXmlSrc($xmlFile)
@@ -91,7 +98,11 @@ class ConfigFactory implements Singleton
         if ($this->_xml === null) {
             $this->_load();
         }
-        $serverConfXML =$this->_xml->xpath('//servers/server[@id="'.$name.'"]');
+        $serverConfXML =$this->xsearch('//servers/server[@id="'.$name.'"]');
+        if ($serverConfXML === false) {
+            throw new ConfigException('Failed to parse the confg file: '
+            .$this->_configFile. ' from '.$this->_configPath);
+        }
         switch (count($serverConfXML)) {
             case 0:
                 throw new ConfigException(
@@ -101,7 +112,7 @@ class ConfigFactory implements Singleton
                 break;
             case 1:
                 $props = array_keys((array)$serverConfXML[0]->children());
-                $parentNode = $serverConfXML[0]->xpath('..');
+                $parentNode = $this->xsearch('..',$serverConfXML[0]);
                 $conf = new Config;
                 $conf->name = (string) $serverConfXML[0]->attributes()->id;
                 $conf->pidpath = (string) $parentNode[0]->attributes()->pidpath;
