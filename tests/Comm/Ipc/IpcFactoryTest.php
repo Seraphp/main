@@ -38,4 +38,3 @@ class IpcFactoryTest extends PHPUnit_Framework_TestCase{
         IpcFactory::get('something',0);
     }
 }
-?>

@@ -20,9 +20,8 @@ class ConfigXmlValidityTest extends PHPUnit_Framework_TestCase{
 
     function testXmlIsValid()
     {
-        $bLoaded = $this->dom->load('seraphp_test_config.xml');
+        $bLoaded = $this->dom->load('tests/Server/Config/seraphp_test_config.xml');
         if (!$bLoaded) { $this->fail('Error at loading XML'); }
     }
 
 }
-?>

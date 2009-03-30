@@ -101,4 +101,3 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
         $PF->setPluginsDir('./Policy');
     }
 }
-?>

@@ -54,4 +54,3 @@ class IpcUnixsocketsTest extends PHPUnit_Framework_TestCase{
         unset($this->ipc);
     }
 }
-?>

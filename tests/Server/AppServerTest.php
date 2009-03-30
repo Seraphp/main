@@ -33,4 +33,3 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
         $this->assertEquals(10, $this->server->getMaxSpawns());
     }
 }
-?>

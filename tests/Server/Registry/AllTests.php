@@ -5,6 +5,7 @@
  * @version $Id$
  * @filesource
  */
+// @codeCoverageIgnoreStart
 require_once 'PHPUnit/Framework.php';
 require_once 'RegistryTest.php';
 require_once 'AppServerRegistryTest.php';
@@ -15,12 +16,10 @@ class Registry_AllTests{
 
     public static function suite()
     {
-        // @codeCoverageIgnoreStart
         $suite = new PHPUnit_Framework_TestSuite('Registry facilities');
         $suite->addTestSuite('AppServerRegistryTest');
         $suite->addTestSuite('RegistryTest');
         return $suite;
-        // @codeCoverageIgnoreEnd
+
     }
-}
-?>
+}// @codeCoverageIgnoreEnd

@@ -44,4 +44,3 @@ class DataStoreTest extends PHPUnit_Framework_TestCase{
         $this->assertSame($this->store->some_key, $some_key);
     }
 }
-?>

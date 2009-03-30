@@ -226,4 +226,3 @@ class SocketTest extends PHPUnit_Framework_TestCase{
         unset($this->soc);
     }
 }
-?>

@@ -51,7 +51,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         $noDigits = new FieldMatchesSpecification('writer', '/\d{2}/');
         $this->assertFalse($noDigits->isSatisfiedBy($this->src));
     }
-    
+
     /**
      * @dataProvider orTrueTable
      */
@@ -60,7 +60,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         $orSpec = new OrSpecification($h,$l);
         $this->assertTrue($orSpec->isSatisfiedBy($this->src));
     }
-    
+
     /**
      * @dataProvider orFalseTable
      */
@@ -69,7 +69,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         $orSpec = new OrSpecification($h,$l);
         $this->assertFalse($orSpec->isSatisfiedBy($this->src));
     }
-    
+
     /**
      * @dataProvider andTrueTable
      */
@@ -78,7 +78,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         $andSpec = new AndSpecification($h,$l);
         $this->assertTrue($andSpec->isSatisfiedBy($this->src));
     }
-    
+
     /**
      * @dataProvider andFalseTable
      */
@@ -87,19 +87,19 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         $andSpec = new AndSpecification($h,$l);
         $this->assertFalse($andSpec->isSatisfiedBy($this->src));
     }
-    
+
     function testNotSpecTrue()
     {
         $notSpec = new NotSpecification(new FieldEqualSpecification('numField', 24));
         $this->assertTrue($notSpec->isSatisfiedBy($this->src));
     }
-    
+
     function testNotSpecFalse()
     {
         $notSpec = new NotSpecification(new FieldEqualSpecification('numField', 42));
         $this->assertFalse($notSpec->isSatisfiedBy($this->src));
     }
-    
+
     function orTrueTable()
     {
         return array(
@@ -108,21 +108,21 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
             array(new FieldEqualSpecification('writer', 'Douglas Adams'), new FieldEqualSpecification('numField', 42))
         );
     }
-    
+
     function orFalseTable()
     {
         return array(
             array(new FieldEqualSpecification('numField', 24), new FieldEqualSpecification('writer', 'Peter Nagy'))
         );
     }
-    
+
     function andTrueTable()
     {
         return array(
             array(new FieldEqualSpecification('writer', 'Douglas Adams'), new FieldEqualSpecification('numField', 42))
         );
     }
-    
+
     function andFalseTable()
     {
         return array(
@@ -131,6 +131,5 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
             array(new FieldEqualSpecification('writer', 'Peter Nagy'), new FieldEqualSpecification('numField', 42))
         );
     }
-    
+
 }
-?>

@@ -68,4 +68,3 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase{
         $this->assertType('array',$conf->includes);
     }
 }
-?>

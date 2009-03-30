@@ -5,6 +5,7 @@
  * @version $Id$
  * @filesource
  */
+// @codeCoverageIgnoreStart
 require_once 'PHPUnit/Framework.php';
 require_once 'IpcFactoryTest.php';
 require_once 'IpcUnixsocketsTest.php';
@@ -15,12 +16,10 @@ class Ipc_AllTests{
 
     public static function suite()
     {
-        // @codeCoverageIgnoreStart
         $suite = new PHPUnit_Framework_TestSuite('Ipc facilities');
         $suite->addTestSuite('IpcFactoryTest');
         $suite->addTestSuite('IpcUnixsocketsTest');
         return $suite;
-        // @codeCoverageIgnoreEnd
     }
 }
-?>
+// @codeCoverageIgnoreEnd
