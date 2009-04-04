@@ -80,6 +80,9 @@ class ConfigFactory implements Singleton
         $node = ($node === null)?$this->_xml:$node;
         //Register them with their prefixes
         foreach ($this->_namespaces as $prefix => $ns) {
+            if ( empty($prefix)) {
+                $prefix = 'srph';
+            }
             $res = $node->registerXPathNamespace($prefix, $ns);
         }
         return $node->xpath($xpath);
@@ -98,7 +101,7 @@ class ConfigFactory implements Singleton
         if ($this->_xml === null) {
             $this->_load();
         }
-        $serverConfXML = $this->xsearch('//servers/server[@id="'.$name.'"]');
+        $serverConfXML = $this->xsearch('//srph:servers/srph:server[@id="'.$name.'"]');
         if ($serverConfXML === false) {
             throw new ConfigException('Failed to parse the confg file: '
             .$this->_configFile. ' from '.$this->_configPath);
