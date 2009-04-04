@@ -80,7 +80,7 @@ class ConfigFactory implements Singleton
         $node = ($node === null)?$this->_xml:$node;
         //Register them with their prefixes
         foreach ($this->_namespaces as $prefix => $ns) {
-            if ( empty($prefix)) {
+            if ( empty($prefix) ) {
                 $prefix = 'srph';
             }
             $res = $node->registerXPathNamespace($prefix, $ns);
