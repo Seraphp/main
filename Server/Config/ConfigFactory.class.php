@@ -115,7 +115,7 @@ class ConfigFactory implements Singleton
                 break;
             case 1:
                 $props = array_keys((array)$serverConfXML[0]->children());
-                $parentNode = $this->xsearch('..',$serverConfXML[0]);
+                $parentNode = $this->xsearch('..', $serverConfXML[0]);
                 $conf = new Config;
                 $conf->name = (string) $serverConfXML[0]->attributes()->id;
                 $conf->pidpath = (string) $parentNode[0]->attributes()->pidpath;
