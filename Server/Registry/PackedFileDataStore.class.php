@@ -79,7 +79,7 @@ class PackedFileDataStore implements StoreEngine{
         if ($data === false) {
             throw new IOException('Error when reading file '.$this->_file);
         }
-        return unserialize($data);
+        return unserialize(base64_decode($data));
     }
 
     /**
@@ -91,7 +91,7 @@ class PackedFileDataStore implements StoreEngine{
     function save($data)
     {
         rewind($this->_fp);
-        $res = @fwrite($this->_fp, serialize($data));
+        $res = @fwrite($this->_fp, base64_encode(serialize($data)));
         if ($res === false) {
             throw new IOException('Error when writing file '.$this->_file);
         }

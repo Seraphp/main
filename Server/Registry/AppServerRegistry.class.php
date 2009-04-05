@@ -34,6 +34,9 @@ class AppServerRegistry extends Registry
     {
         if (isset($engine)) {
             $this->setEngine($engine);
+        } else {
+            require_once 'Server/Registry/PackedFileDataStore.class.php';
+            $this->setEngine(new PackedFileDataStore, './.srpdAppMan');
         }
     }
     /**

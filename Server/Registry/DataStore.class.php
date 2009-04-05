@@ -127,15 +127,18 @@ class DataStore
         $this->_overwrite = (boolean) $flag;
     }
 
-    public function setEngine(StoreEngine $engine)
+    public function setEngine(StoreEngine $engine, $savePath = null)
     {
         $this->_engine = $engine;
+        $this->_engine->init($savePath);
+        var_dump($savePath, $this->_engine->getPath(), $this->_engine->load());
+        $this->_store = (array) $this->_engine->load();
     }
 
     public function __destruct()
     {
         if (isset($this->_engine)) {
-            $this->_engine->save();
+            $this->_engine->save($this->_store);
         }
     }
 
