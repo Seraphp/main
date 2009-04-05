@@ -145,6 +145,17 @@ class PackedFileDataStore implements StoreEngine{
         }
     }
 
+
+
+    /**
+     * Returns absolute filepath fo given path
+     *
+     * As realpath does not handle non-existing files I have to use this ű
+     * user-land implementation based on a comment on php.net.
+     *
+     * @param string $path
+     * @return string  Absolute canonical path
+     */
     private function _getAbsolutePath($path)
     {
         if (file_exists($path)) {
