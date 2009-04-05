@@ -30,43 +30,40 @@ class ServerManager
             $appID,
             ConfigFactory::getConf($appID)
         );
-        if($result === true)
+        if ($result === true) {
             self::writeln('...OK');
-        else
+        } else {
             self::writeln('...Failed');
+        }
     }
 
     static function restart($appID)
     {
         $currStatus = AppServerRegistry::getAppStatus($appID);
-        if($currStatus === 'running')
-        {
+        if ($currStatus === 'running') {
             $oldProcess = AppServerRegistry::getAppInstance($appID);
             self::write('Starting up new server: '.$appID);
             $newProcess = AppServerFactory::getAppInstance(
                 $appID,
                 ConfigFactory::getConf($appID)
             );
-            if($newProcess === true)
+            if ($newProcess === true) {
                 self::writeln('...OK');
-            else
+            } else {
                 self::writeln('...Failed');
+            }
             self::write('Shuting down old: '.$appID);
             $result = $oldProcess->expell();
-            if($result === true){
+            if ($result === true) {
                 self::writeln('...OK');
                 AppServerRegistry::removeApp($appID);
-            }
-            else
-            {
+            } else {
                 self::writeln('...Failed');
             }
-            if($newProcess === true){
+            if ($newProcess === true) {
                 AppServerRegistry::addApp($appID, $newProcess);
             }
-        }
-        else
-        {
+        } else {
             self::writeln($appID.' is '.$currStatus);
         }
     }
@@ -74,22 +71,17 @@ class ServerManager
     static function shutdown($appID)
     {
         $currStatus = AppServerRegistry::getAppStatus($appID);
-        if($currStatus == 'running')
-        {
+        if ($currStatus == 'running') {
             $process = AppServerRegistry::getAppInstance($appID);
             self::write('Shuting down '.$appID);
             $result = $process->expell();
-            if($result === true){
+            if ($result === true) {
                 self::writeln('...OK');
                 AppServerRegistry::removeApp($appID);
-            }
-            else
-            {
+            } else {
                 self::writeln('...Failed');
             }
-        }
-        else
-        {
+        } else {
             self::writeln($appID.' is '.$currStatus);
         }
     }
