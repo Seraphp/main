@@ -62,4 +62,11 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
         $this->reg->removeApp('mockery');
     }
 
+    function tearDown()
+    {
+        if (file_exists('./.srpdAppMan')) {
+            unlink('./.srpdAppMan');
+        }
+    }
+
 }
