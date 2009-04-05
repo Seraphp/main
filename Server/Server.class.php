@@ -254,8 +254,8 @@ abstract class Server implements Daemon
         flock($this->_pidFile, LOCK_UN);
         $pidData = stream_get_meta_data($this->_pidFile);
         fclose($this->_pidFile);
-        fputs(STDOUT, "deleting ".$pidData['uri']."\n");
-        unlink($pidData['uri']);
+        fputs(STDOUT, "deleting ".realpath($pidData['uri'])."\n");
+        unlink(realpath($pidData['uri']));
         fputs(STDOUT, "Parent exiting..\n");
         return $success;
     }

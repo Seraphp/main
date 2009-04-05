@@ -16,8 +16,7 @@
  * @subpackage Registry
  */
 interface StoreEngine {
-    public function init();
-    public function load();
-    public function save();
-    public function export();
+    public function init($resource = null);
+    public function load($resource);
+    public function save($storeData);
 }
