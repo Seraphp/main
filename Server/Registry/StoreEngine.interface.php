@@ -17,6 +17,7 @@
  */
 interface StoreEngine {
     public function init($resource = null);
-    public function load($resource);
+    public function load($resource = null);
     public function save($storeData);
+    public function close();
 }

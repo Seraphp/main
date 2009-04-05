@@ -12,14 +12,19 @@
 require_once 'StoreEngine.interface.php';
 require_once 'Exceptions/IOException.class.php';
 /**
- * Store engine to save|load|export store content into a file in packed format
+ * Store engine to save|load|export store content into a file
+ *
+ * @todo Debug why "compress.zlib://" and suh protocols are not working
  */
 class PackedFileDataStore implements StoreEngine{
+
+    const FN_PREFIX = "srpd";
+    const PROTOCOL = "file://";
 
     /**
      * @var string  Full path to used file for storing data
      */
-    private $file = '';
+    private $_file = '';
     /**
      * @var resource  File pointer reference
      */
@@ -48,17 +53,14 @@ class PackedFileDataStore implements StoreEngine{
      */
     function init($file = null)
     {
-        if ($file === null) {
-            $file = realpath(tempnam(getcwd(), 'srpd'));
-        }
-        $this->file = $file;
-        $this->_fp = @fopen('compress.zlib://'.$this->file, 'w+b');
+        $this->setPath($file);
+        $this->_fp = @fopen(self::PROTOCOL.$this->_file, 'w+b');
         if (!$this->_fp) {
-            throw new IOException('Cannot open file '.$file);
+            throw new IOException('Cannot open file '.$this->_file);
         }
 
         if (@flock($this->_fp, LOCK_EX) === false) {
-            throw new IOException('Cannot get lock on '.$file);
+            throw new IOException('Cannot get lock on '.$this->_file);
         }
         return true;
     }
@@ -66,16 +68,16 @@ class PackedFileDataStore implements StoreEngine{
     /**
      * @see Server/Registry/StoreEngine#load()
      */
-    function load($file)
+    function load($file = null)
     {
-        if ($this->file !== realpath($file)) {
+        if (isset($file) && $this->_file !== $this->_getAbsolutePath($file)) {
             $this->__destruct();
-            $this->file = $file;
-            $this->init();
+            $this->init($file);
         }
+        rewind($this->_fp);
         $data = stream_get_contents($this->_fp);
         if ($data === false) {
-            throw new IOException('Error when reading file '.$this->file);
+            throw new IOException('Error when reading file '.$this->_file);
         }
         return unserialize($data);
     }
@@ -88,11 +90,21 @@ class PackedFileDataStore implements StoreEngine{
      */
     function save($data)
     {
-        $res = frwrite($this->_fp, serialize($data));
+        rewind($this->_fp);
+        $res = @fwrite($this->_fp, serialize($data));
         if ($res === false) {
-            throw new IOException('Error when writing file '.$this->file);
+            throw new IOException('Error when writing file '.$this->_file);
         }
+        fflush($this->_fp);
         return true;
+    }
+
+    function close()
+    {
+        if (is_resource($this->_fp)) {
+            flock($this->_fp, LOCK_UN);
+            fclose($this->_fp);
+        }
     }
 
     /**
@@ -101,13 +113,9 @@ class PackedFileDataStore implements StoreEngine{
      *
      * @return void
      */
-    function __desctruct()
+    function __destruct()
     {
-        if (is_resource($this->_fp)) {
-            $this->save();
-            flock($this->_fp, LOCK_UN);
-            fclose($this->_fp);
-        }
+        $this->close();
     }
 
     /**
@@ -120,12 +128,45 @@ class PackedFileDataStore implements StoreEngine{
      */
     function setPath($path)
     {
-        if (is_file(realpath($path))) {
-            $this->file = realpath($path);
-            return $this->file;
+        clearstatcache();
+        if (empty($path)) {
+            $path = tempnam(getcwd(), self::FN_PREFIX);
         } else {
-            return false;
+            $path = $this->_getAbsolutePath($path);
         }
+        if (is_dir($path)) {
+            $path = tempnam($path, self::FN_PREFIX);
+        }
+        if (is_writable(dirname($path))) {
+            $this->_file = $path;
+            return $this->_file;
+        } else {
+            throw new IOException('Path '.dirname($path).' is not writable');
+        }
+    }
+
+    private function _getAbsolutePath($path)
+    {
+        if (file_exists($path)) {
+            return realpath($path);
+        }
+        $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
+        if ($parts[0] === '.') {
+            $cwd = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, getcwd());
+            $absolutes = array_filter(explode(DIRECTORY_SEPARATOR, $cwd, 'strlen'));
+        } else {
+            $absolutes = array();
+        }
+        foreach ($parts as $part) {
+            if ('.' == $part) continue;
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
+        }
+        return implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
     /**
@@ -134,6 +175,6 @@ class PackedFileDataStore implements StoreEngine{
      */
     function getPath()
     {
-        return $this->file;
+        return $this->_file;
     }
 }
