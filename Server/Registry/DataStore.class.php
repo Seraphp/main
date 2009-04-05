@@ -6,6 +6,7 @@
  * @version $Id$
  * @copyright Copyright (c) 2008, Peter Nagy
  * @package Server
+ * @subpackage Registry
  * @filesource
  */
 /***/
@@ -17,6 +18,7 @@
  * based modell
  *
  * @package Server
+ * @subpackage Registry
  */
 class DataStore
 {
@@ -29,6 +31,10 @@ class DataStore
     protected $_store = array();
 
     /**
+     * @var StoreEngine
+     */
+    protected $_engine = null;
+    /**
      * Enter description here...
      *
      * @var boolean
@@ -36,7 +42,7 @@ class DataStore
     protected $_dirty = false;
 
     /**
-     * Overwright flag for existing data writing in the registry
+     * Overwrite flag for existing data writing in the registry
      *
      * @var boolean
      */
@@ -120,4 +126,17 @@ class DataStore
     {
         $this->_overwrite = (boolean) $flag;
     }
+
+    public function setEngine(StoreEngine $engine)
+    {
+        $this->_engine = $engine;
+    }
+
+    public function __destruct()
+    {
+        if (isset($this->_engine)) {
+            $this->_engine->save();
+        }
+    }
+
 }

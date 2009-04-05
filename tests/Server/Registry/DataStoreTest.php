@@ -6,7 +6,7 @@
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';
-require_once 'Server/DataStore.class.php';
+require_once 'Server/Registry/DataStore.class.php';
 /**
  * Class documentation
  */

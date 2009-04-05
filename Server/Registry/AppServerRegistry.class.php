@@ -30,18 +30,21 @@ class AppServerRegistry extends Registry
      */
     static private $_instance = null;
 
-    private function __construct()
+    private function __construct(StoreEngine $engine= null)
     {
+        if (isset($engine)) {
+            $this->setEngine($engine);
+        }
     }
     /**
      * Returns instance of class
      *
      * @return self
      */
-    public function getInstance()
+    public function getInstance(StoreEngine $engine = null)
     {
         if (self::$_instance === null) {
-            self::$_instance = new self;
+            self::$_instance = new self($engine);
         }
         return self::$_instance;
     }

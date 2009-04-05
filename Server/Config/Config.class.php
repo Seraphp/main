@@ -11,7 +11,7 @@
  */
 /***/
 //namespace Seraphp\Server\Config;
-require_once 'Server/DataStore.class.php';
+require_once 'Server/Registry/DataStore.class.php';
 require_once 'Exceptions/ConfigException.class.php';
 /**
  * Config class decoates DataStore

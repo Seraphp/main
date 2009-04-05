@@ -11,7 +11,7 @@
  */
 /***/
 require_once 'Singleton.interface.php';
-require_once 'Server/DataStore.class.php';
+require_once 'Server/Registry/DataStore.class.php';
 /**
  * Register class with nested keys
  *
@@ -31,12 +31,11 @@ class Registry extends DataStore implements Singleton
      */
     static private $_instance = null;
 
-    /**
-     * Disabled constructor
-     *
-     */
-    private function __construct()
+    private function __construct(StoreEngine $engine = null)
     {
+        if (isset($engine)) {
+            $this->setEngine($engine);
+        }
     }
 
     /**
@@ -53,10 +52,10 @@ class Registry extends DataStore implements Singleton
      *
      * @return self
      */
-    public function getInstance()
+    public function getInstance(StoreEngine $engine = null)
     {
         if (self::$_instance === null) {
-            self::$_instance = new self;
+            self::$_instance = new self($engine);
         }
         return self::$_instance;
     }
