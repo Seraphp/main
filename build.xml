@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="SeraPhp" default="build" basedir=".">
+<project name="SeraPhp" default="build" basedir="..">
  <target name="checkout">
   <exec executable="svn" dir="${basedir}/source">
    <arg line="up" />
