@@ -44,6 +44,7 @@ class AppServer extends Server
     public function __construct(Config $conf)
     {
         $this->_appID = $conf->name;
+        $this->_pidFileName = sprintf('.%s_srphp.pid',$this->_appID);
         //Requireing all the files which are in the Config xml
         if ( isset($conf->includes) ) {
             foreach ($conf->includes as $key => $resource) {

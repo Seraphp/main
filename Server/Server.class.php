@@ -46,6 +46,10 @@ abstract class Server implements Daemon
     /**
      * @var string
      */
+    protected $_pidFileName = '';
+    /**
+     * @var string
+     */
     protected $_pidFolder = null;
     /**
      * Own PID (process id)
@@ -163,8 +167,8 @@ abstract class Server implements Daemon
      */
     private function _savePid2File()
     {
-        $this->_pidFile = fopen($this->_pidFolder.'/.seraphp'.
-                                (isset($this->_appID))?$this->_appID:''.'.pid',
+        $this->_pidFile = fopen($this->_pidFolder.'/'.
+                                $this->_pidFileName,
                                 "w");
         if (!$this->_pidFile || !flock($this->_pidFile, LOCK_EX | LOCK_NB)) {
             throw new Exception('Unable to get pid file lock!');
