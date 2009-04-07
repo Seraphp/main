@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<seraphp>
+<seraphp xmlns="http://www.seraphp.com/seraphpConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.seraphp.com/seraphpConfig seraphpConfig.xsd">
     <servers pidpath="/home/peter/workspace/seraphp">
         <server id="main">
             <instance>
