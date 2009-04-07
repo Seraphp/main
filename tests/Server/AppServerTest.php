@@ -18,7 +18,8 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
     function setUp()
     {
         $this->conf = new Config;
-        $this->conf->name = 'main';
+        $this->appID = 'main';
+        $this->conf->name = $this->appID;
         $this->conf->instance = array('address'=>'localhost', 'port'=>1088);
         $this->server = new AppServer($this->conf);
     }
@@ -27,7 +28,7 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
     {
         $this->assertEquals('main',$this->server->getAppId());
         $this->assertTrue(is_numeric($this->server->summon()));
-        $this->assertFileExists('/home/peter/workspace/seraphp/.seraphpmain.pid');
+        $this->assertFileExists(getcwd().'/.'.$this->appID.'_srphp.pid');
         $this->assertEquals(5, $this->server->getMaxSpawns());
         $this->server->setMaxSpawns(10);
         $this->assertEquals(10, $this->server->getMaxSpawns());
