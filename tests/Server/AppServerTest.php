@@ -26,7 +26,7 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
 
     function testAppServerInstatiation()
     {
-        $this->assertEquals('main',$this->server->getAppId());
+        $this->assertEquals($this->appID, $this->server->getAppId());
         $this->assertTrue(is_numeric($this->server->summon()));
         $this->assertFileExists(getcwd().'/.'.$this->appID.'_srphp.pid');
         $this->assertEquals(5, $this->server->getMaxSpawns());
