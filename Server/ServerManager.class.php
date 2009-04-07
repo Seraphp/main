@@ -26,10 +26,8 @@ class ServerManager
     static function startup($appID='main')
     {
         self::write('Starting up: '.$appID);
-        $result = AppServerFactory::getAppInstance(
-            $appID,
-            ConfigFactory::getConf($appID)
-        );
+        $result = AppServerFactory::getAppInstance($appID,
+                                ConfigFactory::getConf($appID));
         if ($result === true) {
             self::writeln('...OK');
         } else {
@@ -43,10 +41,8 @@ class ServerManager
         if ($currStatus === 'running') {
             $oldProcess = AppServerRegistry::getAppInstance($appID);
             self::write('Starting up new server: '.$appID);
-            $newProcess = AppServerFactory::getAppInstance(
-                $appID,
-                ConfigFactory::getConf($appID)
-            );
+            $newProcess = AppServerFactory::getAppInstance($appID,
+                                ConfigFactory::getConf($appID));
             if ($newProcess === true) {
                 self::writeln('...OK');
             } else {

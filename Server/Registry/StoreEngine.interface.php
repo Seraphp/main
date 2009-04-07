@@ -15,7 +15,8 @@
  * @package Server
  * @subpackage Registry
  */
-interface StoreEngine {
+interface StoreEngine
+{
     public function init($resource = null);
     public function load($resource = null);
     public function save($storeData);

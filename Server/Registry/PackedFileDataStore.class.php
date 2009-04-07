@@ -16,7 +16,8 @@ require_once 'Exceptions/IOException.class.php';
  *
  * @todo Debug why "compress.zlib://" and suh protocols are not working
  */
-class PackedFileDataStore implements StoreEngine{
+class PackedFileDataStore implements StoreEngine
+{
 
     const FN_PREFIX = "srpd";
     const PROTOCOL = "file://";
