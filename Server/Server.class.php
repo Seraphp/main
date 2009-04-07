@@ -164,8 +164,8 @@ abstract class Server implements Daemon
     private function _savePid2File()
     {
         $this->_pidFile = fopen($this->_pidFolder.'/.seraphp'.
-                                $this->_appID.'.pid',
-                                "a");
+                                (isset($this->_appID))?$this->_appID:''.'.pid',
+                                "w");
         if (!$this->_pidFile || !flock($this->_pidFile, LOCK_EX | LOCK_NB)) {
             throw new Exception('Unable to get pid file lock!');
         }
