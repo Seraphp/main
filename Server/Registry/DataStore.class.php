@@ -131,7 +131,6 @@ class DataStore
     {
         $this->_engine = $engine;
         $this->_engine->init($savePath);
-        var_dump($savePath, $this->_engine->getPath(), $this->_engine->load());
         $this->_store = (array) $this->_engine->load();
     }
 
