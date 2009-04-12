@@ -2,7 +2,7 @@
 /**
  * File documentation
  * @author Peter Nagy <antronin@gmail.com>
- * @version $Id: AllTests.php 412 2009-03-30 19:48:08Z peter $
+ * @version $Id$
  * @filesource
  */
 // @codeCoverageIgnoreStart
