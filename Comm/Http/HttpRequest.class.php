@@ -14,6 +14,8 @@
 require_once 'Comm/Request.interface.php';
 require_once 'ObserverListener.interface.php';
 require_once 'Exceptions/HttpException.class.php';
+require_once 'Exceptions/SocketException.class.php';
+require_once 'HttpFactory.class.php';
 /**
  * Class represents an HTTP request, no matter
  * of the usage: sending or receiving it.
@@ -60,18 +62,18 @@ class HttpRequest implements Request, Listener
      * Stores request type like HEAD, GET, POST, etc.
      * @var string
      */
-    public $method = '';
+    public $method = 'GET';
 
     public $referer = '';
 
     public $url = '';
 
-    public $httpVersion = '';
+    public $httpVersion = '1.x';
 
     /**
      * @var string
      */
-    public $contentType = '';
+    public $contentType = 'text/html';
     /**
      * If this request is received(true), or created to be sent(FALSE).
      * @var boolean
@@ -120,17 +122,26 @@ class HttpRequest implements Request, Listener
 
     protected function _parse()
     {
-        if ( $this->isReceived === self::REQ_RECEIVED ) {
-           while ( $this->_buffer = @socket_read($this->_socket, 512) ) {
-               $this->_save();
-               if ( $this->httpHeaders !== array() ) {
-               //We notify only when all headers are received
-                   $this->notify();
-               }
+        if ($this->isReceived===self::REQ_RECEIVED) {
+            $read = array($this->_socket);
+            while (socket_select($read, $write = NULL, $except = NULL, NULL) < 1) {
+                usleep(10);
+            }
+            while ($this->_buffer=socket_read($this->_socket, 64, PHP_BINARY_READ)) {
+                var_dump($this->_buffer);
+                if ($this->_buffer === false || $this->_buffer === '') {
+                     continue;
+                }
+                $this->_save();
+                if ( $this->httpHeaders !== array() ) {
+                //We notify only when all headers are received
+                    $this->notify();
+                }
            }
+           $this->message = trim($this->message);
            //Body also arrived, searching for post
            if ( $this->method == 'POST' ) {
-               $this->postParams = $this->params2array($this->message);
+               $this->postParams = $this->_params2array($this->message);
            }
         }
     }
@@ -166,13 +177,15 @@ class HttpRequest implements Request, Listener
     protected function _processHeaders()
     {
         $headers = array();
+        //First line in the array should be the reqest line,
+        // like 'GET /index.html HTTP/1.1'
         $requestLine = array_shift($this->httpHeaders);
         list ($this->method, $this->url, $this->httpVersion) =
             explode(' ', $requestLine);
         $this->httpVersion = substr($this->httpVersion, -3);
         foreach ( $this->httpHeaders as $row ) {
             $item = explode(':', $row, 2);
-            if ( array_key_exists($item[0], $headers) ) {
+            if (array_key_exists($item[0], $headers)) {
                 $headers[$item[0]] .= ';'.trim($item[1]);
             } else {
                 $headers[$item[0]] = trim($item[1]);
@@ -180,15 +193,15 @@ class HttpRequest implements Request, Listener
         }
         $this->httpHeaders = $headers;
         //set up get, cookies (post will be in the body)
-        if ( array_key_exists('Cookie', $this->httpHeaders) ) {
+        if (array_key_exists('Cookie', $this->httpHeaders)) {
             $this->cookies = explode(';', $this->httpHeaders['Cookies']);
             $this->cookies = HttpFactory::getCookies($this->cookies);
         }
         //processing GET parameters
-        if ( $pos = strpos($this->url, '?') ) {
+        if ($pos = strpos($this->url, '?')) {
             $this->getParams = $this->_params2array(substr($this->url, $pos+1));
         }
-        //Setting Referer
+        //Setting Referer fi any
         if (array_key_exists('Referer', $this->httpHeaders) ) {
             $this->referer = $this->httpHeaders['Referer'];
         }
@@ -338,9 +351,13 @@ class HttpRequest implements Request, Listener
     public function respond($msg)
     {
         if ( $this->isReceived === self::REQ_RECEIVED ) {
-            $response = HttpFactory::create('response');
-        } else throw new HttpException(
+            $response = HttpFactory::create('response', $this->_socket);
+            $response->messageBody = $msg;
+            return $response;
+        } else {
+            throw new HttpException(
                 'HttpRequest instance is to be send out: cannot be responded!'
             );
+        }
     }
 }

@@ -27,8 +27,8 @@ class HttpCookie
     public $secure = false;
     public $onlyHTTP = false;
 
-    public function __construct( $name, $value=false, $expireOn = 0, $path='/',
-        $domain='null', $secure = false, $onlyHTTP=false)
+    public function __construct( $name, $value=false, DateTime $expireOn = null,
+        $path='/', $domain=null, $secure=false, $onlyHTTP=false)
     {
         $this->name = $name;
         $this->value = $value;
@@ -41,15 +41,24 @@ class HttpCookie
 
     public function __toString()
     {
-        ob_start();
-        setcookie($this->name,
-                $this->value,
-                $this->expireOn,
-                $this->path,
-                $this->domain,
-                $this->onlyHTTP);
-        $cookieStr = ob_get_contents();
-        ob_end_clean();
-        return $cookieStr;
+        $details = array();
+        if (isset($this->expireOn)) {
+            $details[] = 'Max-Age='.$date->format('U')-time();
+        } else {
+            $details[] = 'Max-Age=0';
+        }
+        if (isset($this->path)) {
+            $details[] = 'Path='.$this->path;
+        }
+        if (isset($this->domain)) {
+            $details[] = 'Domain='.$this->path;
+        }
+        if ($this->secure) {
+            $details[] = 'Secure';
+        }
+        return sprintf('Set-Cookie:%s=%s;%s',
+                        $this->name,
+                        $this->value,
+                        implode(';',$details));
     }
 }

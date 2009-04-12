@@ -28,20 +28,18 @@ class HttpFactory
      * @param array $array  An array of cookie settings
      * @return array  An array of HttpCookie objects
      */
-    public function getCookies($array)
+    public static function getCookies($array)
     {
         $result = array();
         foreach ($array as $cookieParams) {
             extract($cookieParams);
-            $result[] = new HttpCookie(
-                            $name,
-                            $value,
-                            $expireOn,
-                            $path,
-                            $domain,
-                            $secure,
-                            $onlyHTTP
-                        );
+            $result[] = new HttpCookie($name,
+                                        $value,
+                                        $expireOn,
+                                        $path,
+                                        $domain,
+                                        $secure,
+                                        $onlyHTTP);
         }
         return $result;
     }
@@ -50,17 +48,23 @@ class HttpFactory
      * @param $type Message type, either Request or Response
      * @param null|socket $sock   Socket
      * @param null|array $settings
-     * @return HttpRequest|HttpResponse
+     * @return HttpRequest|HttpResponse|null
      */
-    public function getMessage($type, $sock = null, $settings = null)
+    public static function create($type, $socket = null, $settings = null)
     {
         switch ($type)
         {
             case 'request':
-                return new HttpRequest($sock);
+                return new HttpRequest($socket);
                 break;
             case 'response':
-                return new HttpResponse();
+                return new HttpResponse($socket);
+                break;
+            case 'cookie':
+                return self::getCookies($settings);
+                break;
+            default:
+                return null;
                 break;
         }
     }

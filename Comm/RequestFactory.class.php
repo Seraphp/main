@@ -43,7 +43,7 @@ class RequestFactory
                     switch( self::getProtocol($peek) ) {
                         case 'http':
                             require_once 'Comm/Http/HttpFactory.class.php';
-                            return HttpFactory::getMessage('request', $socket);
+                            return HttpFactory::create('request', $socket);
                             break;
                     }
                 }
