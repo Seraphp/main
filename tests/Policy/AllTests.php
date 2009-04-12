@@ -23,4 +23,3 @@ class Policy_AllTests{
         // @codeCoverageIgnoreEnd
     }
 }
-?>

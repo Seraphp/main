@@ -54,6 +54,4 @@ class RegistryTest extends PHPUnit_Framework_TestCase{
         $this->reg->some_key = $some_key;
         $this->assertSame($this->reg->some_key, $some_key);
     }
-
-
 }
