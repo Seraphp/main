@@ -25,7 +25,13 @@ class DefaultEngine implements AppEngine
 
     function process(Request $req)
     {
-        var_dump(__CLASS__, __METHOD__, $req);
-        return 0;
+        ob_start();
+        var_dump($req);
+        $message = ob_get_contents();
+        $size = ob_get_length();
+        ob_end_clean();
+        $response = $req->respond($message);
+        $response->send();
+        return $response->statusCode;
     }
 }
