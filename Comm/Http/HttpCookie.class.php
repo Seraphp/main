@@ -59,6 +59,6 @@ class HttpCookie
         return sprintf('Set-Cookie:%s=%s;%s',
                         $this->name,
                         $this->value,
-                        implode(';',$details));
+                        implode(';', $details));
     }
 }
