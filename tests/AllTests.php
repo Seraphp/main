@@ -1,6 +1,7 @@
 <?php
 ini_set('include_path',DEFAULT_INCLUDE_PATH.PATH_SEPARATOR.'tests/');
-
+require_once 'Exceptions/ExceptionHandler.class.php';
+ExceptionHandler::setup();
 require_once 'PHPUnit/Framework.php';
 require_once 'Policy/AllTests.php';
 require_once 'Server/AllTests.php';
