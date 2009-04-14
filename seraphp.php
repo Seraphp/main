@@ -7,6 +7,6 @@
 require_once 'Server/AppServer.class.php';
 require_once 'Server/Config/ConfigFactory.class.php';
 $cf = ConfigFactory::getInstance();
-$cf->setXmlSrc('/home/peter/workspace/seraphp/seraphpConf.xml');
+$cf->setXmlSrc('./seraphpConf.xml');
 $mainServer = new AppServer($cf->getConf('main'));
 $procID = $mainServer->summon();
