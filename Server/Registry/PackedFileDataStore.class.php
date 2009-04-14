@@ -91,7 +91,7 @@ class PackedFileDataStore implements StoreEngine
      */
     function save($data)
     {
-        rewind($this->_fp);
+        @rewind($this->_fp);
         $res = @fwrite($this->_fp, base64_encode(serialize($data)));
         if ($res === false) {
             throw new IOException('Error when writing file '.$this->_file);
