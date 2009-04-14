@@ -101,7 +101,8 @@ class ConfigFactory implements Singleton
         if ($this->_xml === null) {
             $this->_load();
         }
-        $serverConfXML = $this->xsearch('//srph:servers/srph:server[@id="'.$name.'"]');
+        $serverConfXML = $this->xsearch('//srph:servers/srph:server[@id="'
+            .$name.'"]');
         if ($serverConfXML === false) {
             throw new ConfigException('Failed to parse the confg file: '
             .$this->_configFile. ' from '.$this->_configPath);
@@ -138,6 +139,7 @@ class ConfigFactory implements Singleton
                         $name,
                         $this->_configPath.DIRECTORY_SEPARATOR.
                         $this->_configFile));
+                break;
             }
         return $conf;
     }

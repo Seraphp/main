@@ -124,11 +124,11 @@ class HttpRequest implements Request, Listener
     {
         if ($this->isReceived===self::REQ_RECEIVED) {
             $read = array($this->_socket);
-            while (socket_select($read, $write = NULL, $except = NULL, NULL) < 1) {
+            while (socket_select($read, $write=null, $except=null, null)<1) {
                 usleep(10);
             }
-            while ($this->_buffer=socket_read($this->_socket, 64, PHP_BINARY_READ)) {
-                var_dump($this->_buffer);
+            while ($this->_buffer =
+                    socket_read($this->_socket, 64, PHP_BINARY_READ)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
                      continue;
                 }
@@ -137,12 +137,12 @@ class HttpRequest implements Request, Listener
                 //We notify only when all headers are received
                     $this->notify();
                 }
-           }
-           $this->message = trim($this->message);
-           //Body also arrived, searching for post
-           if ( $this->method == 'POST' ) {
-               $this->postParams = $this->_params2array($this->message);
-           }
+            }
+            $this->message = trim($this->message);
+            //Body also arrived, searching for post
+            if ( $this->method == 'POST' ) {
+                $this->postParams = $this->_params2array($this->message);
+            }
         }
     }
 
@@ -300,7 +300,8 @@ class HttpRequest implements Request, Listener
         if ( $this->isReceived === self::REQ_TOSEND ) {
             $curlObj = curl_init($this->url);
             $options = array(
-                CURLOPT_CUSTOMREQUEST => ( empty( $this->method) )?'GET':$this->method,
+                CURLOPT_CUSTOMREQUEST =>
+                    (empty($this->method))?'GET':$this->method,
                 CURLOPT_RETURNTRANSFER => true,
             );
             //Setting HTTP version for Curl

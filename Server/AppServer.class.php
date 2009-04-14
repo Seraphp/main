@@ -14,6 +14,7 @@ require_once 'Server/Server.class.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Comm/Request.interface.php';
 require_once 'Comm/RequestFactory.class.php';
+require_once 'Exceptions/SocketException.class.php';
 /**
  * AppServer implementation class
  *
@@ -145,15 +146,16 @@ class AppServer extends Server
             $this->spawn();
             if ($this->role == 'child') {//we are the new process
                 $this->_accepting = false;
-                @socket_close($this->_socket);
+                //@socket_close($this->_socket);
                 @socket_set_nonblock($conn);
                 try {
                     $result = $this->process(RequestFactory::create($conn));
                 }catch (Exception $e) {
-                    socket_write($conn, '500 Internal Server Error');
-                    socket_close($conn);
+                    socket_write($conn, 'HTTP/1.x 500 Internal Server Error');
                     $result = 500;
                 }
+                @socket_close($conn);
+                @socket_close($this->_socket);
                 exit($result);
             }
         }

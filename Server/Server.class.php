@@ -296,8 +296,8 @@ abstract class Server implements Daemon
         switch($sigCode) {
             /*
             Here For every signal we re-register the signal handler before doing
-            everything else, to avoid race condition, the situation when a second
-            signal arrives before the first one waould be processed.
+            everything else, to avoid race condition, the situation when a
+            second signal arrives before the first one waould be processed.
             */
             case SIGCHLD:
                 pcntl_signal(SIGCHLD, array($this, 'signalHandler'), true);

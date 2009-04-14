@@ -21,7 +21,8 @@ require_once 'Server/AppServerFactory.class.php';
 class ServerManager
 {
     private function __construct()
-    {}
+    {
+    }
 
     static function startup($appID='main')
     {
