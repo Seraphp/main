@@ -124,7 +124,8 @@ class HttpRequest implements Request, Listener
     {
         if ($this->isReceived===self::REQ_RECEIVED) {
             $read = array($this->_socket);
-            while (socket_select($read, $write=null, $except=null, null)<1) {
+            while (socket_select($read,
+                     $write = null, $except = null, null) < 1) {
                 usleep(10);
             }
             while ($this->_buffer =
