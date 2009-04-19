@@ -22,7 +22,7 @@ class Comm_AllTests{
         $suite->addTest(Ipc_AllTests::suite());
         $suite->addTest(Http_AllTests::suite());
         $suite->addTestSuite('SocketTest');
-        //$suite->addTestSuite('RequestFactoryTest');
+        $suite->addTestSuite('RequestFactoryTest');
         return $suite;
     }
 }

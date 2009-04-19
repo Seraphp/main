@@ -50,7 +50,7 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testGetProtocolOnHead()
     {
-        $this->assertEquals('htp',
+        $this->assertEquals('http',
             RequestFactory::getProtocol($this->_requests['head']));
     }
 
