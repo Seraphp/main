@@ -6,223 +6,84 @@
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';
-require_once 'Comm/Socket.class.php';
+require_once 'Comm/RequestFactory.class.php';
 /**
  * Class documentation
  */
 class RequestFactoryTest extends PHPUnit_Framework_TestCase{
 
+    private $_requests = array();
+    private $_sockets = array();
+    private $_sep = "\r\n";
+
     function setUp()
     {
-        $this->msg = 'Árvíztűrő tükörfúrógép';
-        $this->soc = new Socket('unix','/tmp/peter/socTest.tmp');
+        $this->_requests['get'] = 'GET /index.html HTTP/1.1'.
+            $this->_sep.
+            'Host:example.com'.
+            $this->_sep.
+            $this->_sep;
+        $this->_request['other'] = 'Árvíztűrő tükörfúrógép';
+        $this->_requests['head'] = 'HEAD /index.html HTTP/1.1'.
+            $this->_sep.
+            'Host:example.com'.
+            $this->_sep.
+            $this->_sep;
+        if (socket_create_pair((strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
+            AF_INET:
+            AF_UNIX), SOCK_STREAM, 0, $this->_sockets) === false) {
+                $this->fail(socket_strerror(socket_last_error()));
+            }
     }
 
-    function testSupportedTransports()
+    function testGetProtocolOnGet()
     {
-        $this->assertContains('unix', Socket::supportedTransports());
-        $this->assertContains('tcp', Socket::supportedTransports());
-        $this->assertContains('udp', Socket::supportedTransports());
+        $this->assertEquals('http',
+            RequestFactory::getProtocol($this->_requests['get']));
     }
 
-    function testSettingValidUnixAddress()
+    function testGetProtocolOther()
     {
-        $this->assertEquals('/tmp/peter/socTest.tmp', $this->soc->getAddress());
+        $this->assertEquals('other',
+            RequestFactory::getProtocol($this->_requests['other']));
     }
 
-    function testSettingEmptyAddress()
+    function testGetProtocolOnHead()
     {
-        $this->setExpectedException('SocketException');
-        $this->soc->setAddress('');
+        $this->assertEquals('htp',
+            RequestFactory::getProtocol($this->_requests['head']));
     }
 
-    function testSettingIPv4Address()
+    function testCreateOnGet()
     {
-        $this->soc->setAddress('127.0.0.1');
+        if (socket_write($this->_sockets[0],
+            $this->_requests['get'],
+            strlen($this->_requests['get']))===false) {
+                $this->fail(socket_strerror(socket_last_error($this->_sockets[0])));
+            }
+        socket_close($this->_sockets[0]);
+        $res = RequestFactory::create($this->_sockets[1]);
+        $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
     }
 
-    function testSettingValidHostAddress()
+    function testCreateOnHead()
     {
-        $this->soc->setAddress('localhost');
-    }
-
-    function testSettingInvalidHostAddress()
-    {
-        $this->soc->setAddress('example.com');
-    }
-
-    function testGetSetPort()
-    {
-        $this->assertEquals(0, $this->soc->getPort());
-        $this->assertEquals(80, $this->soc->setPort(80));
-        $this->assertEquals(80, $this->soc->setPort(65616));
-    }
-
-    function testGetSetBlocking()
-    {
-        $this->assertTrue($this->soc->isBlocking());
-        $this->assertTrue($this->soc->setBlocking(false));
-        $this->assertFalse($this->soc->isBlocking());
-    }
-
-    function testGetSetPersistent()
-    {
-        $this->assertFalse($this->soc->isPersistent());
-        $this->assertTrue($this->soc->setPersistent(true));
-        $this->assertTrue($this->soc->isPersistent());
-    }
-
-    function testGetStatusWhenNotConnected()
-    {
-        $this->setExpectedException('SocketException');
-        $this->assertArrayHasKey('stream_type', $this->soc->getStatus());
-    }
-
-    function testGetSetTransport()
-    {
-        $this->assertEquals('unix', $this->soc->getTransp());
-        $this->assertTrue($this->soc->setTransp('tcp'));
-        $this->assertEquals('tcp', $this->soc->getTransp());
-    }
-
-    function testSetInvalidTransport()
-    {
-        $this->setExpectedException('SocketException');
-        $this->soc->setTransp('bar');
-    }
-
-    function testGetSetTimeout()
-    {
-        $this->assertEquals(0, $this->soc->getTimeout());
-        $this->assertTrue($this->soc->setTimeout(60));
-        $this->assertEquals(60000000, $this->soc->getTimeout());
-    }
-
-    function testSetWriteBufferNotConnected()
-    {
-        $this->setExpectedException('SocketException');
-        $this->assertTrue($this->soc->setWriteBuffer(10));
-    }
-
-    function testSetOptions()
-    {
-        $this->soc->setOptions( array('foo'=>'bar') );
-        $this->assertEquals( array('foo'=>'bar'), $this->soc->getOptions() );
-    }
-
-    function testReadsNotConnected()
-    {
-        $this->setExpectedException('SocketException');
-        $this->soc->read(10);
-        $this->setExpectedException('SocketException');
-        $this->soc->readByte();
-        $this->setExpectedException('SocketException');
-        $this->soc->readAll();
-        $this->setExpectedException('SocketException');
-        $this->soc->readIPAddress();
-        $this->setExpectedException('SocketException');
-        $this->soc->readInt();
-        $this->setExpectedException('SocketException');
-        $this->soc->readLine();
-        $this->setExpectedException('SocketException');
-        $this->soc->readString();
-        $this->setExpectedException('SocketException');
-        $this->soc->readWord();
-    }
-
-    function testReadsConnected()
-    {
-        $this->getTcpConnected();
-        $this->soc->writeLine('GET / HTTP/1.0');
-        $this->soc->writeLine('');
-        $this->assertEquals(10,strlen($this->soc->read(10)));
-        $this->assertLessThan(3,strlen($this->soc->readByte()));
-        $this->assertLessThan(16,strlen($this->soc->readIPAddress()));
-        $this->assertEquals(10,strlen($this->soc->readInt()));
-        $this->assertEquals(5,strlen($this->soc->readWord()));
-    }
-
-    function testReadLineConnected()
-    {
-        $this->getTcpConnected();
-        $this->soc->write('HEAD / HTTP/1.0');
-        $this->soc->writeLine('');
-        $this->soc->writeLine('');
-        $this->assertEquals(35,strlen($this->soc->readLine()));
-    }
-
-    function testWrite()
-    {
-        $this->setExpectedException('SocketException');
-        $this->soc->writeLine($this->msg);
-        $this->setExpectedException('SocketException');
-        $this->soc->write($this->msg);
-        $this->getTcpConnected();
-        $this->assertTrue($this->soc->writeLine($this->msg));
-        $this->assertTrue($this->soc->write($this->msg));
-    }
-
-
-    function testTcpConnect()
-    {
-        $this->soc->setTransp('tcp');
-        $this->soc->setAddress('localhost');
-        $this->soc->setPort(80);
-        $this->soc->connect();
-        $this->soc->disconnect();
-    }
-
-    function testTcpReconnect()
-    {
-        $this->getTcpConnected();
-        $this->soc->connect();
-        $this->soc->disconnect();
-    }
-
-    function testTcpRead()
-    {
-        $this->getTcpConnected();
-        $this->soc->writeLine('GET / HTTP/1.0');
-        $this->soc->writeLine('');
-        $response = $this->soc->read(100);
-        $this->assertEquals(100,strlen($response));
-        $response .= $this->soc->gets(100);
-        $this->assertEquals(199,strlen($response));
-        $response .= $this->soc->readAll();
-        $this->assertEquals(942,strlen($response));
-        $this->soc->disconnect();
-    }
-
-    function testGetStatusWhenConnected()
-    {
-        $this->getTcpConnected();
-        $this->assertArrayHasKey('stream_type', $this->soc->getStatus());
-    }
-
-    function testSetWriteBufferConnected()
-    {
-        $this->getTcpConnected();
-        $this->setExpectedException( 'SocketException' );
-        $this->assertTrue( $this->soc->setWriteBuffer( 0 ) );
-    }
-
-    function testDestructor()
-    {
-        $this->getTcpConnected();
-        $con = $this->soc;
-        $this->soc = null;
-    }
-
-    function getTcpConnected()
-    {
-        $this->soc->setTransp('tcp');
-        $this->soc->setAddress('127.0.0.1');
-        $this->soc->setPort(80);
-        $this->soc->connect();
+        if (socket_write($this->_sockets[0],
+            $this->_requests['head'],
+            strlen($this->_requests['head']))===false) {
+                $this->fail(socket_strerror(socket_last_error($this->_sockets[0])));
+            }
+        socket_close($this->_sockets[0]);
+        $res = RequestFactory::create($this->_sockets[1]);
+        $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
     }
 
     function tearDown()
     {
-        unset($this->soc);
+        foreach ($this->_sockets as $socket) {
+            if (is_resource($socket)) {
+                socket_close($socket);
+            }
+        }
     }
 }
