@@ -1,11 +1,10 @@
 <?php
 ini_set('include_path',DEFAULT_INCLUDE_PATH.PATH_SEPARATOR.'tests/');
-require_once 'Exceptions/ExceptionHandler.class.php';
-ExceptionHandler::setup();
 require_once 'PHPUnit/Framework.php';
 require_once 'Policy/AllTests.php';
 require_once 'Server/AllTests.php';
 require_once 'Comm/AllTests.php';
+require_once 'Exceptions/AllTests.php';
 
 class AllTests
 {
@@ -16,6 +15,7 @@ class AllTests
         $suite->addTest(Policy_AllTests::suite());
         $suite->addTest(Server_AllTests::suite());
         $suite->addTest(Comm_AllTests::suite());
+        $suite->addTest(Exceptions_AllTests::suite());
         PHPUnit_Util_Filter::removeDirectoryFromWhiteList('/home/peter/workspace/seraphp/tests/');
         return $suite;
         // @codeCoverageIgnoreEnd
