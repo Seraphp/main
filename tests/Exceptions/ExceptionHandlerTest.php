@@ -30,4 +30,10 @@ class ExceptionHandlerTest extends PHPUnit_Extensions_OutputTestCase{
         $this->expectOutputString($this->output);
         ExceptionHandler::handleException(new Exception('Test Exception'));
     }
+
+    function testSetupRecall()
+    {
+        $this->assertEquals(null, ExceptionHandler::setup());
+        $this->assertTrue(ExceptionHandler::recall());
+    }
 }
