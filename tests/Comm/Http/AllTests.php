@@ -21,7 +21,7 @@ class Http_AllTests{
         $suite = new PHPUnit_Framework_TestSuite('Http facilities');
         $suite->addTestSuite('HttpCookieTest');
         $suite->addTestSuite('HttpRequestTest');
-       // $suite->addTestSuite('HttpResponseTest');
+        $suite->addTestSuite('HttpResponseTest');
         $suite->addTestSuite('HttpFactoryTest');
         return $suite;
     }
