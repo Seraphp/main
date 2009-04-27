@@ -12,6 +12,13 @@
  */
 class ExceptionHandler
 {
+    private function __construct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
 
     public static function printException(Exception $e)
     {
@@ -27,11 +34,11 @@ class ExceptionHandler
 
     public static function setup()
     {
-        set_exception_handler(array('ExceptionHandler', 'handleException'));
+        return set_exception_handler(array('ExceptionHandler', 'handleException'));
     }
 
     public static function recall()
     {
-        restore_exception_handler();
+        return restore_exception_handler();
     }
 }
