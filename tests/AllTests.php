@@ -18,7 +18,7 @@ class AllTests
         $suite->addTest(Comm_AllTests::suite());
         $suite->addTest(Exceptions_AllTests::suite());
         $suite->addTest(Log_AllTests::suite());
-        PHPUnit_Util_Filter::removeDirectoryFromWhiteList('.');
+        PHPUnit_Util_Filter::addDirectoryToFilter('/usr/share/php');
         return $suite;
         // @codeCoverageIgnoreEnd
     }
