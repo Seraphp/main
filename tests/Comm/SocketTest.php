@@ -189,7 +189,7 @@ class SocketTest extends PHPUnit_Framework_TestCase{
         $response .= $this->soc->gets(100);
         $this->assertEquals(199,strlen($response));
         $response .= $this->soc->readAll();
-        $this->assertEquals(942,strlen($response));
+        $this->assertEquals(946,strlen($response));
         $this->soc->disconnect();
     }
 
