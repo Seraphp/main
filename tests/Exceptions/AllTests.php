@@ -6,7 +6,7 @@
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';
-require_once 'Exceptions/ExceptionHandlerTest.php';
+require_once 'ExceptionHandlerTest.php';
 /**
  * Class documentation
  */

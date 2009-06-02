@@ -7,7 +7,7 @@
  */
 // @codeCoverageIgnoreStart
 require_once 'PHPUnit/Framework.php';
-require_once 'Server/AppServerTest.php';
+require_once 'AppServerTest.php';
 require_once 'Registry/AllTests.php';
 require_once 'Config/AllTests.php';
 /**

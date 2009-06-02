@@ -6,8 +6,8 @@
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';
-require_once 'Policy/SpecificationTest.php';
-require_once 'Policy/PolicyFactoryTest.php';
+require_once 'SpecificationTest.php';
+require_once 'PolicyFactoryTest.php';
 /**
  * Class documentation
  */
