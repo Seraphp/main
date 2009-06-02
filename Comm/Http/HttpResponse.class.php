@@ -10,11 +10,12 @@
  * @filesource
  */
 /***/
-//namescape Seraphp\Comm\Http;
-require_once 'ObserverListener.interface.php';
+//namespace Seraphp\Comm\Http;
+//require_once 'ObserverListener.interface.php';
 /**
  * Class represents an HTTP request, no matter
  * of the usage: sending or receiving it.
+ *
  * @package Comm
  * @subpackage Http
  * @todo Implement HttpResponse class
@@ -33,7 +34,7 @@ class HttpResponse
 
     public function __construct($socket = null)
     {
-        if ($socket !== null) {
+        if ($socket !== null && is_resource($socket)) {
             $this->_socket = $socket;
             $this->toBeSend = true;
         } else {
@@ -45,16 +46,18 @@ class HttpResponse
     {
         if ($this->toBeSend) {
             $this->statusLine = sprintf('HTTP/%s %d %s',
-                                        $this->httpVersion,
-                                        $this->statusCode,
-                                        $this->getReasonPhrase());
-            fwrite($this->socket, $this->statusLine."\r\n");
+                                 $this->httpVersion,
+                                 $this->statusCode,
+                                 HttpFactory::getHttpStatus($this->statusCode));
+            stream_set_write_buffer($this->_socket,0);
+            fwrite($this->_socket, $this->statusLine."\r\n");
             if ($this->headers !== array()) {
-                fwrite($this->socket, implode("\r\n", $this->headers));
+                fwrite($this->_socket,
+                        implode("\r\n", $this->headers));
             }
-            fwrite($this->socket, "\r\n");
+            fwrite($this->_socket, "\r\n");
             if (!empty($this->messageBody)) {
-                fwrite($this->socket, $this->messageBody."\r\n");
+                fwrite($this->_socket, $this->messageBody."\r\n");
             }
         }
     }

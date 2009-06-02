@@ -24,6 +24,26 @@ require_once 'Comm/Http/HttpResponse.class.php';
 class HttpFactory
 {
 
+    public static $httpStatuses = array(
+            100 => 'Continue',
+            101 => 'Switching protocols',
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Found',
+            303 => 'See Other',
+            304 => 'Not Modified',
+            305 => 'Use proxy',
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            402 => 'Payment Required',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            500 => 'Internal Server Error',
+        );
     /**
      * @param array $array  An array of cookie settings
      * @return array  An array of HttpCookie objects
@@ -69,4 +89,20 @@ class HttpFactory
         }
     }
 
+    /**
+     * Returns HTTP status message if it is defined in class variable
+     *
+     * Returns NULL if not found.
+     *
+     * @param integer $code  HTTP status code
+     * @return string|null
+     */
+    public static function getHttpStatus($code)
+    {
+        if (array_key_exists($code, self::$httpStatuses)) {
+            return self::$httpStatuses[$code];
+        } else {
+            return null;
+        }
+    }
 }

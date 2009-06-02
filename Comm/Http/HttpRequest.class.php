@@ -124,17 +124,18 @@ class HttpRequest implements Request, Listener
     {
         if ($this->isReceived===self::REQ_RECEIVED) {
             $read = array($this->_socket);
-            while (socket_select($read,
-                     $write = null, $except = null, null) < 1) {
-                usleep(10);
+            while (stream_select($read,
+                     $write = null, $except = null, 0, 10) < 1) {
+                //usleep(10);
             }
             while ($this->_buffer =
-                    socket_read($this->_socket, 64, PHP_BINARY_READ)) {
+                    fread($this->_socket, 8)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
+                     $this->_save();
                      continue;
                 }
                 $this->_save();
-                if ( $this->httpHeaders !== array() ) {
+                if ($this->httpHeaders !== array()) {
                 //We notify only when all headers are received
                     $this->notify();
                 }
@@ -158,8 +159,8 @@ class HttpRequest implements Request, Listener
     protected function _save()
     {
         $this->message .= $this->_buffer;
-        if ( $this->httpHeaders === array() &&
-             strpos($this->message, "\r\n\r\n") !== false ) {
+        if (strpos($this->message, "\r\n\r\n") !== false &&
+            $this->httpHeaders === array()) {
                 //if received first time a datachunk containing an empty line,
                 //we arrived at the end of the http header
             list($this->httpRawHeaders, $this->message) =
