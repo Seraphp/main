@@ -141,23 +141,26 @@ class AppServer extends Server
      */
     private function _listen()
     {
-        if ($conn = @socket_accept($this->_socket)) {
+        if ($conn = @stream_socket_accept($this->_socket)) {
             fputs(STDOUT, 'Connection accepted, spawning new child'."\n");
+            var_dump(stream_get_meta_data($conn));
             $this->spawn();
-            if ($this->role == 'child') {//we are the new process
+            if ($this->_role == 'child') {//we are the new process
                 $this->_accepting = false;
                 //@socket_close($this->_socket);
                 @socket_set_nonblock($conn);
                 try {
                     $result = $this->process(RequestFactory::create($conn));
                 }catch (Exception $e) {
-                    socket_write($conn, 'HTTP/1.x 500 Internal Server Error');
+                    stream_socket_sendto($conn,
+                        'HTTP/1.0 500 Internal Server Error');
+                    fputs(STDOUT, 'Error: '.$e->getMessage()."\n");
                     $result = 500;
                 }
                 @socket_close($conn);
-                @socket_close($this->_socket);
                 exit($result);
             }
+            @socket_close($conn);
         }
         return;
     }
@@ -172,9 +175,7 @@ class AppServer extends Server
      */
     private function initSocket()
     {
-        $this->_socket = socket_create(AF_INET,
-                                        SOCK_STREAM,
-                                        getprotobyname('TCP'));
+        /*$this->_socket = socket_create(AF_INET, SOCK_STREAM, getprotobyname('TCP'));
         if (!is_resource($this->_socket)) {
             throw new SocketException('Unable to open socket:'
                 .socket_strerror(socket_last_error()));
@@ -187,6 +188,21 @@ class AppServer extends Server
         } else {
             throw new SocketException('Unable to open socket:'
                 .socket_strerror(socket_last_error()));
+        }*/
+        $this->_socket = stream_socket_server(sprintf('%s://%s:%s',
+                'tcp',
+                $this->_address,
+                $this->_port),
+            $errNum,
+            $errMsg,
+            STREAM_SERVER_BIND | STREAM_SERVER_LISTEN);
+        if (!is_resource($this->_socket)) {
+            throw new SocketException('Unable to open socket:'
+                ."$errstr ($errno)");
+        } else {
+            stream_set_blocking($this->_socket,0);
+            $this->_accepting = true;
+            return true;
         }
     }
 
