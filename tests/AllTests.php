@@ -11,7 +11,6 @@ class AllTests
 {
     public static function suite()
     {
-        // @codeCoverageIgnoreStart
         $suite = new PHPUnit_Framework_TestSuite('Seraphp');
         $suite->addTest(Policy_AllTests::suite());
         $suite->addTest(Server_AllTests::suite());
@@ -19,7 +18,7 @@ class AllTests
         $suite->addTest(Exceptions_AllTests::suite());
         $suite->addTest(Log_AllTests::suite());
         PHPUnit_Util_Filter::addDirectoryToFilter('/usr/share/php');
+        PHPUnit_Util_Filter::addDirectoryToFilter('.');
         return $suite;
-        // @codeCoverageIgnoreEnd
     }
 }
