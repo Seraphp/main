@@ -200,7 +200,7 @@ class AppServer extends Server
             throw new SocketException('Unable to open socket:'
                 ."$errstr ($errno)");
         } else {
-            stream_set_blocking($this->_socket,0);
+            stream_set_blocking($this->_socket, 0);
             $this->_accepting = true;
             return true;
         }

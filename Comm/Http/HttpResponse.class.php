@@ -49,7 +49,7 @@ class HttpResponse
                                  $this->httpVersion,
                                  $this->statusCode,
                                  HttpFactory::getHttpStatus($this->statusCode));
-            stream_set_write_buffer($this->_socket,0);
+            stream_set_write_buffer($this->_socket, 0);
             fwrite($this->_socket, $this->statusLine."\r\n");
             if ($this->headers !== array()) {
                 fwrite($this->_socket,

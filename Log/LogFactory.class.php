@@ -32,7 +32,8 @@ require_once 'Exceptions/LogException.class.php';
  * @package Log
  * @uses PEAR::Log
  */
-class LogFactory{
+class LogFactory
+{
 
     private static $_instance = null;
 
@@ -72,7 +73,7 @@ class LogFactory{
                 null,
                 PEAR_LOG_ERR);
             $file = Log::singleton('file',
-                '' ,
+                '',
                 'DEBUG',
                 null,
                 PEAR_LOG_ALL);

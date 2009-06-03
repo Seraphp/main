@@ -36,36 +36,26 @@ class RequestFactory
     {
         $read = array($socket);
         while (stream_select($read, $write = null, $except = null, 0, 10) < 1) {
-            //todo: implement listening timout here as a multiplier of usleep value
-            //usleep(10);
+            //todo: implement listening timout here as a multiplier of usleep
+            //value
         }
         //using socket_recv with MSF_PEEK to examin the first part
         //of the message without removing it form the socket.
         $result = stream_socket_recvfrom($socket, 300, STREAM_PEEK);
-        var_dump($result);
-//        if ( $result !== false ) {
-            if ($result !== null) {
-                if (empty($result)) {
-                    throw new IOException('No data on line!');
-                } else {
-                    switch( self::getProtocol($result) ) {
-                        case 'http':
-                            require_once 'Comm/Http/HttpFactory.class.php';
-                            return HttpFactory::create('request', $socket);
-                            break;
-                    }
-                }
-            } else {
+        if ($result !== null) {
+            if (empty($result)) {
                 throw new IOException('No data on line!');
-            }
- /*       } else {
-            if ( $result === false) {
-                throw new IOException('Connection reset by peer!');
             } else {
-                throw new IOException('Connection gracefully closed by peer!');
+                switch( self::getProtocol($result) ) {
+                    case 'http':
+                        require_once 'Comm/Http/HttpFactory.class.php';
+                        return HttpFactory::create('request', $socket);
+                        break;
+                }
             }
+        } else {
+            throw new IOException('No data on line!');
         }
-*/
     }
 
     /**
