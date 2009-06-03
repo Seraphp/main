@@ -29,11 +29,13 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase{
             'Host:example.com'.
             $this->_sep.
             $this->_sep;
-        if (socket_create_pair((strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
-            AF_INET:
-            AF_UNIX), SOCK_STREAM, 0, $this->_sockets) === false) {
+        $this->_sockets = stream_socket_pair((strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
+            STREAM_PF_INET:STREAM_PF_UNIX),
+            STREAM_SOCK_STREAM,
+            STREAM_IPPROTO_IP);
+        if ($this->_sockets === false) {
                 $this->fail(socket_strerror(socket_last_error()));
-            }
+        }
     }
 
     function testGetProtocolOnGet()
@@ -56,24 +58,24 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testCreateOnGet()
     {
-        if (socket_write($this->_sockets[0],
+        if (fwrite($this->_sockets[0],
             $this->_requests['get'],
             strlen($this->_requests['get']))===false) {
                 $this->fail(socket_strerror(socket_last_error($this->_sockets[0])));
             }
-        socket_close($this->_sockets[0]);
+        stream_socket_shutdown($this->_sockets[0],STREAM_SHUT_RDWR);
         $res = RequestFactory::create($this->_sockets[1]);
         $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
     }
 
     function testCreateOnHead()
     {
-        if (socket_write($this->_sockets[0],
+        if (fwrite($this->_sockets[0],
             $this->_requests['head'],
             strlen($this->_requests['head']))===false) {
                 $this->fail(socket_strerror(socket_last_error($this->_sockets[0])));
             }
-        socket_close($this->_sockets[0]);
+        stream_socket_shutdown($this->_sockets[0],STREAM_SHUT_RDWR);
         $res = RequestFactory::create($this->_sockets[1]);
         $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
     }
@@ -82,7 +84,7 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase{
     {
         foreach ($this->_sockets as $socket) {
             if (is_resource($socket)) {
-                socket_close($socket);
+                stream_socket_shutdown($socket,STREAM_SHUT_RDWR);
             }
         }
     }

@@ -65,7 +65,7 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
     function tearDown()
     {
         if (file_exists('./.srpdAppMan')) {
-            unlink('./.srpdAppMan');
+            //unlink('./.srpdAppMan');
         }
     }
 
