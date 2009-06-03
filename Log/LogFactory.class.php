@@ -10,8 +10,8 @@
  */
 /***/
 //namespace Seraphp\Log
-require_once 'Log.php';
 require_once 'Exceptions/LogException.class.php';
+require_once 'Log/SeraphpLog.class.php';
 /**
  * LogFactory class instantiate a logger class instance using PEAR
  *
@@ -65,15 +65,15 @@ class LogFactory
      */
     private function _setup(SimpleXmlElement $conf = null)
     {
-        self::$_instance = Log::singleton('composite');
+        self::$_instance = SeraphpLog::singleton('composite');
         if ($conf === null) {
-            $console = Log::singleton('console',
+            $console = SeraphpLog::singleton('console',
                 '',
                 'SeraPhp',
                 null,
                 PEAR_LOG_ERR);
-            $file = Log::singleton('file',
-                '',
+            $file = SeraphpLog::singleton('file',
+                'out.log',
                 'DEBUG',
                 null,
                 PEAR_LOG_ALL);
@@ -86,7 +86,7 @@ class LogFactory
             foreach ($loggers as $logger) {
                 $attributes = $logger->conf->attributes();
                 if (isset($logger['handler']) && defined($logger['level'])) {
-                    $handler = Log::singleton($logger['handler'],
+                    $handler = SeraphpLog::singleton($logger['handler'],
                             $logger['name'],
                             $logger['ident'],
                             $attributes,
