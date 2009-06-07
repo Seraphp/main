@@ -44,12 +44,19 @@ class AppServer extends Server
      */
     public function __construct(Config $conf)
     {
-        $this->_appID = $conf->name;
+        self::$_log = LogFactory::getInstance($conf->server);
+        self::$_log->debug(__METHOD__.' called');
+        $this->_appID = (string)$conf['id'];
+        self::$_log->debug('AppID: '.$this->_appID);
         $this->_pidFileName = sprintf('.%s_srphp.pid', $this->_appID);
+        self::$_log->debug('PidFile name: '.$this->_pidFileName);
+        self::$_log->debug('Including files');
         //Requireing all the files which are in the Config xml
-        if ( isset($conf->includes) ) {
+        if (isset($conf->includes)) {
             foreach ($conf->includes as $key => $resource) {
+                self::$_log->debug('Requireing '.$resource);
                 if (require_once $resource) {
+                    self::$_log->debug($resource. 'included');
                     array_push($this->_includes, $resource);
                 }
             }
@@ -58,47 +65,55 @@ class AppServer extends Server
         if (isset($conf->instance)) {
             $instance = $conf->instance;
             //Calling Parent's constructor...
-            if (isset($instance['ipc'])) {
-                parent::__construct($instance['ipc']);
+            if (isset($instance->ipc)) {
+                self::$_log->debug('Initalizing IPC: '.$instance->ipc);
+                parent::__construct($instance->ipc);
             } else {
                 parent::__construct();
             }
             //Setting up server engine
-            if (isset($instance['engine'])) {
+            if (isset($instance->engine)) {
+                self::$_log->debug('Initalizing engine: '.$instance->engine);
                 //Class should be already "required-in" above
                 $this->_engine = new $engine;
             } else {
+                self::$_log->debug('Initalizing default engine');
                 require_once 'Server/DefaultEngine.class.php';
                 $this->_engine = new DefaultEngine;
             }
             //Setting up socket address and port
-            if (isset($instance['address'])) {
-                $this->_address = $instance['address'];
+            if (isset($instance->address)) {
+                $this->_address = $instance->address;
             } else {
                 $this->_address = self::DEFAULT_ADDRESS;
             }
-            if (isset($instance['port'])) {
-                $this->_port = $instance['port'];
+            if (isset($instance->port)) {
+                $this->_port = $instance->port;
             } else {
                 $this->_port = self::DEFAULT_PORT;
             }
+            self::$_log->debug('Using '.
+                sprintf('%s:%d',$this->_address, $this->_port));
         }
-        //Setting up Application registry
+        self::$_log->debug('Setting up Application registry');
         if ($this->ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
             $this->_appReg = IpcRegistry::getInstance();
+            self::$_log->debug('Using IPCRegistry');
         } else {
             require_once 'Server/Registry/Registry.class.php';
             $this->_appReg = Registry::getInstance();
+            self::$_log->debug('Using Registry');
         }
     }
 
     protected function onSummon()
     {
+        self::$_log->debug(__METHOD__.' called');
         if ($this->_ipcType !== '') {
             $this->_appReg->useIpc($this->_ipc);
         }
-        //Initalizing socket listening to
+        self::$_log->debug('Initalizing socket listening on');
         $this->initSocket();
     }
 
@@ -141,26 +156,27 @@ class AppServer extends Server
      */
     private function _listen()
     {
+        //Function usually called every 200 microsec
         if ($conn = @stream_socket_accept($this->_socket)) {
-            fputs(STDOUT, 'Connection accepted, spawning new child'."\n");
-            var_dump(stream_get_meta_data($conn));
+            self::$_log->debug(stream_get_meta_data($conn));
+            self::$_log->debug('Connection accepted, spawning new child');
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process
                 $this->_accepting = false;
-                //@socket_close($this->_socket);
-                @socket_set_nonblock($conn);
+                //stream_socket_shutdown($this->_socket, STREAM_SHUT_RD);
+                stream_set_blocking($conn, 0);
                 try {
                     $result = $this->process(RequestFactory::create($conn));
                 }catch (Exception $e) {
                     stream_socket_sendto($conn,
                         'HTTP/1.0 500 Internal Server Error');
-                    fputs(STDOUT, 'Error: '.$e->getMessage()."\n");
+                    self::$_log->alert('Error: '.$e->getMessage());
                     $result = 500;
                 }
-                @socket_close($conn);
+                stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
                 exit($result);
             }
-            @socket_close($conn);
+            stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
         }
         return;
     }
@@ -175,20 +191,7 @@ class AppServer extends Server
      */
     private function initSocket()
     {
-        /*$this->_socket = socket_create(AF_INET, SOCK_STREAM, getprotobyname('TCP'));
-        if (!is_resource($this->_socket)) {
-            throw new SocketException('Unable to open socket:'
-                .socket_strerror(socket_last_error()));
-        }
-        if ( socket_bind($this->_socket, $this->_address, $this->_port) &&
-            socket_listen($this->_socket, $this->getMaxSpawns()*2) &&
-            socket_set_nonblock($this->_socket)) {
-                $this->_accepting = true;
-                return true;
-        } else {
-            throw new SocketException('Unable to open socket:'
-                .socket_strerror(socket_last_error()));
-        }*/
+        self::$_log->debug(__METHOD__.' called');
         $this->_socket = stream_socket_server(sprintf('%s://%s:%s',
                 'tcp',
                 $this->_address,
@@ -198,8 +201,9 @@ class AppServer extends Server
             STREAM_SERVER_BIND | STREAM_SERVER_LISTEN);
         if (!is_resource($this->_socket)) {
             throw new SocketException('Unable to open socket:'
-                ."$errstr ($errno)");
+                ."$errMsg ($errNum)");
         } else {
+            self::$_log->debug('Setting listening socket to non blocking mode');
             stream_set_blocking($this->_socket, 0);
             $this->_accepting = true;
             return true;
@@ -217,6 +221,7 @@ class AppServer extends Server
      */
     public function process(Request $req)
     {
+        self::$_log->debug(__METHOD__.' called');
         return $this->_engine->process($req);
     }
 
@@ -225,10 +230,11 @@ class AppServer extends Server
      */
     public function onExpell()
     {
-        fputs(STDOUT, 'closing down socket on '
+        self::$_log->debug(__METHOD__.' called');
+        self::$_log->log('closing down socket on '
                 .$this->_address.':'
-                .$this->_port."\n");
-        socket_close($this->_socket);
+                .$this->_port);
+        stream_socket_shtdown($this->_socket, STREAM_SHUT_RDWR);
     }
 
     /**
@@ -243,8 +249,10 @@ class AppServer extends Server
      */
     protected function sigchldCallback($pid, $status)
     {
-        fputs(STDOUT, 'child exited: '.$pid.' with status:'.$status."\n");
+        self::$_log->debug(__METHOD__.' called');
+        self::$_log->debug('child exited: '.$pid.' with status:'.$status);
         if ($this->ipc !== null) {
+            self::$_log->debug('Merging changes through IPC');
             $this->_appReg->mergeChanges();
         }
         unset($this->spawns[$pid]);

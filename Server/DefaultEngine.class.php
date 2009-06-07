@@ -25,6 +25,7 @@ class DefaultEngine implements AppEngine
 
     function process(Request $req)
     {
+        self::$_log->debug(__METHOD__.' called');
         ob_start();
         var_dump($req);
         $message = ob_get_contents();

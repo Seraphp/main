@@ -12,6 +12,7 @@
 //namespace Seraphp\Server;
 require_once 'Server/Daemon.interface.php';
 require_once 'Comm/Ipc/IpcFactory.class.php';
+require_once 'Log/LogFactory.class.php';
 /**
  * Implementation of Daemon interface
  *
@@ -21,7 +22,11 @@ require_once 'Comm/Ipc/IpcFactory.class.php';
  */
 abstract class Server implements Daemon
 {
-
+    /**
+     * Logging engine reference if any
+     * @var Log
+     */
+    protected static $_log = null;
     /**
      * Maximum number of allowed child processes. Default is 5.
      * @var integer
@@ -86,11 +91,18 @@ abstract class Server implements Daemon
      */
     public function __construct($ipcType = '')
     {
+        self::$_log = LogFactory::getInstance();
+        self::$_log->debug('Setting max execution time to infinity');
         ini_set('max_execution_time', 0);
+        self::$_log->debug('Setting max input time to 0');
         ini_set('max_input_time', 0);
+        self::$_log->debug('Setting time limit to 0');
         set_time_limit(0);
+        self::$_log->debug('Setting ipc type to: '.$ipcType);
         $this->_ipcType = $ipcType;
         $this->_pid = getmypid();
+        self::$_log->debug('Server pid is: '.$this->_pid);
+        self::$_log->debug('Getting pcntl constans');
         $consts = get_defined_constants(true);
         $this->_availSigs = $consts['pcntl'];
         unset($consts);
@@ -106,6 +118,7 @@ abstract class Server implements Daemon
      */
     final public function summon()
     {
+        self::$_log->debug(__METHOD__.' called');
         $pid = $this->spawn();
         if ($this->_role == 'child') {//we are the new process
             $this->_savePid2File();
@@ -116,7 +129,7 @@ abstract class Server implements Daemon
                 $this->_ipc = IpcFactory::get($this->_ipcType, $this->_pid);
                 $this->_ipc->setRole($this->_role);
             }
-            fputs(STDOUT, 'Server process (pid:'.$this->_pid.") summoned\n");
+            self::$_log->log('Server process (pid:'.$this->_pid.') summoned');
             $this->onSummon();
             $this->startHart();
         } else {
@@ -135,22 +148,20 @@ abstract class Server implements Daemon
      */
     protected function setUpSigHandlers()
     {
-        fputs(STDOUT, "setUpSigHandlers() called\n");
+        self::$_log->debug(__METHOD__.' called');
         foreach (array_flip($this->_availSigs) as $signal) {
             //SIGKILL cannot be overwriten, SIGCHILD has own handler.
             if ( ($signal !== 'SIGKILL') &&
                 is_callable(array($this,strtolower($signal).'Callback'))
             ) {
-                fputs(STDOUT,
-                      'Registering signal handler for '.$signal.
-                      '('.constant($signal).')...');
-                if ( pcntl_signal(constant($signal),
-                                  array($this,'signalHandler'),
-                                  true)
-                ) {
-                    fputs(STDOUT, "OK\n");
+                if (pcntl_signal(constant($signal),
+                        array($this,'signalHandler'),
+                        true)) {
+                    self::$_log->debug('Signal handler for '.$signal.
+                      '('.constant($signal).') registered');
                 } else {
-                    fputs(STDOUT, "Failed\n");
+                    self::$_log->debug('Registering signal handler for '.$signal.
+                      '('.constant($signal).') failed');
                 }
             }
         }
@@ -167,12 +178,14 @@ abstract class Server implements Daemon
      */
     private function _savePid2File()
     {
+        self::$_log->debug(__METHOD__.' called');
         $this->_pidFile = fopen($this->_pidFolder.'/'.
                                 $this->_pidFileName,
                                 "w");
         if (!$this->_pidFile || !flock($this->_pidFile, LOCK_EX | LOCK_NB)) {
             throw new Exception('Unable to get pid file lock!');
         }
+        self::$_log->debug('Writing to pidfile');
         fwrite($this->_pidFile, $this->_pid);
         fflush($this->_pidFile);
     }
@@ -186,6 +199,7 @@ abstract class Server implements Daemon
      */
     protected function startHart()
     {
+        self::$_log->debug(__METHOD__.' called');
         declare(ticks = 1);
         while (true) {
             $this->hartBeat();
@@ -203,7 +217,9 @@ abstract class Server implements Daemon
      */
     public function spawn()
     {
+        self::$_log->debug(__METHOD__.' called');
         if (count($this->_spawns) < $this->_maxSpawns) {
+            self::$_log->debug('Forking');
             $pid = pcntl_fork();
             if ($pid < 0) {
                 throw new Exception('Unable to fork!');
@@ -243,11 +259,12 @@ abstract class Server implements Daemon
      */
     public function expell()
     {
+        self::$_log->debug(__METHOD__.' called');
         $this->onExpell();
-        fputs(STDOUT, "children: \n");
+        self::$_log->log('children:');
         $success = false;
         foreach ($this->_spawns as $child) {
-            fputs(STDOUT, $child['pid']."\n");
+            self::$_log->log('stopping: '.$child['pid']);
             posix_kill($child['pid'], SIGSTOP);
             pcntl_waitpid($child['pid'], $temp = 0, WNOHANG);
             $success = pcntl_wifexited($temp);
@@ -255,12 +272,14 @@ abstract class Server implements Daemon
                 $child['ipc']->close();
             }
         }
+        self::$_log->debug('Releasing pidfile lock');
         flock($this->_pidFile, LOCK_UN);
         $pidData = stream_get_meta_data($this->_pidFile);
+        self::$_log->debug('Closing pidfile: '.$this->_pidFile);
         fclose($this->_pidFile);
-        fputs(STDOUT, "deleting ".realpath($pidData['uri'])."\n");
+        self::$_log->debug('Deleting '.realpath($pidData['uri']));
         unlink(realpath($pidData['uri']));
-        fputs(STDOUT, "Parent exiting..\n");
+        self::$_log->log('Parent exiting');
         return $success;
     }
 
@@ -271,6 +290,8 @@ abstract class Server implements Daemon
      */
     public function setMaxSpawns($num)
     {
+        self::$_log->debug(__METHOD__.' called');
+        self::$_log->log('Setting max spawn number to:'.$num);
         $this->_maxSpawns = $num;
         return $this->_maxSpawns;
     }
@@ -292,7 +313,8 @@ abstract class Server implements Daemon
      */
     private function signalHandler($sigCode)
     {
-        fputs(STDOUT, __METHOD__." called\n");
+        self::$_log->debug(__METHOD__.' called');
+        self::$_log->debug('Signal: '.$sigCode);
         switch($sigCode) {
             /*
             Here For every signal we re-register the signal handler before doing
@@ -351,6 +373,7 @@ abstract class Server implements Daemon
      */
     public function __destruct()
     {
+        self::$_log->debug(__METHOD__.' called');
         if ($this->_role === 'parent' && is_resource($this->_pidFile)) {
             $this->expell();
         }
