@@ -1,17 +1,25 @@
 <?php
 /**
- * File documentation
+ * File contains Exception Handler class implementation
  *
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2009, Peter Nagy
+ * @package Log
  * @filesource
  */
+/***/
+require_once 'Log/LogFactory.class.php';
+//namespace Seraphp\Log;
 /**
- * Class documentation
+ * Static class for saetting up & handlin Exception centrally
+ * @package Log
  */
 class ExceptionHandler
 {
+
+    private static $_log;
+
     private function __construct()
     {
     }
@@ -20,23 +28,41 @@ class ExceptionHandler
     {
     }
 
-    public static function printException(Exception $e)
-    {
-        print 'Uncaught '. get_class($e).
-        ', code: '. $e->getCode() ."\n".
-        'Message: '.$e->getMessage()."\n";
-    }
-
+    /**
+     * Logs exception to default log class as Alert
+     *
+     * @param Exception $e
+     * @return void
+     */
     public static function handleException(Exception $e)
     {
+         if (self::$_log === null) {
+             self::setup();
+         }
          self::printException($e);
+         self::$_log->alert($e->getMessage());
     }
 
-    public static function setup()
+    /**
+     * Replaces the system default exception handler with this class
+     *
+     * @param Config $conf
+     * @return string  Previous Exception handler if any
+     */
+    public static function setup(Config $conf = null)
     {
+        if ($conf === null) {
+            self::$_log = LogFactory::getInstance();
+        } else {
+            self::$_log = LogFactory::getInstance($conf->Logs);
+        }
         return set_exception_handler(array('ExceptionHandler', 'handleException'));
     }
 
+    /**
+     * Sets back to previous setup the default system exceptin handler
+     * @return string  Previous Exception handler if any
+     */
     public static function recall()
     {
         return restore_exception_handler();
