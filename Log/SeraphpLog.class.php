@@ -20,4 +20,12 @@ class SeraphpLog extends Log{
     {
         parent::setIdent(sprintf('%s(%d)',$str,getmypid()));
     }
+
+    function __destruct()
+    {
+        $this->flush();
+        if (method_exists(parent, '__destruct')) {
+            parent::__destruct();
+        }
+    }
 }

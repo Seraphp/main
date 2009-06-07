@@ -45,11 +45,16 @@ class LogFactory
     {//private cloning disabled
     }
 
-    public static function getInstance(SimpleXmlElement $conf = null)
+    /**
+     * @param Config $conf (Optional)
+     * @return SeraphpLog
+     */
+    public static function getInstance(Config $conf = null)
     {
         if (self::$_instance === null) {
-            self::_setup($conf);
+            self::$_instance = SeraphpLog::singleton('composite');
         }
+        self::_setup($conf);
         return self::$_instance;
     }
 
@@ -57,32 +62,17 @@ class LogFactory
      * Sets up log handlers
      *
      * Based on the provided configuration or a default one the method
-     * configures the loge handlers hierarchy and stores it in self::$_instance
+     * configures the log handlers hierarchy and stores it in self::$_instance
      *
-     * @param SimpleXml $conf
+     * @param Config $conf
      * @return void
      * @throws LogException
      */
-    private function _setup(SimpleXmlElement $conf = null)
+    private static function _setup(Config $conf = null)
     {
-        self::$_instance = SeraphpLog::singleton('composite');
-        if ($conf === null) {
-            $console = SeraphpLog::singleton('console',
-                '',
-                'SeraPhp',
-                null,
-                PEAR_LOG_ERR);
-            $file = SeraphpLog::singleton('file',
-                'out.log',
-                'DEBUG',
-                null,
-                PEAR_LOG_ALL);
-            self::$_instance->addChild($console);
-            self::$_instance->addChild($file);
-        } else {
-            //Assume that $conf is a SimpleXml object
-            //referencing a <Logs> parent element
-            $loggers = $conf->children();
+        self::_defaultSetup();
+        if ($conf !== null && isset($conf->logs) ) {
+            $loggers = $conf->logs->children();
             foreach ($loggers as $logger) {
                 $attributes = $logger->conf->attributes();
                 if (isset($logger['handler']) && defined($logger['level'])) {
@@ -102,5 +92,25 @@ class LogFactory
                 }
             }
         }
+    }
+
+    /**
+     * @return void
+     */
+    protected static function _defaultSetup()
+    {
+        $setup = array('buffering' => true);
+        $console = SeraphpLog::singleton('console',
+            '',
+            'SeraPhp',
+            $setup,
+            PEAR_LOG_INFO);
+        $file = SeraphpLog::singleton('file',
+            'out.log',
+            'DEBUG',
+            $setup,
+            PEAR_LOG_DEBUG);
+        self::$_instance->addChild($console);
+        self::$_instance->addChild($file);
     }
 }
