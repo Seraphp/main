@@ -21,9 +21,17 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
     function setUp()
     {
         $this->reg = AppServerRegistry::getInstance();
-        $this->conf = new Config;
-        $this->conf->name = 'main';
-        $this->conf->instance= array('port'=>self::$port++);
+        $confString = <<<XML
+<?xml version='1.0' standalone='yes'?>
+    <servers>
+        <server id="main">
+            <instance />
+        </server>
+    </servers>
+XML;
+
+        $this->conf = new Config($confString);
+        $this->conf->servers->server->instance->port = self::$port++;
         $this->mockServer = $this->getMock('AppServer', array('getStatus'),array($this->conf));
     }
 

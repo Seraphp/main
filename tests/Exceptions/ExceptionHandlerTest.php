@@ -33,7 +33,9 @@ class ExceptionHandlerTest extends PHPUnit_Extensions_OutputTestCase{
 
     function testSetupRecall()
     {
-        $this->assertEquals(null, ExceptionHandler::setup());
+        $this->assertEquals(array(
+            'ExceptionHandler',
+            'handleException'), ExceptionHandler::setup());
         $this->assertTrue(ExceptionHandler::recall());
     }
 }

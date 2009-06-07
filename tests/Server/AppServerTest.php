@@ -17,11 +17,19 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
 
     function setUp()
     {
-        $this->conf = new Config;
         $this->appID = 'main';
-        $this->conf->name = $this->appID;
-        $this->conf->instance = array('address'=>'localhost', 'port'=>1088);
-        $this->server = new AppServer($this->conf);
+        $confString = <<<XML
+<servers>
+    <server id='$this->appID'>
+        <instance>
+            <address>localhost</address>
+            <port>1088</port>
+        </instance>
+    </server>
+</servers>
+XML;
+        $this->conf = new Config($confString);
+        $this->server = new AppServer($this->conf->server);
     }
 
     function testAppServerInstatiation()
