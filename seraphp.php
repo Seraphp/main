@@ -1,7 +1,7 @@
 #!/usr/bin/env php5
 <?php
 /**
- * Example startup file for Pahser server
+ * Example startup file for Seraphp server
  * @package Seraphp
  */
 require_once 'Exceptions/ExceptionHandler.class.php';
