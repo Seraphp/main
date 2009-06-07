@@ -28,6 +28,7 @@ class HttpRequest implements Request, Listener
 {
     const REQ_TOSEND = false;
     const REQ_RECEIVED = true;
+    private static $_log = null;
     /**
      * Holds sanitized POST parameters in array
      * @var array
@@ -109,6 +110,8 @@ class HttpRequest implements Request, Listener
      */
     public function __construct( $sock = null )
     {
+        self::$_log = LogFactory::getInstance();
+        self::$_log->debug(__METHOD__.' called');
         if ( $sock !== null && is_resource($sock) ) {
          //If parameter is a resource, it means the class will represent a
          //received request
@@ -122,12 +125,14 @@ class HttpRequest implements Request, Listener
 
     protected function _parse()
     {
-        if ($this->isReceived===self::REQ_RECEIVED) {
+        self::$_log->debug(__METHOD__.' called');
+        if ($this->isReceived === self::REQ_RECEIVED) {
             $read = array($this->_socket);
             while (stream_select($read,
                      $write = null, $except = null, 0, 10) < 1) {
                 //usleep(10);
             }
+            self::$_log->debug('Data arriving on socket');
             while ($this->_buffer =
                     fread($this->_socket, 8)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
@@ -178,6 +183,7 @@ class HttpRequest implements Request, Listener
      */
     protected function _processHeaders()
     {
+        self::$_log->debug(__METHOD__.' called');
         $headers = array();
         //First line in the array should be the reqest line,
         // like 'GET /index.html HTTP/1.1'
@@ -194,16 +200,16 @@ class HttpRequest implements Request, Listener
             }
         }
         $this->httpHeaders = $headers;
-        //set up get, cookies (post will be in the body)
+        self::$_log->debug('setting up get, cookies');
         if (array_key_exists('Cookie', $this->httpHeaders)) {
             $this->cookies = explode(';', $this->httpHeaders['Cookies']);
             $this->cookies = HttpFactory::getCookies($this->cookies);
         }
-        //processing GET parameters
+        self::$_log->debug('processing GET parameters');
         if ($pos = strpos($this->url, '?')) {
             $this->getParams = $this->_params2array(substr($this->url, $pos+1));
         }
-        //Setting Referer fi any
+        self::$_log->debug('Setting Referer if any');
         if (array_key_exists('Referer', $this->httpHeaders) ) {
             $this->referer = $this->httpHeaders['Referer'];
         }
@@ -217,6 +223,7 @@ class HttpRequest implements Request, Listener
      */
     private function _params2array($str)
     {
+        self::$_log->debug(__METHOD__.' called');
         $rows = explode('&', urldecode($str));
         $params = array();
         $itemNum = count($rows);
@@ -240,6 +247,7 @@ class HttpRequest implements Request, Listener
      */
     private function _array2params($params, $parentKey = null, $sep = '&')
     {
+        self::$_log->debug(__METHOD__.' called');
         $items = array();
         foreach ( $params as $key => $value ) {
             if ( is_array($value) ) {
@@ -298,6 +306,7 @@ class HttpRequest implements Request, Listener
      */
     public function send()
     {
+        self::$_log->debug(__METHOD__.' called');
         //@todo Implement HttpRequest sending
         if ( $this->isReceived === self::REQ_TOSEND ) {
             $curlObj = curl_init($this->url);
@@ -353,7 +362,8 @@ class HttpRequest implements Request, Listener
 
     public function respond($msg)
     {
-        if ( $this->isReceived === self::REQ_RECEIVED ) {
+        self::$_log->debug(__METHOD__.' called');
+        if ($this->isReceived === self::REQ_RECEIVED) {
             $response = HttpFactory::create('response', $this->_socket);
             $response->messageBody = $msg;
             return $response;

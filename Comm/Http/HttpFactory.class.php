@@ -24,6 +24,8 @@ require_once 'Comm/Http/HttpResponse.class.php';
 class HttpFactory
 {
 
+    private static $_log;
+
     public static $httpStatuses = array(
             100 => 'Continue',
             101 => 'Switching protocols',
@@ -50,6 +52,8 @@ class HttpFactory
      */
     public static function getCookies($array)
     {
+        self::$_log = LogFactory::getInstance();
+        self::$_log->debug(__METHOD__.' called');
         $result = array();
         foreach ($array as $cookieParams) {
             extract($cookieParams);
@@ -72,15 +76,20 @@ class HttpFactory
      */
     public static function create($type, $socket = null, $settings = null)
     {
+        self::$_log = LogFactory::getInstance();
+        self::$_log->debug(__METHOD__.' called');
         switch ($type)
         {
             case 'request':
+                self::$_log->debug('Creating HTTP Request');
                 return new HttpRequest($socket);
                 break;
             case 'response':
+                self::$_log->debug('Creating HTTP Response');
                 return new HttpResponse($socket);
                 break;
             case 'cookie':
+                self::$_log->debug('Creating HTTP Cookie');
                 return self::getCookies($settings);
                 break;
             default:
@@ -99,6 +108,8 @@ class HttpFactory
      */
     public static function getHttpStatus($code)
     {
+        self::$_log = LogFactory::getInstance();
+        self::$_log->debug(__METHOD__.' called');
         if (array_key_exists($code, self::$httpStatuses)) {
             return self::$httpStatuses[$code];
         } else {
