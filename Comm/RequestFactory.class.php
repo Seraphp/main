@@ -18,6 +18,8 @@ require_once 'Exceptions/IOException.class.php';
  */
 class RequestFactory
 {
+    private static $_log;
+
     private function __construct()
     {
     }
@@ -34,11 +36,14 @@ class RequestFactory
      */
     public static function create($socket)
     {
+        self::$_log = LogFactory::getInstance();
+        self::$_log->debug(__METHOD__.' called');
         $read = array($socket);
         while (stream_select($read, $write = null, $except = null, 0, 10) < 1) {
             //todo: implement listening timout here as a multiplier of usleep
             //value
         }
+        self::$_log->debug('Data arriving on socket');
         //using socket_recv with MSF_PEEK to examin the first part
         //of the message without removing it form the socket.
         $result = stream_socket_recvfrom($socket, 300, STREAM_PEEK);
@@ -67,9 +72,13 @@ class RequestFactory
      */
     public static function getProtocol($data)
     {
+        self::$_log = LogFactory::getInstance();
+        self::$_log->debug(__METHOD__.' called');
         if ( preg_match('/^(GET|POST|HEAD) (.+) HTTP\/(\d\.\d)/', $data) ) {
+            self::$_log->debug('Data is HTTP');
             return 'http';
         } else {
+            self::$_log->debug('Data is something unknow');
             return 'other';
         }
     }
