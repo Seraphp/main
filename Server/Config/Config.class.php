@@ -11,10 +11,8 @@
  */
 /***/
 //namespace Seraphp\Server\Config;
-require_once 'Server/Registry/DataStore.class.php';
-require_once 'Exceptions/ConfigException.class.php';
 /**
- * Config class decoates DataStore
+ * Config class decorates SimpleXMLElement
  *
  * The class hold the configuration of a server and can signal
  * if it is changed.
@@ -22,31 +20,32 @@ require_once 'Exceptions/ConfigException.class.php';
  * @package Server
  * @subpackage Config
  */
-class Config extends DataStore
+class Config extends SimpleXMLElement
 {
-
-    protected $_dirty = false;
-
-    /**
-     * Registers a value with a key in the registry.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     */
-    public function __set($key, $value)
-    {
-        parent::__set($key, $value);
-        $this->_dirty = true;
-    }
+    private $_namespaces = array();
+    protected static $_dirty = false;
 
     public function isChanged()
     {
-        return ($this->_dirty);
+        return self::$_dirty;
     }
 
     public function clearState()
     {
-        $this->_dirty = false;
+        self::$_dirty = false;
+    }
+
+    public function xsearch($xpath, Config $node = null)
+    {
+        $node = ($node === null)?$this:$node;
+        $this->_namespaces = $this->getNamespaces(true);
+        //Register them with their prefixes
+        foreach ($this->_namespaces as $prefix => $ns) {
+            if ( empty($prefix) ) {
+                $prefix = 'srph';
+            }
+            $res = $node->registerXPathNamespace($prefix, $ns);
+        }
+        return $node->xpath($xpath);
     }
 }
