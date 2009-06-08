@@ -19,12 +19,6 @@ class ExceptionHandlerTest extends PHPUnit_Extensions_OutputTestCase{
         $this->output = "Uncaught Exception, code: 0\nMessage: Test Exception\n";
     }
 
-    function testPrintException()
-    {
-        $this->expectOutputString($this->output);
-        ExceptionHandler::printException(new Exception('Test Exception'));
-    }
-
     function testHandleException()
     {
         $this->expectOutputString($this->output);

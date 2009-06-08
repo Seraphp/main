@@ -39,7 +39,6 @@ class ExceptionHandler
          if (self::$_log === null) {
              self::setup();
          }
-         self::printException($e);
          self::$_log->alert($e->getMessage());
     }
 
