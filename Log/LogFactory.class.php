@@ -99,7 +99,7 @@ class LogFactory
      */
     protected static function _defaultSetup()
     {
-        $setup = array('buffering' => true);
+        $setup = array('buffering' => true, 'append'=>false);
         $console = SeraphpLog::singleton('console',
             '',
             'SeraPhp',
