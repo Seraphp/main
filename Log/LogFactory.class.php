@@ -76,7 +76,7 @@ class LogFactory
             foreach ($loggers as $logger) {
                 $attributes = $logger->conf->attributes();
                 if (isset($logger['handler']) && defined($logger['level'])) {
-                    $handler = SeraphpLog::singleton($logger['handler'],
+                    $handler = Log::singleton($logger['handler'],
                             $logger['name'],
                             $logger['ident'],
                             $attributes,
@@ -99,13 +99,13 @@ class LogFactory
      */
     protected static function _defaultSetup()
     {
-        $setup = array('buffering' => true, 'append'=>false);
-        $console = SeraphpLog::singleton('console',
+        $setup = array('buffering' => false);
+        $console = Log::singleton('console',
             '',
             'SeraPhp',
             $setup,
             PEAR_LOG_INFO);
-        $file = SeraphpLog::singleton('file',
+        $file = Log::singleton('file',
             'out.log',
             'DEBUG',
             $setup,
