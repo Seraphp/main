@@ -55,15 +55,28 @@ class PackedFileDataStore implements StoreEngine
     function init($file = null)
     {
         $this->setPath($file);
-        $this->_fp = @fopen(self::PROTOCOL.$this->_file, 'w+b');
+        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'w+b');
         if (!$this->_fp) {
             throw new IOException('Cannot open file '.$this->_file);
         }
 
-        if (@flock($this->_fp, LOCK_EX) === false) {
+        if (flock($this->_fp, LOCK_EX) === false) {
             throw new IOException('Cannot get lock on '.$this->_file);
         }
         return true;
+    }
+
+    private function _reinit()
+    {
+        $this->close();
+        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'w+b');
+        if (!$this->_fp) {
+            throw new IOException('Cannot open file '.$this->_file);
+        }
+
+        if (flock($this->_fp, LOCK_EX) === false) {
+            throw new IOException('Cannot get lock on '.$this->_file);
+        }
     }
 
     /**
@@ -72,7 +85,7 @@ class PackedFileDataStore implements StoreEngine
     function load($file = null)
     {
         if (isset($file) && $this->_file !== $this->_getAbsolutePath($file)) {
-            $this->__destruct();
+            $this->close();
             $this->init($file);
         }
         rewind($this->_fp);
@@ -91,8 +104,8 @@ class PackedFileDataStore implements StoreEngine
      */
     function save($data)
     {
-        @rewind($this->_fp);
-        $res = @fwrite($this->_fp, base64_encode(serialize($data)));
+        $this->_reinit();
+        $res = fwrite($this->_fp, base64_encode(serialize($data)));
         if ($res === false) {
             throw new IOException('Error when writing file '.$this->_file);
         }
