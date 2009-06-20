@@ -12,24 +12,10 @@ require_once 'Exceptions/ExceptionHandler.class.php';
  * Class documentation
  */
 class ExceptionHandlerTest extends PHPUnit_Extensions_OutputTestCase{
-    protected $exception, $output;
-
-    function setUp()
-    {
-        $this->output = "Uncaught Exception, code: 0\nMessage: Test Exception\n";
-    }
-
-    function testHandleException()
-    {
-        $this->expectOutputString($this->output);
-        ExceptionHandler::handleException(new Exception('Test Exception'));
-    }
 
     function testSetupRecall()
     {
-        $this->assertEquals(array(
-            'ExceptionHandler',
-            'handleException'), ExceptionHandler::setup());
+        $this->assertNull(ExceptionHandler::setup());
         $this->assertTrue(ExceptionHandler::recall());
     }
 }
