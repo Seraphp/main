@@ -92,6 +92,7 @@ abstract class Server implements Daemon
     public function __construct($ipcType = '')
     {
         self::$_log = LogFactory::getInstance();
+        self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('Setting max execution time to infinity');
         ini_set('max_execution_time', 0);
         self::$_log->debug('Setting max input time to 0');
@@ -134,6 +135,7 @@ abstract class Server implements Daemon
             $this->startHart();
         } else {
             //we are the parent process
+            $this->_role = 'exit';
             return $pid;
         }
     }
@@ -225,6 +227,7 @@ abstract class Server implements Daemon
                 throw new Exception('Unable to fork!');
             } elseif ($pid == 0) {//child process
                 $this->_pid = getmypid();
+                self::$_log->setIdent(getmypid());
                 $this->_role = 'child';
                 if ($this->_ipcType !== '') {
                     $this->_ipc = IpcFactory::get($this->_ipcType,
@@ -233,8 +236,9 @@ abstract class Server implements Daemon
                 return $this->_pid;
             } else {
                 //parent process
-                $this->_spawns[$pid] = array('ipc'=>$ipc);
-                fputs(STDOUT, $pid." spawned\n");
+                $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
+                self::$_log->setIdent(getmypid());
+                self::$_log->log($pid." spawned\n");
                 return $pid;
             }
         }
@@ -263,22 +267,30 @@ abstract class Server implements Daemon
         $this->onExpell();
         self::$_log->log('children:');
         $success = false;
-        foreach ($this->_spawns as $child) {
-            self::$_log->log('stopping: '.$child['pid']);
-            posix_kill($child['pid'], SIGSTOP);
-            pcntl_waitpid($child['pid'], $temp = 0, WNOHANG);
-            $success = pcntl_wifexited($temp);
-            if ($success && $child['ipc'] !== null) {
-                $child['ipc']->close();
+        foreach ($this->_spawns as $childPid=>$details) {
+            self::$_log->log('stopping: '.$childPid);
+            if (posix_getpgid($childPid) !== null) {
+                //it seems we have a PHP bug here:
+                //Sending SIGSTOP when $child['pid']
+                //is null is killing the system.
+                //So I'm checking if pid exists.
+                posix_kill($childPid, SIGSTOP);
+                pcntl_waitpid($childPid, $temp = 0, WNOHANG);
+                $success = pcntl_wifexited($temp);
+/*                if ($success && $childPid['ipc'] !== null) {
+                    $childPid['ipc']->close();
+                }*/
             }
         }
-        self::$_log->debug('Releasing pidfile lock');
-        flock($this->_pidFile, LOCK_UN);
-        $pidData = stream_get_meta_data($this->_pidFile);
-        self::$_log->debug('Closing pidfile: '.$this->_pidFile);
-        fclose($this->_pidFile);
-        self::$_log->debug('Deleting '.realpath($pidData['uri']));
-        unlink(realpath($pidData['uri']));
+        if (is_resource($this->_pidFile)) {
+            self::$_log->debug('Releasing pidfile lock');
+            flock($this->_pidFile, LOCK_UN);
+            $pidData = stream_get_meta_data($this->_pidFile);
+            self::$_log->debug('Closing pidfile: '.$this->_pidFile);
+            fclose($this->_pidFile);
+            self::$_log->debug('Deleting '.realpath($pidData['uri']));
+            unlink(realpath($pidData['uri']));
+        }
         self::$_log->log('Parent exiting');
         return $success;
     }
@@ -374,7 +386,7 @@ abstract class Server implements Daemon
     public function __destruct()
     {
         self::$_log->debug(__METHOD__.' called');
-        if ($this->_role === 'parent' && is_resource($this->_pidFile)) {
+        if ($this->_role === 'parent') {
             $this->expell();
         }
     }
