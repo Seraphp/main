@@ -22,16 +22,26 @@ require_once 'Server/AppEngine.interface.php';
  */
 class DefaultEngine implements AppEngine
 {
+    private static $_log;
 
     function process(Request $req)
     {
+        self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
-        ob_start();
-        var_dump($req);
-        $message = ob_get_contents();
-        $size = ob_get_length();
-        ob_end_clean();
-        $response = $req->respond($message);
+        self::$_log->debug('Output buffer ended');
+        self::$_log->debug('message length: '. strlen($req->httpRawHeaders));
+        $msg = <<<HTML
+    <html>
+        <head>
+            <title>Seraphp</title>
+        </head>
+            <body><h1>It Works!</H1>
+        </body>
+    </html>
+HTML;
+        $response = $req->respond($msg);
+        $response->contentType = 'text/html';
+        self::$_log->debug($response);
         $response->send();
         return $response->statusCode;
     }
