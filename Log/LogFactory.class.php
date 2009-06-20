@@ -11,7 +11,7 @@
 /***/
 //namespace Seraphp\Log
 require_once 'Exceptions/LogException.class.php';
-require_once 'Log/SeraphpLog.class.php';
+require_once 'Log.php';
 /**
  * LogFactory class instantiate a logger class instance using PEAR
  *
@@ -52,7 +52,7 @@ class LogFactory
     public static function getInstance(Config $conf = null)
     {
         if (self::$_instance === null) {
-            self::$_instance = SeraphpLog::singleton('composite');
+            self::$_instance = Log::singleton('composite');
         }
         self::_setup($conf);
         return self::$_instance;
