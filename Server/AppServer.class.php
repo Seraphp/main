@@ -67,7 +67,7 @@ class AppServer extends Server
             //Calling Parent's constructor...
             if (isset($instance->ipc)) {
                 self::$_log->debug('Initalizing IPC: '.$instance->ipc);
-                parent::__construct($instance->ipc);
+                parent::__construct((string) $instance->ipc);
             } else {
                 parent::__construct();
             }
@@ -83,12 +83,12 @@ class AppServer extends Server
             }
             //Setting up socket address and port
             if (isset($instance->address)) {
-                $this->_address = $instance->address;
+                $this->_address = (string) $instance->address;
             } else {
                 $this->_address = self::DEFAULT_ADDRESS;
             }
             if (isset($instance->port)) {
-                $this->_port = $instance->port;
+                $this->_port = (string) $instance->port;
             } else {
                 $this->_port = self::DEFAULT_PORT;
             }
@@ -96,7 +96,7 @@ class AppServer extends Server
                 sprintf('%s:%d',$this->_address, $this->_port));
         }
         self::$_log->debug('Setting up Application registry');
-        if ($this->ipcType !== '') {
+        if ($this->_ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
             $this->_appReg = IpcRegistry::getInstance();
             self::$_log->debug('Using IPCRegistry');
@@ -231,10 +231,12 @@ class AppServer extends Server
     public function onExpell()
     {
         self::$_log->debug(__METHOD__.' called');
-        self::$_log->log('closing down socket on '
+        if (is_resource($this->_socket)) {
+            self::$_log->log('closing down socket on '
                 .$this->_address.':'
                 .$this->_port);
-        stream_socket_shtdown($this->_socket, STREAM_SHUT_RDWR);
+            stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
+        }
     }
 
     /**
@@ -255,6 +257,6 @@ class AppServer extends Server
             self::$_log->debug('Merging changes through IPC');
             $this->_appReg->mergeChanges();
         }
-        unset($this->spawns[$pid]);
+        unset($this->_spawns[$pid]);
     }
 }
