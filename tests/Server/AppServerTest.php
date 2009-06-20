@@ -20,7 +20,7 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
         $this->appID = 'main';
         $confString = <<<XML
 <servers>
-    <server id='$this->appID'>
+    <server id="$this->appID">
         <instance>
             <address>localhost</address>
             <port>1088</port>
