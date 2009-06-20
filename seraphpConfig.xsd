@@ -13,11 +13,15 @@
 	<xs:element name="server">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="tns:instance" minOccurs="1" maxOccurs="1" />
-				<xs:element ref="tns:urimap" minOccurs="0" maxOccurs="1" />
-				<xs:element ref="tns:resources" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="tns:instance" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element ref="tns:urimap" minOccurs="0"
+					maxOccurs="1" />
+				<xs:element ref="tns:resources" minOccurs="0"
+					maxOccurs="1" />
+				<xs:element ref="tns:logs" maxOccurs="1" minOccurs="0"></xs:element>
 			</xs:sequence>
-			<xs:attribute ref="tns:id" />
+			<xs:attribute ref="tns:id" use="required"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -146,4 +150,39 @@
 		</xs:sequence>
 		<xs:attribute name="type" type="xs:string" use="required" />
 	</xs:complexType>
+
+    <xs:element name="log" type="tns:logType"></xs:element>
+
+    <xs:complexType name="logType">
+    	<xs:sequence>
+    		<xs:element ref="tns:conf" maxOccurs="1" minOccurs="1"></xs:element>
+    	</xs:sequence>
+    	<xs:attribute ref="tns:handler" use="required"></xs:attribute>
+    	<xs:attribute ref="tns:name" use="optional"></xs:attribute>
+    	<xs:attribute ref="tns:ident" use="optional"></xs:attribute>
+    	<xs:attribute ref="tns:level" use="required"></xs:attribute>
+    </xs:complexType>
+
+    <xs:attribute name="handler" type="xs:string"></xs:attribute>
+
+    <xs:attribute name="name" type="xs:string"></xs:attribute>
+
+    <xs:attribute name="ident" type="xs:string"></xs:attribute>
+
+    <xs:attribute name="level" type="xs:string"></xs:attribute>
+
+    <xs:element name="conf" type="tns:confType"></xs:element>
+
+    <xs:complexType name="confType">
+    	<xs:anyAttribute></xs:anyAttribute>
+    </xs:complexType>
+
+    <xs:element name="logs" type="tns:logsType"></xs:element>
+
+    
+    <xs:complexType name="logsType">
+    	<xs:sequence>
+    		<xs:element ref="tns:log" maxOccurs="unbounded" minOccurs="0"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
 </xs:schema>
