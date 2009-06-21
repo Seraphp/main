@@ -299,7 +299,7 @@ class AppServer extends Server
         }
         self::$_log->debug("Engine: ".$engine);
         if ($engine === false) {
-            $returnCode = 404;
+            $returnCode = 1;
             self::$_log->debug("Not found: ".$engine);
             $response = $req->respond('File not found!',
                 array('statusCode'=>$returnCode));
@@ -309,7 +309,7 @@ class AppServer extends Server
                 self::$_log->debug("Processing w/".$engine);
                 $returnCode = $this->_engines[$engine]->process($req);
             }else{
-                $returnCode = 404;
+                $returnCode = 1;
                 self::$_log->debug("Not registered: ".$engine);
                 $response = $req->respond('File not found!',
                     array('statusCode'=>$returnCode));
