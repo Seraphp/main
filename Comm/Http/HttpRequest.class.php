@@ -127,8 +127,8 @@ class HttpRequest implements Request, Listener
 
     /**
      * Parses already arrived data
-     * 
-     * While parsing it is notifies all listeners of the arrived amount of data 
+     *
+     * While parsing it is notifies all listeners of the arrived amount of data
      *
      * @throws IOException
      * @return void
@@ -139,7 +139,7 @@ class HttpRequest implements Request, Listener
         if ($this->isReceived === self::REQ_RECEIVED) {
             $read = array($this->_socket);
             if (stream_select($read,
-                     $write = null, $except = null, $this->timeout, 0, 200) < 1) {
+                     $write = null, $except = null, $this->timeout, 200) < 1) {
                 throw new IOException('Connection timed out!');
             }
             self::$_log->debug('Data arriving on socket');
