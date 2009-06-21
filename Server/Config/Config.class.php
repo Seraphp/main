@@ -22,14 +22,14 @@
  */
 class Config extends SimpleXMLElement
 {
-    private $_namespaces = array();
+    private static $_namespaces = array();
 
     public function xsearch($xpath, Config $node = null)
     {
         $node = ($node === null)?$this:$node;
-        $this->_namespaces = $this->getNamespaces(true);
+        self::$_namespaces = $this->getNamespaces(true);
         //Register them with their prefixes
-        foreach ($this->_namespaces as $prefix => $ns) {
+        foreach (self::$_namespaces as $prefix => $ns) {
             if ( empty($prefix) ) {
                 $prefix = 'srph';
             }
