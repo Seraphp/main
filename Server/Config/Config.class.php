@@ -23,17 +23,6 @@
 class Config extends SimpleXMLElement
 {
     private $_namespaces = array();
-    protected static $_dirty = false;
-
-    public function isChanged()
-    {
-        return self::$_dirty;
-    }
-
-    public function clearState()
-    {
-        self::$_dirty = false;
-    }
 
     public function xsearch($xpath, Config $node = null)
     {

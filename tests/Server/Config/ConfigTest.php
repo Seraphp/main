@@ -24,28 +24,10 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
         $this->assertFalse(isset($this->conf->somekey));
     }
 
-    function testEmptyConfigKeyReturnsNull()
-    {
-        $this->assertNull($this->conf->somekey);
-    }
-
-    function testConfigyKeyValid()
+    function testConfigKeyValid()
     {
         $this->conf->somekey->foo->bar='somevalue';
         $this->assertTrue(isset($this->conf->somekey));
-    }
-
-    function testIsChanged()
-    {
-        $this->conf->somekey->foo->bar='somevalue';
-        $this->assertTrue($this->conf->isChanged());
-    }
-
-    function testClearState()
-    {
-        $this->conf->somekey->foo->bar='somevalue';
-        $this->conf->clearState();
-        $this->assertFalse($this->conf->isChanged());
     }
 
     function tearDown()
