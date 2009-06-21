@@ -10,6 +10,7 @@
  */
 /***/
 //namespace Seraphp\Server;
+require_once 'Exceptions/ExceptionHandler.class.php';
 require_once 'Server/AppServer.class.php';
 require_once 'Server/Config/ConfigFactory.class.php';
 require_once 'Server/AppServerFactory.class.php';
@@ -20,12 +21,15 @@ require_once 'Server/AppServerFactory.class.php';
  */
 class ServerManager
 {
+    private static $_log;
+
     private function __construct()
     {
     }
 
     static function startup($appID='main')
     {
+        self::_init();
         self::write('Starting up: '.$appID);
         $result = AppServerFactory::getAppInstance($appID,
                                 ConfigFactory::getConf($appID));
@@ -38,6 +42,7 @@ class ServerManager
 
     static function restart($appID)
     {
+        self::_init();
         $currStatus = AppServerRegistry::getAppStatus($appID);
         if ($currStatus === 'running') {
             $oldProcess = AppServerRegistry::getAppInstance($appID);
@@ -67,6 +72,7 @@ class ServerManager
 
     static function shutdown($appID)
     {
+        self::_init();
         $currStatus = AppServerRegistry::getAppStatus($appID);
         if ($currStatus == 'running') {
             $process = AppServerRegistry::getAppInstance($appID);
@@ -86,6 +92,7 @@ class ServerManager
     static function write($message)
     {
         echo ($message);
+        self::$_log->debug($message);
     }
 
     static function writeln($message)
@@ -94,4 +101,9 @@ class ServerManager
         echo "\n";
     }
 
+    private static function _init()
+    {
+        ExceptionHandler::setup();
+        self::$_log = LogFactory::getInstance();
+    }
 }
