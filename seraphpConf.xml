@@ -8,6 +8,12 @@
                 <address>127.0.0.1</address>
                 <port>8088</port>
                 <timeout>60</timeout>
+                <engines>
+                    <engine class="Default" id="default" />
+                    <engine class="StaticFileServer" id="static">
+                        <param name="basepath">/home/peter/workspace/seraphp</param>
+                    </engine>
+                </engines>
             </instance>
             <urimap>
                 <url engine="default">/</url>
@@ -17,7 +23,7 @@
             </urimap>
             <resources>
                 <includes>
-                    <path>/home/peter/workspace/seraphp/Server/DefaultEngine.class.php</path>
+                    <path>/home/peter/workspace/seraphp/Server/</path>
                 </includes>
                 <static>
                     <path>/home/peter/workspace/seraphp/</path>

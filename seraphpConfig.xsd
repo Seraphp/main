@@ -2,27 +2,15 @@
 <xs:schema targetNamespace="http://www.seraphp.com/seraphpConfig"
 	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:tns="http://www.seraphp.com/seraphpConfig" attributeFormDefault="qualified">
-	<xs:element name="servers">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="tns:server" minOccurs="1" maxOccurs="unbounded" />
-			</xs:sequence>
-			<xs:attribute ref="tns:pidpath" />
-		</xs:complexType>
+	<xs:element name="servers" type="tns:serversComplexType">
+        <xs:annotation>
+        	<xs:documentation>Root element of the Seraphp configuration file</xs:documentation>
+        </xs:annotation>
 	</xs:element>
-	<xs:element name="server">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="tns:instance" minOccurs="1"
-					maxOccurs="1" />
-				<xs:element ref="tns:urimap" minOccurs="0"
-					maxOccurs="1" />
-				<xs:element ref="tns:resources" minOccurs="0"
-					maxOccurs="1" />
-				<xs:element ref="tns:logs" maxOccurs="1" minOccurs="0"></xs:element>
-			</xs:sequence>
-			<xs:attribute ref="tns:id" use="required"/>
-		</xs:complexType>
+	<xs:element name="server" type="tns:serverComplexType">
+        <xs:annotation>
+        	<xs:documentation>Represents an instantiable  server daemon</xs:documentation>
+        </xs:annotation>
 	</xs:element>
 
 	<xs:complexType name="urimapType">
@@ -34,7 +22,7 @@
 	<xs:complexType name="instanceType">
 		<xs:all>
 			<xs:element ref="tns:ipc" minOccurs="0" maxOccurs="1" />
-			<xs:element ref="tns:engine" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="tns:engines" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="tns:maxChildren" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="tns:address" minOccurs="0" maxOccurs="1" />
 			<xs:element ref="tns:port" minOccurs="0" maxOccurs="1" />
@@ -74,7 +62,7 @@
 
 	<xs:element name="ipc" type="xs:string" />
 
-	<xs:element name="engine" type="xs:string" />
+	<xs:element name="engines" type="tns:enginesType" />
 
 	<xs:element name="maxChildren" type="xs:int" />
 
@@ -184,5 +172,54 @@
     	<xs:sequence>
     		<xs:element ref="tns:log" maxOccurs="unbounded" minOccurs="0"></xs:element>
     	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="enginesType">
+    	<xs:sequence>
+    		<xs:element ref="tns:engine" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="engine" type="tns:engineType"></xs:element>
+    
+
+    <xs:complexType name="engineType" mixed="true">
+    	<xs:sequence>
+    		<xs:element ref="tns:param" maxOccurs="unbounded" minOccurs="0"></xs:element>
+    	</xs:sequence>
+    	<xs:attribute ref="tns:class" use="required" />
+    	<xs:attribute ref="tns:id" use="required"></xs:attribute>
+    </xs:complexType>
+
+    <xs:attribute name="class" type="xs:string"></xs:attribute>
+    <xs:complexType name="serverComplexType">
+    	<xs:sequence>
+    		<xs:element minOccurs="1" maxOccurs="1"
+    			ref="tns:instance">
+    		</xs:element>
+    		<xs:element minOccurs="0" maxOccurs="1" ref="tns:urimap"></xs:element>
+    		<xs:element minOccurs="0" maxOccurs="1"
+    			ref="tns:resources">
+    		</xs:element>
+    		<xs:element minOccurs="0" maxOccurs="1" ref="tns:logs"></xs:element>
+    	</xs:sequence>
+    	<xs:attribute use="required" ref="tns:id"></xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="serversComplexType">
+    	<xs:sequence>
+    		<xs:element minOccurs="1" maxOccurs="unbounded"
+    			ref="tns:server">
+    		</xs:element>
+    	</xs:sequence>
+    	<xs:attribute ref="tns:pidpath" use="required">
+    		<xs:annotation>
+    			<xs:documentation>Specify the path used for all server daemon instances to store their pid file.</xs:documentation>
+    		</xs:annotation></xs:attribute>
+    </xs:complexType>
+
+    <xs:element name="param" type="tns:paramType"></xs:element>
+
+    <xs:complexType name="paramType">
+    	<xs:attribute ref="tns:name"></xs:attribute>
     </xs:complexType>
 </xs:schema>
