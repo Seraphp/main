@@ -387,7 +387,7 @@ abstract class Server implements Daemon
     {
         self::$_log->debug(__METHOD__.' called');
         if ($this->_role === 'parent') {
-            $this->expell();
+            exit($this->expell());
         }
     }
 
