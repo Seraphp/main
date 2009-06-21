@@ -41,4 +41,10 @@ XML;
         $this->server->setMaxSpawns(10);
         $this->assertEquals(10, $this->server->getMaxSpawns());
     }
+
+    function tearDown()
+    {
+        $pid = file_get_contents(getcwd().'/.'.$this->appID.'_srphp.pid');
+        posix_kill($pid, 9);
+    }
 }
