@@ -265,10 +265,10 @@ abstract class Server implements Daemon
     {
         self::$_log->debug(__METHOD__.' called');
         $this->onExpell();
-        self::$_log->log('children:');
+        self::$_log->debug('children:');
         $success = false;
         foreach ($this->_spawns as $childPid=>$details) {
-            self::$_log->log('stopping: '.$childPid);
+            self::$_log->debug('stopping: '.$childPid);
             if (posix_getpgid($childPid) !== null) {
                 //it seems we have a PHP bug here:
                 //Sending SIGSTOP when $child['pid']
@@ -291,7 +291,7 @@ abstract class Server implements Daemon
             self::$_log->debug('Deleting '.realpath($pidData['uri']));
             unlink(realpath($pidData['uri']));
         }
-        self::$_log->log('Parent exiting');
+        self::$_log->debug('Parent exiting');
         return $success;
     }
 
