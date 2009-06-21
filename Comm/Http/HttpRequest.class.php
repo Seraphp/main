@@ -15,6 +15,7 @@ require_once 'Comm/Request.interface.php';
 require_once 'ObserverListener.interface.php';
 require_once 'Exceptions/HttpException.class.php';
 require_once 'Exceptions/SocketException.class.php';
+require_once 'Exceptions/IOException.class.php';
 require_once 'HttpFactory.class.php';
 /**
  * Class represents an HTTP request, no matter
@@ -29,6 +30,7 @@ class HttpRequest implements Request, Listener
     const REQ_TOSEND = false;
     const REQ_RECEIVED = true;
     private static $_log = null;
+    public $timeout = 30;
     /**
      * Holds sanitized POST parameters in array
      * @var array
@@ -123,14 +125,22 @@ class HttpRequest implements Request, Listener
         $this->_parse();
     }
 
+    /**
+     * Parses already arrived data
+     * 
+     * While parsing it is notifies all listeners of the arrived amount of data 
+     *
+     * @throws IOException
+     * @return void
+     */
     protected function _parse()
     {
         self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
             $read = array($this->_socket);
-            while (stream_select($read,
-                     $write = null, $except = null, 0, 10) < 1) {
-                //usleep(10);
+            if (stream_select($read,
+                     $write = null, $except = null, $this->timeout, 0, 200) < 1) {
+                throw new IOException('Connection timed out!');
             }
             self::$_log->debug('Data arriving on socket');
             while ($this->_buffer =
@@ -307,7 +317,6 @@ class HttpRequest implements Request, Listener
     public function send()
     {
         self::$_log->debug(__METHOD__.' called');
-        //@todo Implement HttpRequest sending
         if ( $this->isReceived === self::REQ_TOSEND ) {
             $curlObj = curl_init($this->url);
             $options = array(
@@ -360,11 +369,13 @@ class HttpRequest implements Request, Listener
             );
     }
 
-    public function respond($msg)
+    public function respond($msg, $settings = null)
     {
         self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
-            $response = HttpFactory::create('response', $this->_socket);
+            $response = HttpFactory::create('response',
+                $this->_socket,
+                $settings);
             $response->messageBody = $msg;
             return $response;
         } else {
