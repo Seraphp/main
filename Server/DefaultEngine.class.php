@@ -24,12 +24,14 @@ class DefaultEngine implements AppEngine
 {
     private static $_log;
 
+    function __construct(Config $conf)
+    {
+    }
+
     function process(Request $req)
     {
         self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Output buffer ended');
-        self::$_log->debug('message length: '. strlen($req->httpRawHeaders));
         $msg = <<<HTML
     <html>
         <head>
@@ -42,7 +44,11 @@ HTML;
         $response = $req->respond($msg);
         $response->contentType = 'text/html';
         self::$_log->debug($response);
-        $response->send();
-        return $response->statusCode;
+        try{
+            $response->send();
+        } catch (IOException $e) {
+            return 1;
+        }
+        return 0;
     }
 }
