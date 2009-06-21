@@ -10,6 +10,7 @@
  */
 /***/
 require_once 'Comm/Request.interface.php';
+require_once 'Server/Config/Config.class.php';
 /**
  * Defines the methodes an AppEngine should implement
  *
@@ -17,12 +18,16 @@ require_once 'Comm/Request.interface.php';
  */
 interface AppEngine
 {
-
+    /**
+     * @param Config $conf  Configuration part from xml
+     * @return void
+     */
+    function __construct(Config $conf);
     /**
      * Method to process the received Request
      *
-     * @param Request $req
-     * @return integer
+     * @param Request $req  Incoming request in wrapper object
+     * @return integer  exit statuscode
      */
     function process(Request $req);
 }
