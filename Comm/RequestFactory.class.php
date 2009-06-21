@@ -31,17 +31,18 @@ class RequestFactory
     /**
      * Returns an object reference which is implements Request interface
      *
+     * @param resource $socket  Stream socketalready open
+     * @param integer $timeout  Timeout in secs to close if no data is arrived
      * @return Request
      * @throws IOException  If no data in socket arrived
      */
-    public static function create($socket)
+    public static function create($socket, $timeout=30)
     {
         self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
         $read = array($socket);
-        while (stream_select($read, $write = null, $except = null, 0, 10) < 1) {
-            //todo: implement listening timout here as a multiplier of usleep
-            //value
+        if (stream_select($read, $write = null, $except = null, $timeout, 200) < 1) {
+            throw new IOException('Connection timed out!');
         }
         self::$_log->debug('Data arriving on socket');
         //using socket_recv with MSF_PEEK to examin the first part
