@@ -82,20 +82,31 @@ class HttpFactory
         {
             case 'request':
                 self::$_log->debug('Creating HTTP Request');
-                return new HttpRequest($socket);
+                $obj = new HttpRequest($socket);
+                if ($settings !== null) {
+                    foreach ($settings as $key => $value) {
+                        $obj->$key=$value;
+                    };
+                }
                 break;
             case 'response':
                 self::$_log->debug('Creating HTTP Response');
-                return new HttpResponse($socket);
+                $obj = new HttpResponse($socket);
+                if ($settings !== null) {
+                    foreach ($settings as $key => $value) {
+                        $obj->$key=$value;
+                    };
+                }
                 break;
             case 'cookie':
                 self::$_log->debug('Creating HTTP Cookie');
-                return self::getCookies($settings);
+                $obj = self::getCookies($settings);
                 break;
             default:
-                return null;
+                $obj = null;
                 break;
         }
+        return $obj;
     }
 
     /**
