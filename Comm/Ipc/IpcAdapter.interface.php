@@ -20,10 +20,43 @@
 interface IpcAdapter
 {
 
+    /**
+     * Initalize adapter
+     *
+     * @param $pid  Process ID
+     * @param $role  Child or Parent
+     * @return void
+     */
     function init($pid, $role);
+    /**
+     * Reads form the Adapter and return result string or false on error
+     *
+     * @return string|false
+     */
     function read();
+    /**
+     * Sends message to recipient through adapter
+     *
+     * @param string $to  Recipient ID of the message
+     * @param string $message  Meddage to deliver
+     * @return boolean  True onSuccess, false on failure
+     */
     function write($to, $message);
+    /**
+     * Sets role in the communication
+     *
+     * @param string $role  'child' or 'parent' arte accepted only
+     * @return string  'child' or 'parent' accordingly
+     */
     function setRole($role);
+    /**
+     * Returns current role
+     * @return string 'child' or 'parent' accordingly
+     */
     function getRole();
+    /**
+     * Closes any open connection
+     * @return void
+     */
     function close();
 }

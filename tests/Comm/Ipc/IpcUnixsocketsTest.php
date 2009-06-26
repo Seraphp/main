@@ -33,16 +33,10 @@ class IpcUnixsocketsTest extends PHPUnit_Framework_TestCase{
 
     function testWrite()
     {
-        $this->assertEquals(strlen($this->msg)+1,$this->ipc->write(1234, $this->msg));
+        $this->assertEquals(strlen($this->msg)+1,
+            $this->ipc->write(1234, $this->msg));
     }
 
-    function testRead()
-    {
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-        $this->assertEquals($this->msg,$this->ipc->read());
-    }
 
     function testClose()
     {
