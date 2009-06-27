@@ -1,68 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.seraphp.com/seraphpConfig"
 	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.seraphp.com/seraphpConfig" attributeFormDefault="qualified">
-	<xs:element name="servers" type="tns:serversComplexType">
-        <xs:annotation>
-        	<xs:documentation>Root element of the Seraphp configuration file</xs:documentation>
-        </xs:annotation>
-	</xs:element>
-	<xs:element name="server" type="tns:serverComplexType">
-        <xs:annotation>
-        	<xs:documentation>Represents an instantiable  server daemon</xs:documentation>
-        </xs:annotation>
-	</xs:element>
-
-	<xs:complexType name="urimapType">
-		<xs:sequence>
-			<xs:element ref="tns:url" minOccurs="1" maxOccurs="unbounded" />
-		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="instanceType">
-		<xs:all>
-			<xs:element ref="tns:ipc" minOccurs="0" maxOccurs="1" />
-			<xs:element ref="tns:engines" minOccurs="0" maxOccurs="1" />
-			<xs:element ref="tns:maxChildren" minOccurs="0" maxOccurs="1" />
-			<xs:element ref="tns:address" minOccurs="0" maxOccurs="1" />
-			<xs:element ref="tns:port" minOccurs="0" maxOccurs="1" />
-			<xs:element ref="tns:timeout" minOccurs="0" maxOccurs="1">
+	xmlns:tns="http://www.seraphp.com/seraphpConfig" attributeFormDefault="unqualified">
+	<xs:element name="servers">
+		<xs:annotation>
+			<xs:documentation>Root element of the Seraphp configuration file
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="1" maxOccurs="unbounded" ref="tns:server">
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="pidpath" type="xs:anyURI" use="required">
 				<xs:annotation>
-					<xs:documentation>Timeout value in seconds
-					</xs:documentation>
+					<xs:documentation>Specify the path used for all server daemon
+						instances to store their pid file.</xs:documentation>
 				</xs:annotation>
-			</xs:element>
-		</xs:all>
-	</xs:complexType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
 
-	<xs:element name="instance" type="tns:instanceType" />
+	<xs:element name="server">
+		<xs:annotation>
+			<xs:documentation>Represents an instantiable server daemon
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="1" maxOccurs="1" ref="tns:instance">
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="1" ref="tns:urimap" />
+				<xs:element minOccurs="0" maxOccurs="1" ref="tns:resources">
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="1" ref="tns:logs" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 
-	<xs:element name="urimap" type="tns:urimapType" />
+	<xs:element name="instance">
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="tns:ipc" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="tns:engines" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="tns:maxChildren" minOccurs="0"
+					maxOccurs="1" />
+				<xs:element ref="tns:address" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="tns:port" minOccurs="0" maxOccurs="1" />
+				<xs:element name="timeout" type="xs:int" minOccurs="0"
+					maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Timeout value in seconds
+                    </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
 
-	<xs:element name="resources" type="tns:resourceType" />
+	<xs:element name="urimap">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:url" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-	<xs:complexType name="resourceType">
-		<xs:sequence>
-			<xs:element ref="tns:includes" minOccurs="1" maxOccurs="unbounded" />
-			<xs:element name="static" type="tns:staticType" maxOccurs="1" minOccurs="0"/>
-			<xs:element name="auth" type="tns:authType" maxOccurs="1" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
+	<xs:element name="resources">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:includes" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element name="static" type="tns:staticType"
+					maxOccurs="1" minOccurs="0" />
+				<xs:element name="auth" type="tns:authType" maxOccurs="1"
+					minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-	<xs:element name="url" type="tns:urlType" />
-
-	<xs:element name="includes" type="tns:includesType" />
-
-	<xs:complexType name="includesType">
-		<xs:sequence>
-			<xs:element ref="tns:path" minOccurs="1" maxOccurs="unbounded" />
-
-		</xs:sequence>
-	</xs:complexType>
+	<xs:element name="includes">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:path" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 	<xs:element name="ipc" type="xs:string" />
 
-	<xs:element name="engines" type="tns:enginesType" />
+	<xs:element name="engines">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:engine" minOccurs="0" maxOccurs="unbounded"></xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 	<xs:element name="maxChildren" type="xs:int" />
 
@@ -70,40 +103,33 @@
 
 	<xs:element name="port" type="xs:int" />
 
-	<xs:element name="seraphp" type="tns:rootType" />
+	<xs:element name="seraphp">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:servers" maxOccurs="1" minOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-	<xs:complexType name="rootType">
-		<xs:sequence>
-			<xs:element ref="tns:servers" maxOccurs="1" minOccurs="1" />
-		</xs:sequence>
-	</xs:complexType>
-
-
-
-	<xs:complexType name="urlType" mixed="true">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="auth" type="xs:string" use="optional"
-					default="none" />
-				<xs:attribute ref="tns:engine" use="optional" />
-				<xs:attribute name="target" type="xs:string" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-
-	<xs:attribute name="pidpath" type="xs:anyURI" />
-
-	<xs:attribute name="id" type="xs:string" />
-
-	<xs:element name="timeout" type="xs:int" />
-
-	<xs:attribute name="engine" type="xs:string" />
+	<xs:element name="url">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="auth" type="xs:string" use="optional"
+						default="none" />
+					<xs:attribute name="engine" type="xs:string" use="optional" />
+					<xs:attribute name="target" type="xs:string" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 
 	<xs:complexType name="staticType">
 		<xs:sequence>
 			<xs:element ref="tns:path" maxOccurs="1" minOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
+	
 	<xs:element name="path" type="xs:anyURI" />
 
 	<xs:complexType name="authType">
@@ -119,15 +145,13 @@
 		<xs:sequence>
 			<xs:element name="user" type="tns:userType" maxOccurs="unbounded"
 				minOccurs="1" />
-
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="userType">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="role" type="xs:string"
-					use="required" />
+				<xs:attribute name="role" type="xs:string" use="required" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -139,87 +163,47 @@
 		<xs:attribute name="type" type="xs:string" use="required" />
 	</xs:complexType>
 
-    <xs:element name="log" type="tns:logType"></xs:element>
+	<xs:element name="log">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:conf" maxOccurs="1" minOccurs="1"></xs:element>
+			</xs:sequence>
+			<xs:attribute name="handler" type="xs:string" use="required"></xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="optional"></xs:attribute>
+			<xs:attribute name="ident" type="xs:string" use="optional"></xs:attribute>
+			<xs:attribute name="level" type="xs:string" use="required"></xs:attribute>
+		</xs:complexType>
+	</xs:element>
 
-    <xs:complexType name="logType">
-    	<xs:sequence>
-    		<xs:element ref="tns:conf" maxOccurs="1" minOccurs="1"></xs:element>
-    	</xs:sequence>
-    	<xs:attribute ref="tns:handler" use="required"></xs:attribute>
-    	<xs:attribute ref="tns:name" use="optional"></xs:attribute>
-    	<xs:attribute ref="tns:ident" use="optional"></xs:attribute>
-    	<xs:attribute ref="tns:level" use="required"></xs:attribute>
-    </xs:complexType>
+	<xs:element name="conf" nillable="true">
+		<xs:complexType>
+			<xs:anyAttribute/>
+		</xs:complexType>
+	</xs:element>
 
-    <xs:attribute name="handler" type="xs:string"></xs:attribute>
+	<xs:element name="logs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:log" maxOccurs="unbounded"
+					minOccurs="0"></xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-    <xs:attribute name="name" type="xs:string"></xs:attribute>
+	<xs:element name="engine">
+		<xs:complexType mixed="true">
+			<xs:sequence>
+				<xs:element ref="tns:param" maxOccurs="unbounded"
+					minOccurs="0" />
+			</xs:sequence>
+			<xs:attribute name="class" type="xs:string" use="required" />
+			<xs:attribute name="id" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
 
-    <xs:attribute name="ident" type="xs:string"></xs:attribute>
-
-    <xs:attribute name="level" type="xs:string"></xs:attribute>
-
-    <xs:element name="conf" type="tns:confType"></xs:element>
-
-    <xs:complexType name="confType">
-    	<xs:anyAttribute></xs:anyAttribute>
-    </xs:complexType>
-
-    <xs:element name="logs" type="tns:logsType"></xs:element>
-
-    
-    <xs:complexType name="logsType">
-    	<xs:sequence>
-    		<xs:element ref="tns:log" maxOccurs="unbounded" minOccurs="0"></xs:element>
-    	</xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="enginesType">
-    	<xs:sequence>
-    		<xs:element ref="tns:engine" minOccurs="0" maxOccurs="unbounded"></xs:element>
-    	</xs:sequence>
-    </xs:complexType>
-
-    <xs:element name="engine" type="tns:engineType"></xs:element>
-    
-
-    <xs:complexType name="engineType" mixed="true">
-    	<xs:sequence>
-    		<xs:element ref="tns:param" maxOccurs="unbounded" minOccurs="0"></xs:element>
-    	</xs:sequence>
-    	<xs:attribute ref="tns:class" use="required" />
-    	<xs:attribute ref="tns:id" use="required"></xs:attribute>
-    </xs:complexType>
-
-    <xs:attribute name="class" type="xs:string"></xs:attribute>
-    <xs:complexType name="serverComplexType">
-    	<xs:sequence>
-    		<xs:element minOccurs="1" maxOccurs="1"
-    			ref="tns:instance">
-    		</xs:element>
-    		<xs:element minOccurs="0" maxOccurs="1" ref="tns:urimap"></xs:element>
-    		<xs:element minOccurs="0" maxOccurs="1"
-    			ref="tns:resources">
-    		</xs:element>
-    		<xs:element minOccurs="0" maxOccurs="1" ref="tns:logs"></xs:element>
-    	</xs:sequence>
-    	<xs:attribute use="required" ref="tns:id"></xs:attribute>
-    </xs:complexType>
-    <xs:complexType name="serversComplexType">
-    	<xs:sequence>
-    		<xs:element minOccurs="1" maxOccurs="unbounded"
-    			ref="tns:server">
-    		</xs:element>
-    	</xs:sequence>
-    	<xs:attribute ref="tns:pidpath" use="required">
-    		<xs:annotation>
-    			<xs:documentation>Specify the path used for all server daemon instances to store their pid file.</xs:documentation>
-    		</xs:annotation></xs:attribute>
-    </xs:complexType>
-
-    <xs:element name="param" type="tns:paramType"></xs:element>
-
-    <xs:complexType name="paramType">
-    	<xs:attribute ref="tns:name"></xs:attribute>
-    </xs:complexType>
+	<xs:element name="param">
+		<xs:complexType mixed="true">
+			<xs:attribute name="name" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
 </xs:schema>
