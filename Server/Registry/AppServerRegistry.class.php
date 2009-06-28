@@ -14,6 +14,7 @@
 require_once 'Server/Registry/Registry.class.php';
 require_once 'Server/AppServer.class.php';
 require_once 'Exceptions/RegistryException.class.php';
+require_once 'Comm/JsonRpc/JsonRpcProxy.class.php';
 /**
  * Registry class of running AppServer instances
  *
@@ -64,7 +65,8 @@ class AppServerRegistry extends Registry
     public function getAppStatus($appID)
     {
         if (isset($this->$appID)) {
-            return $this->$appID->getStatus();
+            $instance = $this->getAppInstance($appID);
+            return $instance->getStatus();
         } else return null;
     }
 
@@ -75,12 +77,14 @@ class AppServerRegistry extends Registry
      * key is exists in the registry, or NUll.
      *
      * @param string $appID
-     * @return AppServer|Null
+     * @return JsonRpcProxy|null
      */
     public function getAppInstance($appID)
     {
         if (isset($this->$appID)) {
-            return $this->$appID;
+            $proxy = new JsonRpcProxy($appID, null, $this->$appID);
+            $proxy->init();
+            return $proxy;
         } else return null;
     }
 
@@ -89,14 +93,14 @@ class AppServerRegistry extends Registry
      *
      * Returns reference of the removed application
      *
-     * @param string $appID
-     * @return AppServer
-     * @throws RegistryException
+     * @param string $appID Id of the instance needs removal
+     * @return JsonRpcProxy
+     * @throws RegistryException  if id not exists in registry
      */
     public function removeApp($appID)
     {
         if (isset($this->$appID)) {
-            $ref = $this->$appID;
+            $ref = $this->getAppInstance($appID);
             unset($this->$appID);
             return $ref;
         } else {
@@ -110,14 +114,14 @@ class AppServerRegistry extends Registry
      * Store reference of application in registry.
      *
      * @param string $appID
-     * @param AppServer $appRef
+     * @param Server $appRef
      * @return boolean
      * @throws RegistryException
      */
-    public function addApp($appID, AppServer $appRef)
+    public function addApp($appID, Server $appRef)
     {
         if (!isset($this->$appID)) {
-            $this->$appID = $appRef;
+            $this->$appID = get_class($appRef);
             return true;
         } else {
             throw new RegistryException(
