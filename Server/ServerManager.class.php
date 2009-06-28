@@ -22,6 +22,8 @@ require_once 'Server/AppServerFactory.class.php';
 class ServerManager
 {
     private static $_log;
+    private static $_cf;
+    private static $_reg;
 
     private function __construct()
     {
@@ -30,25 +32,21 @@ class ServerManager
     static function startup($appID='main')
     {
         self::_init();
-        self::write('Starting up: '.$appID);
-        $result = AppServerFactory::getAppInstance($appID,
-                                ConfigFactory::getConf($appID));
-        if ($result === true) {
-            self::writeln('...OK');
-        } else {
-            self::writeln('...Failed');
-        }
+        self::writeln('Starting up: '.$appID);
+        $server = AppServerFactory::getAppInstance($appID,
+                            self::$_cf->getConf($appID));
+        $pid = $server->summon();
     }
 
     static function restart($appID)
     {
         self::_init();
-        $currStatus = AppServerRegistry::getAppStatus($appID);
+        $currStatus = self::$_reg->getAppStatus($appID);
         if ($currStatus === 'running') {
-            $oldProcess = AppServerRegistry::getAppInstance($appID);
+            $oldProcess = self::$_reg->getAppInstance($appID);
             self::write('Starting up new server: '.$appID);
             $newProcess = AppServerFactory::getAppInstance($appID,
-                                ConfigFactory::getConf($appID));
+                                self::$_cf->getConf($appID));
             if ($newProcess === true) {
                 self::writeln('...OK');
             } else {
@@ -58,12 +56,12 @@ class ServerManager
             $result = $oldProcess->expell();
             if ($result === true) {
                 self::writeln('...OK');
-                AppServerRegistry::removeApp($appID);
+                self::$_reg->removeApp($appID);
             } else {
                 self::writeln('...Failed');
             }
             if ($newProcess === true) {
-                AppServerRegistry::addApp($appID, $newProcess);
+                self::$_reg->addApp($appID, $newProcess);
             }
         } else {
             self::writeln($appID.' is '.$currStatus);
@@ -73,14 +71,14 @@ class ServerManager
     static function shutdown($appID)
     {
         self::_init();
-        $currStatus = AppServerRegistry::getAppStatus($appID);
+        $currStatus = self::$_reg->getAppStatus($appID);
         if ($currStatus == 'running') {
-            $process = AppServerRegistry::getAppInstance($appID);
+            $process = self::$_reg->getAppInstance($appID);
             self::write('Shuting down '.$appID);
             $result = $process->expell();
             if ($result === true) {
                 self::writeln('...OK');
-                AppServerRegistry::removeApp($appID);
+                self::$_reg->removeApp($appID);
             } else {
                 self::writeln('...Failed');
             }
@@ -105,5 +103,7 @@ class ServerManager
     {
         ExceptionHandler::setup();
         self::$_log = LogFactory::getInstance();
+        self::$_cf = ConfigFactory::getInstance();
+        self::$_reg = AppServerRegistry::getInstance();
     }
 }
