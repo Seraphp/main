@@ -277,15 +277,22 @@ class Socket
         }
         if ( $this->_transport == 'unix' ) {
             $addr = $this->_transport.'://'.$this->_addr;
+            if (!file_exists($this->_addr)) {
+                if (posix_mkfifo($this->_addr, 0700) === false) {
+                    throw new SocketException('Cannot create FIFO file: '.
+                        $this->_addr);
+                }
+            }
+            $fp = fopen($this->_addr, 'r+');
         } else {
             $addr = $this->_transport.'://'.$this->_addr . ':' . $this->_port;
-        }
-        $fp = stream_socket_client($addr,
+            $fp = stream_socket_client($addr,
                                    $errno,
                                    $errstr,
                                    $this->_timeout/1000000,
                                    $flags,
                                    $context);
+        }
         if ( !is_resource($fp) ) {
             if ( $errno == 0 && isset($php_errormsg) ) {
                 $errstr = $php_errormsg;
@@ -665,34 +672,32 @@ class Socket
     function select($state, $tvSec, $tvUsec = 0)
     {
         if ( !$this->isConnected() ) {
-            throw new SocketException('Not connected');
+            throw new SocketException('Invalid select call: not connected');
         }
         $read = null;
         $write = null;
         $except = null;
         if ( $state & self::READ ) {
-            $read[] = $this->fp;
+            $read[] = $this->_fp;
         }
         if ( $state & self::WRITE ) {
-            $write[] = $this->fp;
+            $write[] = $this->_fp;
         }
         if ( $state & self::ERROR ) {
-            $except[] = $this->fp;
+            $except[] = $this->_fp;
         }
-        if ( false ===
-                ($sr = stream_select($read, $write, $except, $tvSec, $tvUsec))
-            ) {
+        if (false === ($sr = stream_select($read, $write, $except, $tvSec, $tvUsec))) {
             return false;
         }
 
         $result = 0;
-        if ( count($read) ) {
+        if (count($read)) {
             $result |= self::READ;
         }
-        if ( count($write) ) {
+        if (count($write)) {
             $result |= self::WRITE;
         }
-        if ( count($except) ) {
+        if (count($except)) {
             $result |= self::ERROR;
         }
         return $result;
