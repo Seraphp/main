@@ -14,6 +14,7 @@ require_once 'Server/Server.class.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Comm/Request.interface.php';
 require_once 'Comm/RequestFactory.class.php';
+require_once 'Comm/JsonRpc/JsonRpcProxy.class.php';
 require_once 'Exceptions/SocketException.class.php';
 /**
  * AppServer implementation class
@@ -33,6 +34,7 @@ class AppServer extends Server
     private $_socket = null;
     private $_accepting = false;
     private $_urimap = array();
+    private $_rpcProxy = null;
 
     const DEFAULT_ADDRESS = '127.0.0.1';
     const DEFAULT_PORT = 8085;
@@ -138,6 +140,15 @@ class AppServer extends Server
         }
         $this->_setupIncludePathes();
         $this->_initEngines();
+
+        self::$_log->debug('Initalizing JsonRpc  proxy');
+        $this->_rpcProxy = new JsonRpcProxy($this->_appID);
+        $this->_rpcProxy->addSrcObject('AppServer',
+            array('getAppId',
+                'getStatus'),
+            array('expell'));
+        $this->_rpcProxy->init();
+
         self::$_log->debug('Initalizing socket listening on');
         $this->initSocket();
     }
@@ -201,7 +212,8 @@ class AppServer extends Server
         if ($this->_accepting === true) {
             $this->_listen();
         }
-        usleep(200);
+        $this->_rpcProxy->listen();
+        usleep(100);
     }
 
     /**
