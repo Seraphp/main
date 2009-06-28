@@ -22,6 +22,8 @@ require_once 'Log/LogFactory.class.php';
  */
 abstract class Server implements Daemon
 {
+    protected $_status = 'exists';
+
     /**
      * Logging engine reference if any
      * @var Log
@@ -202,6 +204,7 @@ abstract class Server implements Daemon
     protected function startHart()
     {
         self::$_log->debug(__METHOD__.' called');
+        $this->_status = 'running';
         declare(ticks = 1);
         while (true) {
             $this->hartBeat();
@@ -292,6 +295,7 @@ abstract class Server implements Daemon
             unlink(realpath($pidData['uri']));
         }
         self::$_log->debug('Parent exiting');
+        $this->_status = 'expelled';
         return $success;
     }
 
@@ -389,6 +393,16 @@ abstract class Server implements Daemon
         if ($this->_role === 'parent') {
             exit($this->expell());
         }
+    }
+
+    /**
+     * Gives back status of the Server instance
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->_status;
     }
 
     abstract protected function onSummon();
