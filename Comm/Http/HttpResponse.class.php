@@ -56,32 +56,33 @@ class HttpResponse
         self::$_log->debug(__METHOD__.' called');
         if ($this->toBeSend) {
             $this->headers['Date'] = date(DATE_RFC1123);
+            //Keep-Alive feature not implemented yet
+            $this->headers['Connection'] = 'Closed';
+            //Creating Status line
             $this->statusLine = sprintf('HTTP/%s %d %s',
                                  $this->httpVersion,
                                  $this->statusCode,
                                  HttpFactory::getHttpStatus($this->statusCode));
-            self::$_log->debug('Setting write buffer to 0');
-            stream_set_write_buffer($this->_socket, 0);
-            self::$_log->debug('Sending status line');
-            self::$_log->debug($this->statusLine);
-            if (fwrite($this->_socket, $this->statusLine."\r\n") === false) {
-                throw new IOException('Cannot send status line!');
-            }
+            $buffer = $this->statusLine."\r\n";
+            //If a file is to be sent in the message bdy
             if (is_resource($this->messageBody)) {
-                $data = fstat($this->messageBody);
+                $data = array_merge(fstat($this->messageBody),
+                    stream_get_meta_data($this->messageBody));
                 $this->headers['Content-Length'] = $data['size'];
                 $this->headers['Last-Modified'] =
                     date(DATE_RFC1123, $data['mtime']);
+                $this->headers['Etag'] = md5_file($data['uri']);
             }else{
                 $this->headers['Content-Length'] = strlen($this->messageBody);
+                $this->headers['Etag'] = md5($this->messageBody);
             }
             if ($this->headers !== array()) {
-                self::$_log->debug('Sending headers');
-                if (fwrite($this->_socket, $this->_headers()."\r\n")) {
-                    throw new IOException('Cannot send headers!');
-                }
+                $buffer .= $this->_headers()."\r\n";
             }
-            fwrite($this->_socket, "\r\n");
+            self::$_log->debug('Sending out head part');
+            if (fwrite($this->_socket, $buffer."\r\n") === false) {
+                throw new IOException('Cannot send out header part');
+            }
             if (!empty($this->messageBody)) {
                 self::$_log->debug('Sending message body');
                 if (is_resource($this->messageBody)) {
