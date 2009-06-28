@@ -21,6 +21,7 @@ class PackedFileDataStore implements StoreEngine
 
     const FN_PREFIX = "srpd";
     const PROTOCOL = "file://";
+    private static $_lastFile = '';
 
     /**
      * @var string  Full path to used file for storing data
@@ -55,7 +56,8 @@ class PackedFileDataStore implements StoreEngine
     function init($file = null)
     {
         $this->setPath($file);
-        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'w+b');
+        touch($this->_file);
+        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'r+');
         if (!$this->_fp) {
             throw new IOException('Cannot open file '.$this->_file);
         }
@@ -69,7 +71,7 @@ class PackedFileDataStore implements StoreEngine
     private function _reinit()
     {
         $this->close();
-        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'w+b');
+        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'r+');
         if (!$this->_fp) {
             throw new IOException('Cannot open file '.$this->_file);
         }
@@ -89,9 +91,11 @@ class PackedFileDataStore implements StoreEngine
             $this->init($file);
         }
         rewind($this->_fp);
-        $data = stream_get_contents($this->_fp);
-        if ($data === false) {
-            throw new IOException('Error when reading file '.$this->_file);
+        $data = fgets($this->_fp);
+        if (!feof($this->_fp)) {
+            if ($data === false) {
+                throw new IOException('Error when reading file '.$this->_file);
+            }
         }
         return unserialize(base64_decode($data));
     }
@@ -104,7 +108,7 @@ class PackedFileDataStore implements StoreEngine
      */
     function save($data)
     {
-        $this->_reinit();
+        rewind($this->_fp);
         $res = fwrite($this->_fp, base64_encode(serialize($data)));
         if ($res === false) {
             throw new IOException('Error when writing file '.$this->_file);
@@ -144,7 +148,11 @@ class PackedFileDataStore implements StoreEngine
     {
         clearstatcache();
         if (empty($path)) {
-            $path = tempnam(getcwd(), self::FN_PREFIX);
+            if (empty(self::$_lastFile)) {
+                $path = tempnam(getcwd(), self::FN_PREFIX);
+            } else {
+                $path = self::$_lastFile;
+            }
         } else {
             $path = $this->_getAbsolutePath($path);
         }
@@ -153,6 +161,7 @@ class PackedFileDataStore implements StoreEngine
         }
         if (is_writable(dirname($path))) {
             $this->_file = $path;
+            self::$_lastFile = $this->_file;
             return $this->_file;
         } else {
             throw new IOException('Path '.dirname($path).' is not writable');
