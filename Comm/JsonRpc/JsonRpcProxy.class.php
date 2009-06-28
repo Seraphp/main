@@ -47,7 +47,7 @@ class JsonRpcProxy
     /**
      * @var mixed  Reference for connection object
      */
-    private $_connection = null;
+    private $_conn = null;
     /**
      * @var array  Callable methods on our side
      */
@@ -56,6 +56,8 @@ class JsonRpcProxy
      * @var array  Methodes at destianation which will have no return value
      */
     private $_notifications = array();
+
+    private $_fifo = '';
 
     /**
      * @var integer Message ID counter
@@ -140,23 +142,20 @@ class JsonRpcProxy
         self::$_log->debug(__METHOD__. ' called');
         switch ($this->_type) {
             case 'socket':
-                require_once 'Comm/Socket.class.php';
                 @mkdir('/tmp/seraphp/', 0700);
-                $this->_connection = new Socket('unix',
-                    '/tmp/seraphp/'.$this->_name.'.tmp');
-                if (!$this->_connection->isConnected()) {
-                    $this->_connection->connect();
-                }
-                $this->_connection->setBlocking(false);
+                $this->_fifo = '/tmp/seraphp/'.$this->_name.'.tmp';
+                $this->_conn = fopen($this->_fifo, 'r+');
+                stream_set_blocking($this->_conn, false);
                 break;
         }
     }
 
     public function listen()
     {
-        if ($this->_connection->select(Socket::READ, 0, 20) == Socket::READ) {
+        $read = array($this->_conn);
+        if (stream_select($read,$write = array(), $exc = array(), 0, 20) > 0) {
             self::$_log->debug(__METHOD__. ': received something');
-            $this->parseRequest($this->_connection->readLine());
+            $this->parseRequest(fgets($this->_conn));
         }
     }
 
@@ -171,22 +170,21 @@ class JsonRpcProxy
         if (in_array($name, $this->_notifications) ) {
             $message = (string) new JsonRpcRequest($name, $arguments);
             self::$_log->debug('Message: '.$message);
-            try {
-                $this->_connection->writeLine($message);
-            } catch(Exception $e) {
-                throw $e;
-            }
+             if (fwrite($this->_conn, $message."\n") === false) {
+                 throw new IOException('Cannot write FIFO: '.$this->_fifo);
+             }
         } else {
             $message = (string) new JsonRpcRequest($name, $arguments, self::getID());
-            if ($this->_connection->writeLine($message)) {
-                usleep(300);//letting readers read the message
-                if ($this->_connection->select(Socket::READ, 0, 20) == Socket::READ) {
-                    $reply = $this->_connection->readLine();
+            if (fwrite($this->_conn, $message."\n")) {
+                usleep(300);//letting reader get message
+                $read = array($this->_conn);
+                if (stream_select($read,$write=array(), $exc= array(), 0, 20) > 0) {
+                    $reply = fgets($this->_conn);
                     self::$_log->debug(__METHOD__. ' received:'.$reply);
                     return $this->_parseReply($reply);
                 }
             } else {
-                throw new IOException('Cannot write to socket');
+                throw new IOException('Cannot write FIFO: '.$this->_fifo);
             }
         }
     }
@@ -235,7 +233,7 @@ class JsonRpcProxy
                                                  $error,
                                                  $message->id);
                 self::$_log->debug('Result is: '.$response);
-                $this->_connection->writeLine($response);
+                fwrite($this->_conn, $response."\n");
             }
         }
     }
@@ -283,8 +281,8 @@ class JsonRpcProxy
      */
     public function __destruct()
     {
-        if ($this->_connection->isConnected()) {
-            $this->_connection->disconnect();
+        if (is_resource($this->_conn)) {
+            fclose($this->_conn);
         }
     }
 }
