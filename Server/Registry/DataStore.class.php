@@ -137,12 +137,7 @@ class DataStore
     public function __destruct()
     {
         if (isset($this->_engine)) {
-            try{
-                $this->_engine->save($this->_store);
-            }catch(IOException $e){
-                print $e->getMessage();
-                exit;
-            }
+            $this->_engine->save($this->_store);
         }
     }
 
