@@ -18,7 +18,7 @@
  * @subpackage JsonRpc
  * @since JSON-RPC 1.0
  */
-class Response
+class JsonRpcResponse
 {
     public $result = null;
     public $error = null;

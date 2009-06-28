@@ -11,7 +11,7 @@
  */
 /***/
 //namespace Seraphp\Comm;
-require_once 'Comm/Request.interface.class';
+require_once 'Comm/Request.interface.php';
 /**
  * Implements simple JSON-RPC Request class
  *
@@ -19,7 +19,7 @@ require_once 'Comm/Request.interface.class';
  * @subpackage JsonRpc
  * @since JSON-RPC 1.0
  */
-class Request implements Request
+class JsonRpcRequest implements Request
 {
      public $id = null;
      public $method = '';
