@@ -55,11 +55,12 @@ XML;
 
     function testAddValidApp()
     {
-        $this->mockServer->expects($this->once())->method('getStatus');
-        $this->assertTrue($this->reg->addApp('mockery',$this->mockServer));
+        $this->assertTrue($this->reg->addApp('mockery', $this->mockServer));
         $this->assertEquals($this->reg->getAppStatus('mockery'),null);
-        $this->assertSame($this->reg->getAppInstance('mockery'),$this->mockServer);
-        $this->assertSame($this->mockServer, $this->reg->removeApp('mockery'));
+        $this->assertThat($this->reg->getAppInstance('mockery'),
+            $this->IsInstanceOf('JsonRpcProxy'));
+        $this->assertThat($this->reg->removeApp('mockery'),
+            $this->IsInstanceOf('JsonRpcProxy'));
         $this->setExpectedException('RegistryException');
         $this->reg->removeApp('mockery');
     }
