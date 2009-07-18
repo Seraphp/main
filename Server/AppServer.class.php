@@ -141,7 +141,7 @@ class AppServer extends Server
         $this->_setupIncludePathes();
         $this->_initEngines();
 
-        self::$_log->debug('Initalizing JsonRpc  proxy');
+        self::$_log->debug('Initalizing JsonRpc proxy');
         $this->_rpcProxy = new JsonRpcProxy($this->_appID);
         $this->_rpcProxy->addSrcObject('AppServer',
             array('getAppId',
