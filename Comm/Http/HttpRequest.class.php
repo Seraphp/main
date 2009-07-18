@@ -369,6 +369,12 @@ class HttpRequest implements Request, Listener
             );
     }
 
+    /**
+     * Creates a HttpResponse class, according to the Requests paramteres
+     *
+     * @return HttpResponse
+     * @throws HttpException
+     */
     public function respond($msg, $settings = null)
     {
         self::$_log->debug(__METHOD__.' called');
