@@ -138,6 +138,7 @@ class DataStore
     {
         if (isset($this->_engine)) {
             $this->_engine->save($this->_store);
+            $this->_engine->cleanUp();
         }
     }
 

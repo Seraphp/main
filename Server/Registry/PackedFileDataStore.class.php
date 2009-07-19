@@ -57,6 +57,17 @@ class PackedFileDataStore implements StoreEngine
     {
         $this->setPath($file);
         touch($this->_file);
+        return $this->_open();
+    }
+
+    private function _reinit()
+    {
+        $this->close();
+        return $this->_open();
+    }
+
+    protected function _open()
+    {
         $this->_fp = fopen(self::PROTOCOL.$this->_file, 'r+');
         if (!$this->_fp) {
             throw new IOException('Cannot open file '.$this->_file);
@@ -66,19 +77,6 @@ class PackedFileDataStore implements StoreEngine
             throw new IOException('Cannot get lock on '.$this->_file);
         }
         return true;
-    }
-
-    private function _reinit()
-    {
-        $this->close();
-        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'r+');
-        if (!$this->_fp) {
-            throw new IOException('Cannot open file '.$this->_file);
-        }
-
-        if (flock($this->_fp, LOCK_EX) === false) {
-            throw new IOException('Cannot get lock on '.$this->_file);
-        }
     }
 
     /**
@@ -211,5 +209,14 @@ class PackedFileDataStore implements StoreEngine
     function getPath()
     {
         return $this->_file;
+    }
+
+    function cleanUp()
+    {
+        clearstatcache();
+        //mivel: strlen(base64_encode(serialize(array()))) = 8
+        if (filesize($this->_file) < 9) {
+            unlink($this->_file);
+        }
     }
 }

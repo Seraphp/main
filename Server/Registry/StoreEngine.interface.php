@@ -21,4 +21,5 @@ interface StoreEngine
     public function load($resource = null);
     public function save($storeData);
     public function close();
+    public function cleanUp();
 }
