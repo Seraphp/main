@@ -9,6 +9,8 @@
  <target name="clean">
   <delete dir="${basedir}/build"/>
   <delete dir="${basedir}/source/docs"/>
+  <delete file="${basedir}/source/.srpdAppMan" />
+  <delete file="${basedir}/source/.main_srphp.pid" />
  </target>
 
  <target name="prepare">
