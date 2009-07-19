@@ -11,6 +11,7 @@
   <delete dir="${basedir}/source/docs"/>
   <delete file="${basedir}/source/.srpdAppMan" />
   <delete file="${basedir}/source/.main_srphp.pid" />
+  <delete file="${basedir}/source/out.log" />
  </target>
 
  <target name="prepare">
