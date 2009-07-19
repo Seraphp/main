@@ -346,24 +346,22 @@ abstract class Server implements Daemon
                 break;
             default:
                 $sigName = array_keys($this->_availSigs, $sigCode);
+                self::$_log->debug('Signal: '.$sigName);
                 if (is_array($sigName)) {
-                    foreach ($signame as $signal) {
-                        if (is_callable($this,
-                                        strtolower($sigName).'Callback')
-                           ) {
-                            pcntl_signal($sigCode,
-                                        array($this,'signalHandler'),
-                                        true);
-                            call_user_func(array(
-                                            $this,
-                                            strtolower($sigName).'Callback'));
+                    foreach ($sigName as $signal) {
+                        self::$_log->debug('Signals[]: '.$signal);
+                        $method = strtolower($signal).'Callback';
+                        self::$_log->debug((method_exists($this, $method))?"$method exists":"$method not exists");
+                        if (method_exists($this, $method)) {
+                            pcntl_signal($sigCode, array($this,'signalHandler'), true);
+                            self::$_log->debug('calling: '.$method);
+                            call_user_func(array($this, $method));
                         }
                     }
                 } elseif ($sigName !== false) {
                     pcntl_signal($sigCode, array($this, 'signalHandler'), true);
                     call_user_func(array(
-                                        $this,
-                                        strtolower($sigName).'Callback'));
+                       $this, strtolower($sigName).'Callback'));
                 }
                 return;
         }
