@@ -32,14 +32,12 @@ class JsonRpcProxy
     private static $_log;
 
     private $_name = '';
+
+    private $_role = null;
     /**
-     * @var mixed  Reference of proxied object
+     * @var mixed  Reference for client object
      */
-    private $_src = null;
-    /**
-     * @var mixed  Reference for callable JSON-RPC object
-     */
-    private $_dest = null;
+    private $_client = null;
     /**
      * @var string  Connection type to use for RPC
      */
@@ -64,12 +62,14 @@ class JsonRpcProxy
      */
     private static $_id = 0;
 
+    private $_pid = null;
+
     /**
      * Sets up the class before opening any connection
      *
      * @param string $name  A string to name the connection
-     * @param string $src  The client class whose methods are offered out for others
-     * @param string $dest  The destination class whose methods can be called
+     * @param string $client  The client class whose methods are offered out
+     *  for others
      * @param string $type  Connection type to use
      * @param array $methods  List of method calls to be proxied, if empty all
      * will be used
@@ -77,55 +77,57 @@ class JsonRpcProxy
      * return value from dest
      * @return JsonRpcProxy
      */
-    public function __construct($name, $src = null, $dest = null,
-            $type='socket', $srcMethods = array(), $destNotifications = array())
+    public function __construct($name, $client = null,
+            $type='socket', $methods = array(), $notifs = array())
     {
         self::$_log = LogFactory::getInstance($conf);
         self::$_log->debug(__METHOD__. ' called');
         $this->_type = $type;
         $this->_name = $name;
-        if (isset($src)) {
-            $this->addSrcObject($src, $srcMethods);
-        }
-        if (isset($dest)) {
-            $this->addDestObject($dest, $destNotifications);
+        if (isset($client)) {
+            $this->setup($client, $methods, $notifs);
         }
     }
 
-    public function addSrcObject($src, $methods = array(),
-        $notifications = array())
+    /**
+     *
+     * @param stdObject|string $client  Any object whose methodes will be called
+     *  through JsonRpcProxy
+     * @param array $methods Specify methodes you want to make callable
+     * @param array $notifications  Specify methodes(returning void) you want
+     *  to make callable
+     * @return void
+     */
+    public function setup($client, $methods = array(), $notifs = array())
     {
         self::$_log->debug(__METHOD__. ' called');
-        $this->_src = $src;
-        $list = $this->analyzeClientMethods($this->_src);
+        switch (gettype($client)) {
+            case 'array':
+                $this->_client = $client[0];
+                $this->_pid = $client[1];
+                if (is_object($this->_client)) {
+                    $clientClass = get_class($this->_client);
+                } else {
+                    $clientClass = $this->_client;
+                }
+                break;
+            case 'object':
+                $this->_client = $client;
+                $clientClass = get_class($this->_client);
+                break;
+            default:
+                $this->_client = $client;
+                $clientClass = $this->_client;
+        }
+        $list = $this->_analyzeMethods($clientClass);
         if ($methods !== array()) {
             $this->_allowedMethods = array_intersect($methods,
                 $list['methods']);
         } else {
             $this->_allowedMethods = $list['methods'];
         }
-        if ($notifications !== array()) {
-            $this->_notifications = array_intersect($notifications,
-                $list['notifications']);
-        } else {
-            $this->_notifications = $list['notifications'];
-        }
-    }
-
-    public function addDestObject($dest, $methods = array(),
-        $notifications = array())
-    {
-        self::$_log->debug(__METHOD__. ' called');
-        $this->_dest = $dest;
-        $list = $this->analyzeClientMethods($this->_dest);
-        if ($methods !== array()) {
-            $this->_allowedMethods = array_intersect($methods,
-                $list['methods']);
-        } else {
-            $this->_allowedMethods = $list['methods'];
-        }
-        if ($notifications !== array()) {
-            $this->_notifications = array_intersect($notifications,
+        if ($notifs !== array()) {
+            $this->_notifications = array_intersect($notifs,
                 $list['notifications']);
         } else {
             $this->_notifications = $list['notifications'];
@@ -135,27 +137,69 @@ class JsonRpcProxy
     /**
      * Initalize the connection to start communication
      *
+     * @param string $role  How to initalize the proxy: 'client'(default) or 'server'
      * @return boolean
      */
-    public function init()
+    public function init($role = 'client')
     {
         self::$_log->debug(__METHOD__. ' called');
+        if($role == 'client' || $role == 'server') {
+            $this->_role = $role;
+        } else {
+            throw new Exception('Role can only be client or server!');
+        }
         switch ($this->_type) {
             case 'socket':
                 @mkdir('/tmp/seraphp/', 0700);
-                $this->_fifo = '/tmp/seraphp/'.$this->_name.'.tmp';
-                $this->_conn = fopen($this->_fifo, 'r+');
-                stream_set_blocking($this->_conn, false);
+                if ($this->_role == 'server') {
+                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'In.tmp';
+                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'Out.tmp';
+                } else {
+                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'Out.tmp';
+                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'In.tmp';
+                }
+                foreach ($this->_fifo as $type => $fifo)
+                if (!file_exists($fifo)) {
+                    posix_mkfifo($fifo, 0700);
+                }
                 break;
+        }
+    }
+
+    protected function _connect($mode)
+    {
+        if ($this->_role == 'client') {
+            $this->_disconnect();
+        }
+        if ($mode == 'read') {
+            $fifoDir = ($this->_role == 'client')?'out':'in';
+            $this->_conn = fopen($this->_fifo[$fifoDir], 'r+');
+            stream_set_blocking($this->_conn, false);
+        } elseif ($mode == 'write') {
+            $fifoDir = ($this->_role == 'client')?'in':'out';
+            $this->_conn = fopen($this->_fifo[$fifoDir], 'w+');
+            stream_set_blocking($this->_conn, false);
+        }
+    }
+
+    protected function _disconnect()
+    {
+        if (is_resource($this->_conn)) {
+            fclose($this->_conn);
         }
     }
 
     public function listen()
     {
+        self::$_log->debug(__METHOD__.' called');
+        $this->_connect('read');
         $read = array($this->_conn);
-        if (stream_select($read,$write = array(), $exc = array(), 0, 20) > 0) {
+        self::$_log->debug($this->_conn);
+        if (stream_select($read, $write = array(), $exc = array(), 5) > 0) {
             self::$_log->debug(__METHOD__. ': received something');
             $this->parseRequest(fgets($this->_conn));
+        } else {
+            self::$_log->debug(__METHOD__.' timed out');
         }
     }
 
@@ -170,22 +214,32 @@ class JsonRpcProxy
         if (in_array($name, $this->_notifications) ) {
             $message = (string) new JsonRpcRequest($name, $arguments);
             self::$_log->debug('Message: '.$message);
-             if (fwrite($this->_conn, $message."\n") === false) {
+            $this->_connect('write');
+            if (fwrite($this->_conn, $message."\n") === false) {
                  throw new IOException('Cannot write FIFO: '.$this->_fifo);
-             }
-        } else {
+            }
+            $this->_sendSignal($this->_pid);
+        } elseif (in_array($name, $this->_allowedMethods) ) {
             $message = (string) new JsonRpcRequest($name, $arguments, self::getID());
+            $this->_connect('write');
             if (fwrite($this->_conn, $message."\n")) {
-                usleep(300);//letting reader get message
+                $this->_sendSignal($this->_pid);
+                $this->_connect('read');
                 $read = array($this->_conn);
-                if (stream_select($read,$write=array(), $exc= array(), 0, 20) > 0) {
+                if (stream_select($read, $write=array(), $exc= array(), 5) > 0) {
                     $reply = fgets($this->_conn);
+                    if ($reply === false) {
+                        throw new IOException('No reply in FIFO');
+                    }
                     self::$_log->debug(__METHOD__. ' received:'.$reply);
                     return $this->_parseReply($reply);
                 }
             } else {
                 throw new IOException('Cannot write FIFO: '.$this->_fifo);
             }
+        } else {
+            throw new Exception(sprintf('No such function: %s::%s()'.
+                $this->_client, $name));
         }
     }
 
@@ -201,7 +255,7 @@ class JsonRpcProxy
         self::$_log->debug(__METHOD__. ' called');
         $message = json_decode($reply);
         self::$_log->debug('Message: '.$reply);
-        if ( isset($message->error) ) {
+        if (isset($message->error)) {
             $exception = $message->error;
             throw $exception;
         } else {
@@ -215,25 +269,26 @@ class JsonRpcProxy
      */
     public function parseRequest($msg)
     {
+        fwrite(STDOUT, __METHOD__.' received: '.$msg);
         self::$_log->debug(__METHOD__. ' called');
         self::$_log->debug('Message: '.$msg);
         $message = json_decode($msg);
-        if (is_callable($this->_src, $message->method)) {
+        if (is_callable($this->_client, $message->method)) {
             self::$_log->debug('Method exists: '.$message->method);
             $error = null;
-            try {
-                $result = call_user_func_array(array($this->_src,
-                                                     $message->method),
-                                               $message->params);
-            } catch(Exception $e)	{
+            try
+            {
+                $result = call_user_func_array(array($this->_client,
+                    $message->method), $message->params);
+            } catch(Exception $e) {
                 $error = $e;
             }
-            if ( $message->id !== null ) {
+            if ($message->id !== null ) {
                 $response = (string) new JsonRpcResponse($result,
-                                                 $error,
-                                                 $message->id);
+                    $error, $message->id);
                 self::$_log->debug('Result is: '.$response);
-                fwrite($this->_conn, $response."\n");
+                $this->_connect('write');
+                fwrite($this->_conn['write'], $response."\n");
             }
         }
     }
@@ -251,22 +306,21 @@ class JsonRpcProxy
     /**
      * Returns an array of 2 arrays about methodes and notifications
      *
-     * @param string $class  Any class which has to be analized
+     * @param string $className  Any class which has to be analized
      * @return array  Methodes which are publicly available, marking which have
      * no return value
      */
-    public function analyzeClientMethods($class)
+    protected function _analyzeMethods($className)
     {
         self::$_log->debug(__METHOD__. ' called');
         $pubMethods = array();
         $pubNotifs = array();
-        $analyzer = new ReflectionClass($class);
+        $analyzer = new ReflectionClass($className);
         $methods = $analyzer->getMethods();
-        for ( $idx = 0; $idx < count($methods); $idx++ ) {
-            if ( $methods[$idx]->isPublic() &&
-               !$methods[$idx]->isConstructor()
-            ) {
-                if ( strpos($methods[$idx]->getDocComment(), '@return void') ) {
+        for ($idx = 0; $idx < count($methods); $idx++) {
+            if ($methods[$idx]->isPublic() &&
+               !$methods[$idx]->isConstructor()) {
+                if (strpos($methods[$idx]->getDocComment(), '@return void')) {
                     $pubNotifs[] = $methods[$idx]->getName();
                 } else {
                     $pubMethods[] = $methods[$idx]->getName();
@@ -276,13 +330,20 @@ class JsonRpcProxy
         return array('methods' => $pubMethods, 'notifications'=>$pubNotifs);
     }
 
+    protected function _sendSignal($pid)
+    {
+        if (is_numeric($pid)) {
+            return posix_kill($pid, SIGUSR1);
+        } else {
+            throw new Exception('Invalid PID provided: '.$pid);
+        }
+    }
+
     /**
      * @return void
      */
     public function __destruct()
     {
-        if (is_resource($this->_conn)) {
-            fclose($this->_conn);
-        }
+        $this->_disconnect();
     }
 }
