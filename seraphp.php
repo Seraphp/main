@@ -29,7 +29,7 @@ if ($argc > 1) {
             break;
         default: echo '1st paramter has to be the required action:'.
          'start|stop|restart';
-        break;
+            break;
     }
 } else {
     echo "Usage: ./seraphp.php ACTION SERVER [config]\n";

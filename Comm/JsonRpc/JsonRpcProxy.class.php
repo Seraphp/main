@@ -154,11 +154,11 @@ class JsonRpcProxy
             case 'socket':
                 @mkdir('/tmp/seraphp/', 0700);
                 if ($this->_role == 'server') {
-                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'In.tmp';
-                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'Out.tmp';
+                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'I.tmp';
+                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'O.tmp';
                 } else {
-                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'Out.tmp';
-                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'In.tmp';
+                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'O.tmp';
+                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'I.tmp';
                 }
                 foreach ($this->_fifo as $type => $fifo)
                 if (!file_exists($fifo)) {
@@ -222,13 +222,16 @@ class JsonRpcProxy
             }
             $this->_sendSignal($this->_pid);
         } elseif (in_array($name, $this->_allowedMethods) ) {
-            $message = (string) new JsonRpcRequest($name, $arguments, self::getID());
+            $message = (string) new JsonRpcRequest($name, $arguments,
+                self::getID());
             $this->_connect('write');
             if (fwrite($this->_conn, $message."\n")) {
                 $this->_sendSignal($this->_pid);
                 $this->_connect('read');
                 $read = array($this->_conn);
-                if (stream_select($read, $write = array(), $exc = array(), 5) > 0) {
+                $write = null;
+                $exc = null;
+                if (stream_select($read, $write, $exc, 5) > 0) {
                     $reply = fgets($this->_conn);
                     if ($reply === false) {
                         throw new IOException('No reply in FIFO');

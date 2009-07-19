@@ -41,7 +41,9 @@ class RequestFactory
         self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
         $read = array($socket);
-        if (stream_select($read, $write = null, $except = null, $timeout, 200) < 1) {
+        $write = null;
+        $except = null;
+        if (stream_select($read, $write, $except, $timeout, 200) < 1) {
             throw new IOException('Connection timed out!');
         }
         self::$_log->debug('Data arriving on socket');
