@@ -34,7 +34,7 @@ XML;
 
         $this->conf = new Config($confString);
         self::$port++;
-        $this->mockServer = $this->getMock('AppServer', array('getStatus'),array($this->conf));
+        $this->mockServer = new AppServer($this->conf);
     }
 
     function testRegistryIsSingleton()
@@ -56,7 +56,7 @@ XML;
     function testAddValidApp()
     {
         $this->assertTrue($this->reg->addApp('mockery', $this->mockServer));
-        $this->assertEquals($this->reg->getAppStatus('mockery'),null);
+        $this->assertEquals($this->reg->getAppStatus('mockery'), null);
         $this->assertThat($this->reg->getAppInstance('mockery'),
             $this->IsInstanceOf('JsonRpcProxy'));
         $this->assertThat($this->reg->removeApp('mockery'),
@@ -67,7 +67,7 @@ XML;
 
     function testAddSameApp()
     {
-        $this->assertTrue($this->reg->addApp('mockery',$this->mockServer));
+        $this->assertTrue($this->reg->addApp('mockery', $this->mockServer));
         $this->setExpectedException('RegistryException');
         $this->reg->addApp('mockery',$this->mockServer);
         $this->reg->removeApp('mockery');
