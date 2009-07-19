@@ -90,6 +90,9 @@ class DataStore
      */
     public function __set($key, $value)
     {
+        if (strpos($key, '_') === 0) {
+            return false;
+        }
         if ($this->_overwrite === true) {
             $this->_store[$key]=$value;
         } else {
