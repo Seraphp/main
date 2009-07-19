@@ -95,7 +95,11 @@ class PackedFileDataStore implements StoreEngine
                 throw new IOException('Error when reading file '.$this->_file);
             }
         }
-        return unserialize(base64_decode($data));
+        if ($data !== false) {
+            return unserialize(base64_decode($data));
+        } else {
+            return array();
+        }
     }
 
     /**
