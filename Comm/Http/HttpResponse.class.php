@@ -72,7 +72,7 @@ class HttpResponse
                 $this->headers['Last-Modified'] =
                     date(DATE_RFC1123, $data['mtime']);
                 $this->headers['Etag'] = md5_file($data['uri']);
-            }else{
+            } else {
                 $this->headers['Content-Length'] = strlen($this->messageBody);
                 $this->headers['Etag'] = md5($this->messageBody);
             }
@@ -93,7 +93,7 @@ class HttpResponse
                     if (fwrite($this->_socket, "\r\n") === false) {
                         throw new IOException('Cannot send message body!');
                     }
-                }else{
+                } else {
                     if (fwrite($this->_socket,
                         $this->messageBody."\r\n") === false) {
                         throw new IOException('Cannot send message body!');
@@ -110,8 +110,8 @@ class HttpResponse
         self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('Creating header lines');
         foreach ($this->headers as $key=>$value) {
-            self::$_log->debug(sprintf('%s:%s',$key,$value));
-            array_push($headers, sprintf('%s:%s',$key,$value));
+            self::$_log->debug(sprintf('%s:%s', $key, $value));
+            array_push($headers, sprintf('%s:%s', $key, $value));
         }
         $headers = implode("\r\n", $headers);
         return $headers;

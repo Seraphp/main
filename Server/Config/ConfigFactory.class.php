@@ -153,22 +153,6 @@ class ConfigFactory implements Singleton
                 break;
             case 1:
                 $parentNode = $this->xsearch('..', $serverConfXML[0]);
-                /*$props = array_keys((array)$serverConfXML[0]->children());
-                $parentNode = $this->xsearch('..', $serverConfXML[0]);
-                $conf = new Config;
-                $conf->name = (string) $serverConfXML[0]->attributes()->id;
-                $conf->pidpath = (string) $parentNode[0]->attributes()->pidpath;
-                if (in_array('urimap', $props)) {
-                  $conf->urimap = (array) $serverConfXML[0]->urimap->children();
-                }
-                if (in_array('instance', $props)) {
-                    $conf->instance =
-                        (array) $serverConfXML[0]->instance->children();
-                }
-                if (in_array('resources', $props)) {
-                    $conf->includes =
-                     (array) $serverConfXML[0]->resources->includes->children();
-                }*/
                 $serverConfXML[0]->addAttribute('pidpath',
                     $parentNode[0]->attributes()->pidpath);
                 $conf = $serverConfXML[0];
@@ -181,7 +165,7 @@ class ConfigFactory implements Singleton
                         $this->_configPath.DIRECTORY_SEPARATOR.
                         $this->_configFile));
                 break;
-            }
+        }
         return $conf;
     }
 }

@@ -165,7 +165,7 @@ class AppServer extends Server
     {
         foreach ($this->_includes as $path) {
             $currIncludePath = get_include_path();
-            if (strpos($currIncludePath,$path) === false) {
+            if (strpos($currIncludePath, $path) === false) {
                 set_include_path($currIncludePath . PATH_SEPARATOR . $path);
             }
         }
@@ -299,7 +299,7 @@ class AppServer extends Server
     public function process(Request $req)
     {
         self::$_log->debug(__METHOD__.' called');
-        $path = parse_url($req->url,PHP_URL_PATH);
+        $path = parse_url($req->url, PHP_URL_PATH);
         $engines = $this->_urimap->children();
         $engine = false;
         foreach ($engines as $node=>$value) {
@@ -319,7 +319,7 @@ class AppServer extends Server
             if (array_key_exists($engine, $this->_engines)) {
                 self::$_log->debug("Processing w/".$engine);
                 $returnCode = $this->_engines[$engine]->process($req);
-            }else{
+            } else {
                 $returnCode = 1;
                 self::$_log->debug("Not registered: ".$engine);
                 $response = $req->respond('File not found!',

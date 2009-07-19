@@ -118,6 +118,7 @@ class JsonRpcProxy
             default:
                 $this->_client = $client;
                 $clientClass = $this->_client;
+                break;
         }
         $list = $this->_analyzeMethods($clientClass);
         if ($methods !== array()) {
@@ -137,13 +138,14 @@ class JsonRpcProxy
     /**
      * Initalize the connection to start communication
      *
-     * @param string $role  How to initalize the proxy: 'client'(default) or 'server'
+     * @param string $role  How to initalize the proxy: 'client'(default) or
+     *  'server'
      * @return boolean
      */
     public function init($role = 'client')
     {
         self::$_log->debug(__METHOD__. ' called');
-        if($role == 'client' || $role == 'server') {
+        if ($role == 'client' || $role == 'server') {
             $this->_role = $role;
         } else {
             throw new Exception('Role can only be client or server!');
@@ -226,7 +228,7 @@ class JsonRpcProxy
                 $this->_sendSignal($this->_pid);
                 $this->_connect('read');
                 $read = array($this->_conn);
-                if (stream_select($read, $write=array(), $exc= array(), 5) > 0) {
+                if (stream_select($read, $write = array(), $exc = array(), 5) > 0) {
                     $reply = fgets($this->_conn);
                     if ($reply === false) {
                         throw new IOException('No reply in FIFO');

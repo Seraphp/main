@@ -164,8 +164,8 @@ abstract class Server implements Daemon
                     self::$_log->debug('Signal handler for '.$signal.
                       '('.constant($signal).') registered');
                 } else {
-                    self::$_log->debug('Registering signal handler for '.$signal.
-                      '('.constant($signal).') failed');
+                    self::$_log->debug('Registering signal handler for '.
+                      $signal.'('.constant($signal).') failed');
                 }
             }
         }
@@ -351,10 +351,9 @@ abstract class Server implements Daemon
                     foreach ($sigName as $signal) {
                         self::$_log->debug('Signals[]: '.$signal);
                         $method = strtolower($signal).'Callback';
-                        self::$_log->debug((method_exists($this, $method))?"$method exists":"$method not exists");
                         if (method_exists($this, $method)) {
-                            pcntl_signal($sigCode, array($this,'signalHandler'), true);
-                            self::$_log->debug('calling: '.$method);
+                            pcntl_signal($sigCode, array($this,'signalHandler'),
+                                true);
                             call_user_func(array($this, $method));
                         }
                     }
@@ -364,6 +363,7 @@ abstract class Server implements Daemon
                        $this, strtolower($sigName).'Callback'));
                 }
                 return;
+                break;
         }
     }
 

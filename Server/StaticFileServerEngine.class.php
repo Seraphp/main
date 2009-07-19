@@ -40,8 +40,8 @@ class StaticFileServerEngine implements AppEngine
     {
         self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('Requested URL: '.$req->url);
-        $truePath = $this->_basePath.strtr(
-            substr($req->url, strpos($req->url,'/',1)),
+        $truePath = $this->_basePath.
+            strtr(substr($req->url, strpos($req->url, '/', 1)),
             PATH_SEPARATOR,
             DIRECTORY_SEPARATOR);
         $resp = $req->respond('');
