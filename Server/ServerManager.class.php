@@ -36,7 +36,6 @@ class ServerManager
         $server = AppServerFactory::getAppInstance($appID,
                             self::$_cf->getConf($appID));
         $pid = $server->summon();
-        var_dump(__METHOD__,$pid);
         self::$_reg->storePid($appID, $pid);
     }
 
