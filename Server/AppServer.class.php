@@ -143,7 +143,7 @@ class AppServer extends Server
 
         self::$_log->debug('Initalizing JsonRpc proxy');
         $this->_rpcProxy = new JsonRpcProxy($this->_appID);
-        $this->_rpcProxy->addSrcObject('AppServer',
+        $this->_rpcProxy->setup($this,
             array('getAppId',
                 'getStatus'),
             array('expell'));
@@ -212,7 +212,6 @@ class AppServer extends Server
         if ($this->_accepting === true) {
             $this->_listen();
         }
-        $this->_rpcProxy->listen();
         usleep(100);
     }
 
@@ -364,5 +363,11 @@ class AppServer extends Server
             $this->_appReg->mergeChanges();
         }
         unset($this->_spawns[$pid]);
+    }
+
+    protected function sigusr1Callback()
+    {
+        self::$_log->debug(__METHOD__.' called');
+        $this->_rpcProxy->listen();
     }
 }
