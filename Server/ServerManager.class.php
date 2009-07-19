@@ -36,6 +36,8 @@ class ServerManager
         $server = AppServerFactory::getAppInstance($appID,
                             self::$_cf->getConf($appID));
         $pid = $server->summon();
+        var_dump(__METHOD__,$pid);
+        self::$_reg->storePid($appID, $pid);
     }
 
     static function restart($appID)
@@ -62,6 +64,7 @@ class ServerManager
             }
             if ($newProcess === true) {
                 self::$_reg->addApp($appID, $newProcess);
+                self::$_reg->storePid($appID, $newProcess->summon());
             }
         } else {
             self::writeln($appID.' is '.$currStatus);
