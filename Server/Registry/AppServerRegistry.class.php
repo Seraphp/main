@@ -66,12 +66,14 @@ class AppServerRegistry extends Registry
     {
         if (isset($this->$appID)) {
             $instance = $this->getAppInstance($appID);
-            return $instance->getStatus();
+            if (is_array($this->$appID)) {
+                return $instance->getStatus();
+            } else return null;
         } else return null;
     }
 
     /**
-     * Gives object reference fo running AppServer
+     * Gives object reference of running AppServer
      *
      * Returns object reference of running AppServer instance if given
      * key is exists in the registry, or NUll.
@@ -82,7 +84,7 @@ class AppServerRegistry extends Registry
     public function getAppInstance($appID)
     {
         if (isset($this->$appID)) {
-            $proxy = new JsonRpcProxy($appID, null, $this->$appID);
+            $proxy = new JsonRpcProxy($appID, $this->$appID);
             $proxy->init();
             return $proxy;
         } else return null;
@@ -126,6 +128,19 @@ class AppServerRegistry extends Registry
         } else {
             throw new RegistryException(
                 'AppServer already registered: '.$appID
+            );
+        }
+    }
+
+    public function storePid($appID, $pid)
+    {
+        var_dump(__METHOD__,$pid);
+        if (isset($this->$appID)) {
+            $this->$appID = array($this->$appID, $pid);
+            return true;
+        } else {
+            throw new RegistryException(
+                'AppServer not yet registered: '.$appID
             );
         }
     }
