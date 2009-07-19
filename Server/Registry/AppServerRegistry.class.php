@@ -134,7 +134,6 @@ class AppServerRegistry extends Registry
 
     public function storePid($appID, $pid)
     {
-        var_dump(__METHOD__,$pid);
         if (isset($this->$appID)) {
             $this->$appID = array($this->$appID, $pid);
             return true;
