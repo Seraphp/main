@@ -18,13 +18,29 @@ require_once 'Registry/AppServerRegistry.class.php';
  */
 class AppServerFactory
 {
+    /**
+     * @var Log
+     */
     private static $_log;
+    /**
+     * @var AppServerRegistry
+     */
     private static $_registry = null;
 
+    /**
+     * Disabled private constructor
+     *
+     * @return void
+     */
     private function __construct()
     {
     }
 
+    /**
+     * Initalize class variables
+     *
+     * @return void
+     */
     private static function _init()
     {
         if (!isset(self::$_registry)) {
@@ -33,6 +49,13 @@ class AppServerFactory
         self::$_log = LogFactory::getInstance();
     }
 
+    /**
+     * Gives back an JsonRpcProxy class
+     *
+     * @param Config $appID
+     * @param $conf
+     * @return unknown_type
+     */
     public static function getAppInstance($appID, Config $conf)
     {
         self::_init();
@@ -53,16 +76,8 @@ class AppServerFactory
         return $instance;
     }
 
-    public static function startApp($appID)
+    public static function storePid($name, $pid)
     {
-        self::_init();
-        self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__. ' called');
-        if (self::$_registry->getAppStatus($appID) !== 'running') {
-            throw new Exception("Instance of '$appID' not registered,".
-                "cannot start it");
-        }
-        $instance = self::$_registry->getAppInstance($appID);
-        $instance->summon();
+        self::$_registry->storePid($name, $pid);
     }
 }
