@@ -168,20 +168,20 @@ class JsonRpcProxy
         }
     }
 
-    protected function _connect($mode)
+    protected function _connect($usage)
     {
         if ($this->_role == 'client') {
             $this->_disconnect();
         }
-        if ($mode == 'read') {
+        if ($usage == 'read') {
             $fifoDir = ($this->_role == 'client')?'out':'in';
-            $this->_conn = fopen($this->_fifo[$fifoDir], 'r+');
-            stream_set_blocking($this->_conn, false);
-        } elseif ($mode == 'write') {
+            $mode = 'r+';
+        } elseif ($usage == 'write') {
             $fifoDir = ($this->_role == 'client')?'in':'out';
-            $this->_conn = fopen($this->_fifo[$fifoDir], 'w+');
-            stream_set_blocking($this->_conn, false);
-        }
+            $mode = 'w+';
+        } else throw new Exception('Invalid usage specified: '.$usage);
+        $this->_conn = fopen($this->_fifo[$fifoDir], $mode);
+        stream_set_blocking($this->_conn, false);
     }
 
     protected function _disconnect()
