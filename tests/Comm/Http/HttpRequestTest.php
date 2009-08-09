@@ -93,6 +93,19 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
         $this->assertEquals($this->_params, $request->postParams);
     }
 
+    function testResponse()
+    {
+        if (fwrite($this->_sockets[1],
+            $this->_requestString['get'],
+            strlen($this->_requestString['get']))===false) {
+                $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
+            }
+        stream_socket_shutdown($this->_sockets[1],STREAM_SHUT_RDWR);
+        $request = new HttpRequest($this->_sockets[0]);
+        $this->assertTrue($request->isReceived);
+        $this->assertThat($request->respond('Testing'), $this->isInstanceOf('HttpResponse'));
+    }
+
     function tearDown()
     {
         foreach ($this->_sockets as $socket) {
