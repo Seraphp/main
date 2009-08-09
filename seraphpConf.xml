@@ -40,10 +40,10 @@
 				</auth>
 			</resources>
 			<logs>
-				<log handler="console" ident="Seraphp" level="PEAR_LOG_ERR">
+				<log handler="console" ident="Seraphp" level="ERR">
 					<conf stream="STDOUT" buffering="false" />
 				</log>
-				<log handler="file" ident="DEBUG" level="PEAR_LOG_ERR">
+				<log handler="file" name="out.log" ident="DEBUG" level="ERR">
 					<conf />
 				</log>
 			</logs>

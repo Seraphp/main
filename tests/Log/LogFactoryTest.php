@@ -18,10 +18,10 @@ class LogFactoryTest extends PHPUnit_Framework_TestCase{
         $xmlStr = <<<XML
      <server>
         <logs>
-            <log handler="console" name="" ident="Seraphp" level="PEAR_LOG_ERR">
+            <log handler="console" name="" ident="Seraphp" level="ERR">
                 <conf stream="STDOUT" buffering="false" />
             </log>
-            <log handler="file" name="out.log" ident="DEBUG" level="PEAR_LOG_ALL">
+            <log handler="file" name="out.log" ident="DEBUG" level="DEBUG">
                 <conf />
             </log>
         </logs>
@@ -30,17 +30,41 @@ XML;
         $this->xml = new Config($xmlStr);
     }
 
-    function testGetInstanceWithConf()
+    function testGetInstanceWithConfPear()
     {
-        $log = LogFactory::getInstance($this->xml);
+        $log = LogFactory::getInstance($this->xml, 'PEAR');
         $this->assertThat($log, $this->isInstanceOf('Log'));
         $this->assertTrue($log->isComposite());
     }
 
-    function testGetInstanceNoConf()
+    function testGetInstanceWithConfZend()
     {
-        $log = LogFactory::getInstance();
+        $log = LogFactory::getInstance($this->xml, 'Zend');
+        $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
+    }
+
+    function testGetInstanceWithConfAuto()
+    {
+        $log = LogFactory::getInstance($this->xml, 'Zend');
+        $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
+    }
+
+    function testGetInstanceNoConfPear()
+    {
+        $log = LogFactory::getInstance(null, 'PEAR');
         $this->assertThat($log, $this->isInstanceOf('Log'));
         $this->assertTrue($log->isComposite());
+    }
+
+    function testGetInstanceNoConfZend()
+    {
+        $log = LogFactory::getInstance(null, 'Zend');
+        $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
+    }
+
+    function testGetInstanceNoConfAuto()
+    {
+        $log = LogFactory::getInstance(null);
+        $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
 }
