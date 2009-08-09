@@ -5,6 +5,8 @@
  * @author Peter Nagy <antronin@gmail.com>
  * @version $Id$
  * @copyright Copyright (c) 2009, Peter Nagy
+ * @package Server
+ * @subpackage Registry
  * @filesource
  */
 /***/
@@ -14,6 +16,8 @@ require_once 'Exceptions/IOException.class.php';
 /**
  * Store engine to save|load|export store content into a file
  *
+ * @package Server
+ * @subpackage Registry
  * @todo Debug why "compress.zlib://" and suh protocols are not working
  */
 class PackedFileDataStore implements StoreEngine
