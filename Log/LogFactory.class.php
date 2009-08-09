@@ -147,7 +147,7 @@ class LogFactory
                             throw new Exception('Failed to open stream: '.
                             $logger['name']);
                         }
-                    }else {
+                    } else {
                             $stream = $logger['name'];
                     }
                     $writer = new Zend_Log_Writer_Stream($stream);
