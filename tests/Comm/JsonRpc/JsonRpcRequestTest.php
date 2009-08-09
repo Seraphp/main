@@ -21,6 +21,12 @@ class JsonRpcRequestTest extends PHPUnit_Framework_TestCase{
         $this->assertEquals(null,$request->params);
     }
 
+    function testConstructorNoMethod()
+    {
+        $this->setExpectedException('Exception','Method has to be defined!');
+        $request = new JsonRpcRequest(null, null, 1);
+    }
+
     function testToString()
     {
         $request = new JsonRpcRequest('call', null, 1);

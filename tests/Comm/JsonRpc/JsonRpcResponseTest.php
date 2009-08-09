@@ -21,6 +21,14 @@ class JsonRpcResponseTest extends PHPUnit_Framework_TestCase{
         $this->assertEquals(null,$response->error);
     }
 
+    function testConstructorNoResult()
+    {
+        $this->setExpectedException('Exception',
+            'Either a result or an error should be set!');
+        $response = new JsonRpcResponse(null, null, 1);
+
+    }
+
     function testToString()
     {
         $response = new JsonRpcResponse('result', null, 1);
