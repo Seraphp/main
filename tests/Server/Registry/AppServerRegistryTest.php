@@ -26,14 +26,14 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
     <servers>
         <server id="main">
             <instance>
-                <port>self::$port</port>
+                <port />
             </instance>
         </server>
     </servers>
 XML;
 
         $this->conf = new Config($confString);
-        self::$port++;
+        $this->conf->servers->server->instance->port = self::$port++;
         $this->mockServer = new AppServer($this->conf);
     }
 
