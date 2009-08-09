@@ -28,6 +28,20 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase{
         $this->assertThat($res, $this->isInstanceOf('HttpResponse'));
     }
 
+    function testCreateRequestWithSettings()
+    {
+        $res = HttpFactory::create("request", array('contentType'=>'text/html'));
+        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT,$res);
+        $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
+    }
+
+    function testCreateResponseWithSettings()
+    {
+        $res = HttpFactory::create("response", array('contentType'=>'text/html'));
+        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT,$res);
+        $this->assertThat($res, $this->isInstanceOf('HttpResponse'));
+    }
+
     function testCreateCookies()
     {
         $this->_cookies = array();
@@ -35,5 +49,15 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase{
         $res = HttpFactory::create("cookie",null,$this->_cookies);
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY,$res);
         $this->assertThat($res[0], $this->isInstanceOf('HttpCookie'));
+    }
+
+    function testGetValidHttpStatusCodes()
+    {
+        $this->assertEquals('Continue',HTTPFactory::getHttpStatus(100));
+    }
+
+    function testGetNotValidHttpStatusCodes()
+    {
+        $this->assertEquals(null, HTTPFactory::getHttpStatus(900));
     }
 }
