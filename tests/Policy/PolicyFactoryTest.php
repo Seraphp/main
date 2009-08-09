@@ -62,13 +62,12 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
         $PF = PolicyFactory::getInstance();
         $spec = $PF->equal('writer','Douglas Adams')->and_(
             $PF->matches('numField','/^\d{2}$/')->and_(
-            $PF->not_(
                 $PF->greater('numField', 40)
-            )
         ));
-        $this->assertFalse($spec->isSatisfiedBy($this->src));
+        $this->assertTrue($spec->isSatisfiedBy($this->src));
+
         $spec = $PF->equal('title','Douglas Adams')->or_(
-            $PF->matches('numField','/^\d{2}$/')->not_(
+            $PF->matches('numField','/^\d{2}$/')->and_(
                 $PF->greater('numField', 40)
             )
         );
