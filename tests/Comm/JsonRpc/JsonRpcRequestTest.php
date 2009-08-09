@@ -18,7 +18,7 @@ class JsonRpcRequestTest extends PHPUnit_Framework_TestCase{
         $request = new JsonRpcRequest('call', null, 1);
         $this->assertEquals('call',$request->method);
         $this->assertEquals(1,$request->id);
-        $this->assertEquals(array(),$request->params);
+        $this->assertEquals(null,$request->params);
     }
 
     function testToString()
