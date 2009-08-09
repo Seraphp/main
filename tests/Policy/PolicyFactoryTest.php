@@ -66,7 +66,7 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
                 $PF->greater('numField', 40)
             )
         ));
-        $this->assertTrue($spec->isSatisfiedBy($this->src));
+        $this->assertFalse($spec->isSatisfiedBy($this->src));
         $spec = $PF->equal('title','Douglas Adams')->or_(
             $PF->matches('numField','/^\d{2}$/')->not_(
                 $PF->greater('numField', 40)
