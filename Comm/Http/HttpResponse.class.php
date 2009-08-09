@@ -47,9 +47,10 @@ class HttpResponse
     }
 
     /**
-     *
+     * Method to send out HTTP response
      *
      * @return void
+     * @throws IOException
      */
     public function send()
     {
@@ -90,6 +91,7 @@ class HttpResponse
             $this->headers['Content-Length'] = strlen($this->messageBody);
             $this->headers['Etag'] = md5($this->messageBody);
         }
+        $this->headers['Content-Type'] = $this->contentType;
     }
 
     private function _sendBody()
