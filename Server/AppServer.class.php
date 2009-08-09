@@ -54,77 +54,97 @@ class AppServer extends Server
         self::$_log->debug('AppID: '.$this->_appID);
         $this->_pidFileName = sprintf('.%s_srphp.pid', $this->_appID);
         self::$_log->debug('PidFile name: '.$this->_pidFileName);
+        if (isset($conf->includes)) {
+            $this->_configIncludes($conf->includes);
+        }
+        //Calling parent's constructor to initalize IPC if any
+        if (isset($conf->instance)) {
+            $this->_configInstance($conf->instance);
+        }
+        $this->_configRegistry();
+    }
+
+    protected function _configIncludes($includes)
+    {
         self::$_log->debug('Adding include pathes');
         //Adding all pathes listed in config "includes/path"
         //They will not be added to include path before daemon is
         //summoned to lock out other processes seeing those pathes
-        if (isset($conf->includes)) {
-            foreach ($conf->includes as $key => $resource) {
-                self::$_log->debug('path: '.$resource);
-                if (is_dir($resource)) {
-                    array_push($this->_includes, $resource);
-                    self::$_log->debug($resource. 'added');
-                } else {
-                    throw new Exception($resource.
-                        ' is not a directory to include');
-                }
+        foreach ($conf->includes as $key => $resource) {
+            self::$_log->debug('path: '.$resource);
+            if (is_dir($resource)) {
+                array_push($this->_includes, $resource);
+                self::$_log->debug($resource. 'added');
+            } else {
+                throw new Exception($resource.
+                    ' is not a directory to include');
             }
         }
-        //Calling parent's constructor to initalize IPC if any
-        if (isset($conf->instance)) {
-            $instance = $conf->instance;
-            //Calling Parent's constructor...
-            if (isset($instance->ipc)) {
-                self::$_log->debug('Initalizing IPC: '.$instance->ipc);
-                parent::__construct((string) $instance->ipc);
-            } else {
-                parent::__construct();
-            }
-           self::$_log->debug('Setting up server engines');
-            if (isset($instance->engines)) {
-                foreach ($instance->engines->children() as $engine) {
-                    $this->_engines[(string)$engine['id']] = $engine;
-                }
-            } else {
-                self::$_log->debug('Initalizing default engines');
-                $conf = '<engine id="default" class="Default" />';
-                $this->_engines['default'] = new Config($conf);
-            }
-            self::$_log->debug('Setting up URImaps');
-            if (isset($conf->urimap)) {
-                $this->_urimap = $conf->urimap;
-            } else {
-                $this->_urimap = new Config('<urimap />');
-                $this->_urimap->url = '/';
-                $this->_urimap->url['engine'] = 'default';
-            }
-            self::$_log->debug('Setting up socket address, port and timeout');
-            if (isset($instance->address)) {
-                $this->_address = (string) $instance->address;
-            } else {
-                $this->_address = self::DEFAULT_ADDRESS;
-            }
-            if (isset($instance->port)) {
-                $this->_port = (string) $instance->port;
-            } else {
-                $this->_port = self::DEFAULT_PORT;
-            }
-            if (isset($instance->timeout)) {
-                $this->_timeout = (integer) $instance->timeout;
-            } else {
-                $this->_timeout = self::DEFAULT_TIMEOUT;
-            }
-            self::$_log->info('Using '.
-                sprintf('%s:%d w/ %d sec timeout',
-                    $this->_address,
-                    $this->_port,
-                    $this->_timeout));
+    }
+
+    protected function _configInstance($instance)
+    {
+        //Calling Parent's constructor...
+        if (isset($instance->ipc)) {
+            self::$_log->debug('Initalizing IPC: '.$instance->ipc);
+            parent::__construct((string) $instance->ipc);
+        } else {
+            parent::__construct();
         }
+
+        self::$_log->debug('Setting up server engines');
+        if (isset($instance->engines)) {
+            foreach ($instance->engines->children() as $engine) {
+                $this->_engines[(string)$engine['id']] = $engine;
+            }
+        } else {
+            self::$_log->debug('Initalizing default engines');
+            $conf = '<engine id="default" class="Default" />';
+            $this->_engines['default'] = new Config($conf);
+        }
+
+        self::$_log->debug('Setting up URImaps');
+        if (isset($conf->urimap)) {
+            $this->_urimap = $conf->urimap;
+        } else {
+            $this->_urimap = new Config('<urimap />');
+            $this->_urimap->url = '/';
+            $this->_urimap->url['engine'] = 'default';
+        }
+
+        self::$_log->debug('Setting up socket address, port and timeout');
+        //setting up bind address
+        if (isset($instance->address)) {
+            $this->_address = (string) $instance->address;
+        } else {
+            $this->_address = self::DEFAULT_ADDRESS;
+        }
+        //Setting up port
+        if (isset($instance->port)) {
+            $this->_port = (string) $instance->port;
+        } else {
+            $this->_port = self::DEFAULT_PORT;
+        }
+        //Setting up timeout
+        if (isset($instance->timeout)) {
+            $this->_timeout = (integer) $instance->timeout;
+        } else {
+            $this->_timeout = self::DEFAULT_TIMEOUT;
+        }
+        self::$_log->info('Using '.
+            sprintf('%s:%d w/ %d sec timeout',
+                $this->_address,
+                $this->_port,
+                $this->_timeout));
+    }
+
+    protected function _configRegistry()
+    {
         self::$_log->debug('Setting up Application registry');
         if ($this->_ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
             $this->_appReg = IpcRegistry::getInstance();
-            self::$_log->debug('Using IPCRegistry');
+            self::$_log->debug('Using IpcRegistry');
         } else {
             require_once 'Server/Registry/Registry.class.php';
             $this->_appReg = Registry::getInstance();
