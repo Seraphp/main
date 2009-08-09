@@ -35,9 +35,9 @@ class HttpCookieTest extends PHPUnit_Framework_TestCase{
 
     function testToString()
     {
-        $cookie = new HttpCookie($this->_name, $this->_value);
-        $this->assertEquals(sprintf('Set-Cookie:%s=%s;Max-Age=%s;Path=/',
-             $this->_name, $this->_value, 0),
-            $cookie->__toString());
+        $cookie = new HttpCookie($this->_name, $this->_value, null, '/', 'localhost', true);
+        $this->assertEquals(sprintf('Set-Cookie:%s=%s;Max-Age=%s;Path=/;Domain=%s;Secure',
+             $this->_name, $this->_value, 0, 'localhost'),
+             $cookie->__toString());
     }
 }

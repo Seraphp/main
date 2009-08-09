@@ -51,7 +51,7 @@ class HttpCookie
             $details[] = 'Path='.$this->path;
         }
         if (isset($this->domain)) {
-            $details[] = 'Domain='.$this->path;
+            $details[] = 'Domain='.$this->domain;
         }
         if ($this->secure) {
             $details[] = 'Secure';
