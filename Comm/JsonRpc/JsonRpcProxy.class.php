@@ -196,9 +196,9 @@ class JsonRpcProxy
         self::$_log->debug(__METHOD__.' called');
         $this->_connect('read');
         $read = array($this->_conn);
-        self::$_log->debug($this->_conn);
-        if (stream_select($read, $write = array(), $exc = array(), 5) > 0) {
-            self::$_log->debug(__METHOD__. ': received something');
+        $write = array();
+        $exc = array();
+        if (stream_select($read, $write, $exc, 5) > 0) {
             $this->parseRequest(fgets($this->_conn));
         } else {
             self::$_log->debug(__METHOD__.' timed out');
