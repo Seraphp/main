@@ -23,7 +23,7 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase{
             'Host:example.com'.
             $this->_sep.
             $this->_sep;
-        $this->_request['other'] = 'Árvíztűrő tükörfúrógép';
+        $this->_requests['other'] = 'Árvíztűrő tükörfúrógép';
         $this->_requests['head'] = 'HEAD /index.html HTTP/1.1'.
             $this->_sep.
             'Host:example.com'.
