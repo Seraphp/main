@@ -317,7 +317,7 @@ class HttpRequest implements Request, Listener
     public function send()
     {
         self::$_log->debug(__METHOD__.' called');
-        if ( $this->isReceived === self::REQ_TOSEND ) {
+        if ($this->isReceived === self::REQ_TOSEND) {
             $curlObj = curl_init($this->url);
             $options = array(
                 CURLOPT_CUSTOMREQUEST =>
@@ -339,20 +339,20 @@ class HttpRequest implements Request, Listener
             //Setting Cookies for curl
             if ($this->cookies !== array()) {
                 $setCookieStr = '';
-                foreach ( $this->cookies as $cookie ) {
+                foreach ($this->cookies as $cookie) {
                     $setCookieStr .= $cookie->__toString().';';
                 }
                 $options[CURLOPT_COOKIE] = $setCookieStr;
                 unset($setCookieStr);
             }
             //Setting up POST parameters for curl
-            if ($this->postParams !== array() ) {
+            if ($this->postParams !== array()) {
                 $options[CURLOPT_POSTFIELDS] =
                    $this->_array2params($this->postParams);
             }
             //Setting up GET parameters for curl
             if ($this->getParams !== array() ) {
-                if ( strpos($this->url, '?') !== false ) {
+                if (strpos($this->url, '?') !== false) {
                     $options[CURLOPT_URL] = $this->url .
                      urlencode('&'.$this->_array2params($this->getParams));
                 } else {
