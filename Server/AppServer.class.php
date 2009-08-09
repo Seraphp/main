@@ -337,7 +337,7 @@ class AppServer extends Server
     {
         self::$_log->debug(__METHOD__.' called');
         if (is_resource($this->_socket)) {
-            self::$_log->log('closing down socket on '
+            self::$_log->info('closing down socket on '
                 .$this->_address.':'
                 .$this->_port);
             stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
@@ -358,7 +358,7 @@ class AppServer extends Server
     {
         self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('child exited: '.$pid.' with status:'.$status);
-        if ($this->ipc !== null) {
+        if ($this->_ipc !== null) {
             self::$_log->debug('Merging changes through IPC');
             $this->_appReg->mergeChanges();
         }

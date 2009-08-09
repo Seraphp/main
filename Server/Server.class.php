@@ -132,7 +132,7 @@ abstract class Server implements Daemon
                 $this->_ipc = IpcFactory::get($this->_ipcType, $this->_pid);
                 $this->_ipc->setRole($this->_role);
             }
-            self::$_log->log('Server process (pid:'.$this->_pid.') summoned');
+            self::$_log->debug('Server process (pid:'.$this->_pid.') summoned');
             $this->onSummon();
             $this->startHart();
         } else {
@@ -230,7 +230,6 @@ abstract class Server implements Daemon
                 throw new Exception('Unable to fork!');
             } elseif ($pid == 0) {//child process
                 $this->_pid = getmypid();
-                self::$_log->setIdent(getmypid());
                 $this->_role = 'child';
                 if ($this->_ipcType !== '') {
                     $this->_ipc = IpcFactory::get($this->_ipcType,
@@ -240,8 +239,8 @@ abstract class Server implements Daemon
             } else {
                 //parent process
                 $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
-                self::$_log->setIdent(getmypid());
-                self::$_log->log($pid." spawned\n");
+                //self::$_log->setIdent(getmypid());
+                self::$_log->debug($pid." spawned\n");
                 return $pid;
             }
         }
@@ -307,7 +306,7 @@ abstract class Server implements Daemon
     public function setMaxSpawns($num)
     {
         self::$_log->debug(__METHOD__.' called');
-        self::$_log->log('Setting max spawn number to:'.$num);
+        self::$_log->debug('Setting max spawn number to:'.$num);
         $this->_maxSpawns = $num;
         return $this->_maxSpawns;
     }
