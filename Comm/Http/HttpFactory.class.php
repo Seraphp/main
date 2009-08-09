@@ -56,7 +56,14 @@ class HttpFactory
         self::$_log->debug(__METHOD__.' called');
         $result = array();
         foreach ($array as $cookieParams) {
-            extract($cookieParams);
+            $name = null;
+            $value = null;
+            $expireOn = null;
+            $path = null;
+            $domain = null;
+            $secure = null;
+            $onlyHTTP = null;
+            extract($cookieParams, EXTR_IF_EXISTS);
             $result[] = new HttpCookie($name,
                                         $value,
                                         $expireOn,
