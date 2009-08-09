@@ -80,7 +80,7 @@ class JsonRpcProxy
     public function __construct($name, $client = null,
             $type='socket', $methods = array(), $notifs = array())
     {
-        self::$_log = LogFactory::getInstance($conf);
+        self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__. ' called');
         $this->_type = $type;
         $this->_name = $name;
