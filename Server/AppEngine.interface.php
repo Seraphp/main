@@ -19,6 +19,8 @@ require_once 'Server/Config/Config.class.php';
 interface AppEngine
 {
     /**
+     * A Constructor must exists accepting the configuration
+     *
      * @param Config $conf  Configuration part from xml
      * @return void
      */

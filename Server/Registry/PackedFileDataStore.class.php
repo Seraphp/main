@@ -222,7 +222,7 @@ class PackedFileDataStore implements StoreEngine
     function cleanUp()
     {
         clearstatcache();
-        //mivel: strlen(base64_encode(serialize(array()))) = 8
+        //because: strlen(base64_encode(serialize(array()))) = 8
         if (filesize($this->_file) < 9) {
             unlink($this->_file);
         }

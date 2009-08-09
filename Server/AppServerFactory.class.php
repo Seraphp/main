@@ -54,7 +54,7 @@ class AppServerFactory
      *
      * @param Config $appID
      * @param $conf
-     * @return unknown_type
+     * @return AppServer|JsonRpcProxy
      */
     public static function getAppInstance($appID, Config $conf)
     {
