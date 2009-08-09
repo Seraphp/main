@@ -18,4 +18,11 @@ class ExceptionHandlerTest extends PHPUnit_Extensions_OutputTestCase{
         $this->assertNull(ExceptionHandler::setup());
         $this->assertTrue(ExceptionHandler::recall());
     }
+
+    function testHandling()
+    {
+        ExceptionHandler::setup();
+        $this->setExpectedException('Exception', 'Test Exception');
+        throw new Exception('Test Exception');
+    }
 }
