@@ -13,10 +13,14 @@ require_once 'Server/Config/Config.class.php';
 class ConfigTest extends PHPUnit_Framework_TestCase{
 
     private $reg = null;
+    private $conf;
+    private $xml;
 
     function setUp()
     {
         $this->conf = new Config('<test><foo/><bar/></test>');
+        $this->xml = simplexml_load_file(getcwd().'/tests/Server/Config/seraphp_test_config.xml',
+                        'Config');
     }
 
     function testEmptyConfigKeyIsInvalid()
@@ -41,9 +45,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
 
     function testXSearchFromNode()
     {
-        $result = $this->conf->xsearch('//foo', $this->conf->test);
+        $result = $this->xml->xsearch('//srph:server', $this->xml->servers);
         $this->assertType('array',$result);
-        $this->assertType('object',$result[0]);
+        $this->assertObjectHasAttribute('instance',$result[0]);
     }
 
     function tearDown()
