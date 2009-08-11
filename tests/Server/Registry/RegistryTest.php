@@ -21,7 +21,7 @@ class RegistryTest extends PHPUnit_Framework_TestCase{
 
     function testRegistryIsSingleton()
     {
-        $this->assertThat($this->reg, $this->IsInstanceOf('Registry'));
+        $this->assertThat($this->reg, $this->IsInstanceOf('Singleton'));
         $this->assertSame($this->reg, Registry::getInstance());
     }
 
@@ -29,6 +29,13 @@ class RegistryTest extends PHPUnit_Framework_TestCase{
     {
         $this->setExpectedException('Exception');
         $newReg = clone $this->reg;
+    }
+
+    function testAddingEngine()
+    {
+        require_once 'Server/Registry/PackedFileDataStore.class.php';
+        $this->reg = Registry::getInstance(new PackedFileDataStore);
+        $this->assertThat($this->reg, $this->IsInstanceOf('Registry'));
     }
 
     function testEmptyRegistryKeyIsInvalid()
