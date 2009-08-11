@@ -45,7 +45,7 @@ class PackedFileDataStore implements StoreEngine
      */
     function __construct($file = null)
     {
-        if (isset($file)) {
+        if ($file !== null) {
             $this->init($file);
         }
     }
@@ -64,10 +64,14 @@ class PackedFileDataStore implements StoreEngine
         return $this->_open();
     }
 
-    private function _reinit()
+    private function _reinit($file = null)
     {
-        $this->close();
-        return $this->_open();
+        if ($file !== null && $this->_file !== $this->_getAbsolutePath($file)) {
+            $this->close();
+            $this->init($file);
+        } else {
+            $this->init();
+        }
     }
 
     protected function _open()
@@ -88,10 +92,7 @@ class PackedFileDataStore implements StoreEngine
      */
     function load($file = null)
     {
-        if (isset($file) && $this->_file !== $this->_getAbsolutePath($file)) {
-            $this->close();
-            $this->init($file);
-        }
+        $this->_reinit($file);
         rewind($this->_fp);
         $data = fgets($this->_fp);
         if (!feof($this->_fp)) {
@@ -114,6 +115,7 @@ class PackedFileDataStore implements StoreEngine
      */
     function save($data)
     {
+        $this->_reinit();
         rewind($this->_fp);
         $res = fwrite($this->_fp, base64_encode(serialize($data)));
         if ($res === false) {
@@ -140,6 +142,7 @@ class PackedFileDataStore implements StoreEngine
     function __destruct()
     {
         $this->close();
+        $this->cleanUp();
     }
 
     /**
