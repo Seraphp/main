@@ -38,21 +38,6 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase{
         array_push($this->createdFiles, $store->getPath());
     }
 
-    function testConstructorNoPath()
-    {
-        $store = new PackedFileDataStore();
-        $this->assertEquals('', $store->getPath());
-        array_push($this->createdFiles, $store->getPath());
-    }
-
-    function testConstructorWithPath()
-    {
-        $store = new PackedFileDataStore('./testDataFile.gz');
-        $this->assertEquals(realpath('./testDataFile.gz'), $store->getPath());
-        $this->assertFileExists($store->getPath());
-        array_push($this->createdFiles, $store->getPath());
-    }
-
     function testSave()
     {
         $store = new PackedFileDataStore();
