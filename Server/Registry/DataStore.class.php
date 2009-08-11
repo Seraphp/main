@@ -86,24 +86,24 @@ class DataStore
      *
      * @param string  $key
      * @param mixed  $value
-     * @return boolean
+     * @return void
      */
     public function __set($key, $value)
     {
         if (strpos($key, '_') === 0) {
-            return false;
+            return;
         }
         if ($this->_overwrite === true) {
             $this->_store[$key]=$value;
         } else {
             if (isset($this->$key) === true) {
-                 return false;
+                 return;
             } else {
                 $this->_store[$key]=$value;
             }
         }
         $this->_dirty = true;
-        return true;
+        return;
     }
 
     /**
@@ -114,7 +114,8 @@ class DataStore
      */
     public function __get($key)
     {
-        if (isset($this->$key)) {
+        if (isset($this->$key) &&
+            strpos($key, '_') !== 0) {
             return $this->_store[$key];
         } else return null;
     }
@@ -124,10 +125,12 @@ class DataStore
      * which already exists in registry. Default is true
      *
      * @param boolean $flag
+     * @return boolen  The actual value of overwrite
      */
     public function setOverwrite($flag)
     {
         $this->_overwrite = (boolean) $flag;
+        return $flag;
     }
 
     public function setEngine(StoreEngine $engine, $savePath = null)
@@ -137,11 +140,16 @@ class DataStore
         $this->_store = (array) $this->_engine->load();
     }
 
+    public function getEngineType()
+    {
+        return get_class($this->_engine);
+    }
+
     public function __destruct()
     {
         if (isset($this->_engine)) {
             $this->_engine->save($this->_store);
-            $this->_engine->cleanUp();
+            unset($this->_engine);
         }
     }
 
