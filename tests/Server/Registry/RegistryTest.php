@@ -33,8 +33,10 @@ class RegistryTest extends PHPUnit_Framework_TestCase{
 
     function testAddingEngine()
     {
+        //TODO: adding simply the real Data Store here stops testing script. Figure it out!
         require_once 'Server/Registry/PackedFileDataStore.class.php';
-        $this->reg = Registry::getInstance(new PackedFileDataStore);
+        $engine = $this->getMock('PackedFileDataStore');
+        $this->reg = Registry::getInstance($engine);
         $this->assertThat($this->reg, $this->IsInstanceOf('Registry'));
     }
 
