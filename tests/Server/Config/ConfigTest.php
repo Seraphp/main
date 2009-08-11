@@ -39,6 +39,13 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
         $this->assertObjectHasAttribute('bar',$result[0]);
     }
 
+    function testXSearchFromNode()
+    {
+        $result = $this->conf->xsearch('//foo', $this->conf->test);
+        $this->assertType('array',$result);
+        $this->assertType('object',$result[0]);
+    }
+
     function tearDown()
     {
         unset($this->conf);
