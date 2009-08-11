@@ -54,7 +54,8 @@ class Registry extends DataStore implements Singleton
      */
     public function getInstance(StoreEngine $engine = null)
     {
-        if (self::$_instance === null) {
+        if (self::$_instance === null ||
+            get_class($engine) !== get_class(self::$_instance->_engine)) {
             self::$_instance = new self($engine);
         }
         return self::$_instance;
