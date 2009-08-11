@@ -5,13 +5,12 @@
  * @version $Id$
  * @filesource
  */
-//require_once 'PHPUnit/Framework.php';
-require_once 'PHPUnit/Extensions/OutputTestCase.php';
+require_once 'PHPUnit/Framework.php';
 require_once 'Exceptions/ExceptionHandler.class.php';
 /**
  * Class documentation
  */
-class ExceptionHandlerTest extends PHPUnit_Extensions_OutputTestCase{
+class ExceptionHandlerTest extends PHPUnit_Framework_TestCase{
 
     function testSetupRecall()
     {
