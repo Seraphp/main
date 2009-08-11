@@ -16,7 +16,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
 
     function setUp()
     {
-        $this->conf = new Config('<test />');
+        $this->conf = new Config('<test><foo/><bar/></test>');
     }
 
     function testEmptyConfigKeyIsInvalid()
@@ -28,6 +28,15 @@ class ConfigTest extends PHPUnit_Framework_TestCase{
     {
         $this->conf->somekey->foo->bar='somevalue';
         $this->assertTrue(isset($this->conf->somekey));
+    }
+
+    function testXSearch()
+    {
+        $result = $this->conf->xsearch('/test');
+        $this->assertType('array',$result);
+        $this->assertType('object',$result[0]);
+        $this->assertObjectHasAttribute('foo',$result[0]);
+        $this->assertObjectHasAttribute('bar',$result[0]);
     }
 
     function tearDown()
