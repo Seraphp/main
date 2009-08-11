@@ -24,7 +24,9 @@ class PackedFileDataStore implements StoreEngine
 {
 
     const FN_PREFIX = "srpd";
-    const PROTOCOL = "file://";
+
+    public $protocol = "file://";
+
     private static $_lastFile = '';
 
     /**
@@ -43,8 +45,11 @@ class PackedFileDataStore implements StoreEngine
      * @param string $file  Optional, filepath to be used
      * @return void
      */
-    function __construct($file = null)
+    function __construct($file = null, $protocol = null)
     {
+        if ($protocol !== null) {
+            $this->protocol = $protocol;
+        }
         if ($file !== null) {
             $this->init($file);
         }
@@ -76,7 +81,7 @@ class PackedFileDataStore implements StoreEngine
 
     protected function _open()
     {
-        $this->_fp = fopen(self::PROTOCOL.$this->_file, 'r+');
+        $this->_fp = fopen($this->protocol.$this->_file, 'r+');
         if (!$this->_fp) {
             throw new IOException('Cannot open file '.$this->_file);
         }
