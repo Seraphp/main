@@ -8,6 +8,7 @@
 // @codeCoverageIgnoreStart
 require_once 'PHPUnit/Framework.php';
 require_once 'AppServerTest.php';
+require_once 'DeafultEngineTest.php';
 require_once 'Registry/AllTests.php';
 require_once 'Config/AllTests.php';
 /**
@@ -20,6 +21,7 @@ class Server_AllTests{
 
         $suite = new PHPUnit_Framework_TestSuite('Seraphp Server');
         $suite->addTestSuite('AppServerTest');
+        $suite->addTestSuite('DefaultEngineTest');
         $suite->addTest(Registry_AllTests::suite());
         $suite->addTest(Config_AllTests::suite());
         return $suite;
