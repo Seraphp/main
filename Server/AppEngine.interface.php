@@ -24,7 +24,7 @@ interface AppEngine
      * @param Config $conf  Configuration part from xml
      * @return void
      */
-    function __construct(Config $conf);
+    function __construct(Config $conf= null);
     /**
      * Method to process the received Request
      *

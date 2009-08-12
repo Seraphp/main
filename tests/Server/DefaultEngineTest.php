@@ -18,6 +18,7 @@ class DefaultEngineTest extends PHPUnit_Framework_TestCase{
     private $request = null;
     private $response = null;
     private $_sep = "\r\n";
+    private $config;
 
     function setUp()
     {
@@ -33,6 +34,13 @@ class DefaultEngineTest extends PHPUnit_Framework_TestCase{
     {
         $engine = new DefaultEngine($this->config);
         $this->assertEquals(0, $engine->process($this->request));
+    }
+
+    function tearDown()
+    {
+        unset($this->request);
+        unset($this->response);
+        unset($this->config);
     }
 
 }

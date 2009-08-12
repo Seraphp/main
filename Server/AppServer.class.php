@@ -259,13 +259,13 @@ class AppServer extends Server
                     $result = $this->process(RequestFactory::create($conn),
                         $this->_timeout);
                 } catch (IOException $e) {
-                    stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
                     self::$_log->alert('Error: '.$e->getMessage());
+                    stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
                     $result = 0;
                 } catch (Exception $e) {
+                    self::$_log->alert('Error: '.$e->getMessage());
                     stream_socket_sendto($conn,
                         'HTTP/1.0 500 Internal Server Error');
-                    self::$_log->alert('Error: '.$e->getMessage());
                     $result = 1;
                 }
                 stream_socket_shutdown($conn, STREAM_SHUT_RDWR);

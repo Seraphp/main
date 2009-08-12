@@ -24,13 +24,13 @@ class DefaultEngine implements AppEngine
 {
     private static $_log;
 
-    function __construct(Config $conf)
+    function __construct(Config $conf = null)
     {
+        self::$_log = LogFactory::getInstance($conf);
     }
 
     function process(Request $req)
     {
-        self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
         $msg = <<<HTML
     <html>
@@ -43,10 +43,10 @@ class DefaultEngine implements AppEngine
 HTML;
         $response = $req->respond($msg);
         $response->contentType = 'text/html';
-        self::$_log->debug($response);
         try{
             $response->send();
         } catch (IOException $e) {
+            self::$_log->alert($e->getMessage());
             return 1;
         }
         return 0;

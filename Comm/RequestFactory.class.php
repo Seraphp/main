@@ -47,14 +47,15 @@ class RequestFactory
             throw new IOException('Connection timed out!');
         }
         self::$_log->debug('Data arriving on socket');
-        //using socket_recv with MSF_PEEK to examin the first part
+        //using socket_recv with STREAM_PEEK to examin the first part
         //of the message without removing it form the socket.
-        $result = stream_socket_recvfrom($socket, 300, STREAM_PEEK);
+        $result = stream_socket_recvfrom($socket, 1500, STREAM_PEEK);
+        self::$_log->debug("Result: ".$result);
         if ($result !== null) {
             if (empty($result)) {
-                throw new IOException('No data on line!');
+                throw new IOException('Arrived data is empty!');
             } else {
-                switch( self::getProtocol($result) ) {
+                switch (self::getProtocol($result)) {
                     case 'http':
                         require_once 'Comm/Http/HttpFactory.class.php';
                         return HttpFactory::create('request', $socket);

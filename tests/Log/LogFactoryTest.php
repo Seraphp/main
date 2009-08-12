@@ -25,6 +25,9 @@ class LogFactoryTest extends PHPUnit_Framework_TestCase{
             <log handler="file" name="out.log" ident="DEBUG" level="DEBUG">
                 <conf />
             </log>
+            <log handler="file" name="out.log" ident="TEST2" level="INFO">
+                <conf />
+            </log>
         </logs>
     </server>
 XML;
@@ -46,7 +49,7 @@ XML;
 
     function testGetInstanceWithConfAuto()
     {
-        $log = LogFactory::getInstance($this->xml, 'Zend');
+        $log = LogFactory::getInstance($this->xml);
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
 
@@ -65,7 +68,13 @@ XML;
 
     function testGetInstanceNoConfAuto()
     {
-        $log = LogFactory::getInstance(null);
+        $log = LogFactory::getInstance();
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
+    }
+
+    function testInstantiateDifferently()
+    {
+        $log1 = LogFactory::getInstance();
+        $log2 = LogFactory::getInstance($this->xml);
     }
 }

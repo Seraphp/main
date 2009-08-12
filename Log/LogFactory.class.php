@@ -36,13 +36,28 @@ require_once 'Exceptions/LogException.class.php';
 class LogFactory
 {
 
-    private static $_instance = null;
-    private static $_provider = '';
+    /**
+     * @var array  Stores the instance with an own key
+     */
+    private static $_instance = array();
+    /**
+     * @var string  'Zend' or 'PEAR'
+     */
+    public static $provider = '';
 
+    /**
+     * Disabled constructor
+     * @return void
+     */
     private function __construct()
     {
     }
 
+    /**
+     * Disabled cloning
+     *
+     * @return void
+     */
     private function __clone()
     {
     }
@@ -56,11 +71,15 @@ class LogFactory
      */
     public static function getInstance(Config $conf = null, $provider = 'Zend')
     {
-        if (self::$_instance === null || ($provider !== self::$_provider)) {
-            if ($provider !== self::$_provider) {
-                self::$_instance = null;
-                self::$_provider = '';
-            }
+        if ($conf !== null) {
+            $key = md5($provider.$conf->asXml().$provider);
+        } else {
+            $key = md5($provider.$provider);
+        }
+        if (self::$_instance === array() ||
+          !array_key_exists($key, self::$_instance)) {
+            self::$_instance = null;
+            self::$provider = '';
             self::_init($provider);
             self::_setup($conf);
         }
@@ -74,7 +93,7 @@ class LogFactory
                 if (include_once('Zend/Loader/Autoloader.php')) {
                     Zend_Loader_Autoloader::getInstance();
                     self::$_instance = new Zend_Log();
-                    self::$_provider = 'Zend';
+                    self::$provider = 'Zend';
                 } else {
                     throw new Exception("Zend_Log package not available!");
                 }
@@ -82,7 +101,7 @@ class LogFactory
             case 'PEAR':
                 if (include_once('Log.php')) {
                     self::$_instance = Log::singleton('composite');
-                    self::$_provider = 'PEAR';
+                    self::$provider = 'PEAR';
                 } else {
                     throw new Exception("PEAR Log package not available!");
                 }
@@ -91,10 +110,10 @@ class LogFactory
                 if (include_once('Zend/Loader/Autoloader.php')) {
                     Zend_Loader_Autoloader::getInstance();
                     self::$_instance = new Zend_Log();
-                    self::$_provider = 'Zend';
+                    self::$provider = 'Zend';
                 } elseif (include_once('Log.php')) {
                     self::$_instance = Log::singleton('composite');
-                    self::$_provider = 'PEAR';
+                    self::$provider = 'PEAR';
                 } else {
                     throw new Exception('No logger package available'.
                     '(Zend_Log or PEAR::Log)!');
@@ -131,7 +150,7 @@ class LogFactory
 
     private static function _addWriter($logger)
     {
-        if (self::$_provider === 'Zend') {
+        if (self::$provider === 'Zend') {
             $level = constant('Zend_Log::'.$logger['level']);
             $writerClass = 'Zend_Log_Writer_'.$logger['handler'];
             $attribs = $logger->conf->attributes();
@@ -209,7 +228,7 @@ class LogFactory
      */
     protected static function _defaultSetup()
     {
-        if (self::$_provider === 'Zend') {
+        if (self::$provider === 'Zend') {
             self::$_instance->setEventItem('pid', getmypid());
             $format = '%timestamp% %pid% (%priorityName%): %message%' . PHP_EOL;
             $formatter = new Zend_Log_Formatter_Simple($format);

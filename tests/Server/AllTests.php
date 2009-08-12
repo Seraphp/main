@@ -20,8 +20,8 @@ class Server_AllTests{
     {
 
         $suite = new PHPUnit_Framework_TestSuite('Seraphp Server');
-        $suite->addTestSuite('AppServerTest');
         $suite->addTestSuite('DefaultEngineTest');
+        $suite->addTestSuite('AppServerTest');
         $suite->addTest(Registry_AllTests::suite());
         $suite->addTest(Config_AllTests::suite());
         return $suite;
