@@ -40,10 +40,12 @@ class LogFactory
     private static $_provider = '';
 
     private function __construct()
-    {}
+    {
+    }
 
     private function __clone()
-    {}
+    {
+    }
 
     /**
      * Gives back an instance of the Log facility class
