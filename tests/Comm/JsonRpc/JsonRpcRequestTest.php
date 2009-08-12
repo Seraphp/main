@@ -6,7 +6,7 @@
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';
-require_once 'Comm/Http/HttpRequest.class.php';
+require_once 'Comm/JsonRpc/JsonRpcRequest.class.php';
 /**
  * Class documentation
  */

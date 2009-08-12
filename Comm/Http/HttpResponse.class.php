@@ -12,6 +12,7 @@
 /***/
 //namespace Seraphp\Comm\Http;
 //require_once 'ObserverListener.interface.php';
+require_once 'Log/LogFactory.class.php';
 /**
  * Class represents an HTTP request, no matter
  * of the usage: sending or receiving it.

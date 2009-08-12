@@ -12,6 +12,7 @@
 /***/
 //namespace Seraphp\Comm\Http;
 require_once 'Comm/Request.interface.php';
+require_once 'Log/LogFactory.class.php';
 require_once 'ObserverListener.interface.php';
 require_once 'Exceptions/HttpException.class.php';
 require_once 'Exceptions/SocketException.class.php';
