@@ -10,6 +10,7 @@
  */
 /***/
 require_once 'Server/AppEngine.interface.php';
+require_once 'Log/LogFactory.class.php';
 /**
  * Default AppEngine class
  *
@@ -18,7 +19,6 @@ require_once 'Server/AppEngine.interface.php';
  * up and running.
  *
  * @package Server
- * @todo Implement Request handling
  */
 class DefaultEngine implements AppEngine
 {
