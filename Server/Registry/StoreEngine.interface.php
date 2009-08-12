@@ -25,12 +25,11 @@ interface StoreEngine
      */
     public function init($resource = null);
     /**
-     * Loads the given resource and rebuild data store in memory
+     * Loads the given resource and returns content
      *
-     * @param $resource
-     * @return boolean
+     * @return mixed
      */
-    public function load($resource = null);
+    public function load();
     /**
      * Saves the actual data from store to the represented format
      *
@@ -44,10 +43,4 @@ interface StoreEngine
      * @return void
      */
     public function close();
-    /**
-     * Clens up any bits and pieces before saving
-     *
-     * @return void
-     */
-    public function cleanUp();
 }
