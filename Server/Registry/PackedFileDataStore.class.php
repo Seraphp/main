@@ -27,8 +27,6 @@ class PackedFileDataStore implements StoreEngine
 
     public $protocol = "file://";
 
-    private static $_lastFile = '';
-
     /**
      * @var string  Full path to used file for storing data
      */
@@ -39,10 +37,12 @@ class PackedFileDataStore implements StoreEngine
     private $_fp = null;
 
     /**
-     * Calls init() with parameter
+     * Calls init() if a file is provided
      * @see init()
+     * Sets protocol if provided
      *
      * @param string $file  Optional, filepath to be used
+     * @param string $protocol  OPtional, protocol to be used
      * @return void
      */
     function __construct($file = null, $protocol = null)
@@ -69,23 +69,21 @@ class PackedFileDataStore implements StoreEngine
         return $this->_open();
     }
 
-    private function _reinit($file = null)
-    {
-        if ($file !== null && $this->_file !== $this->_getAbsolutePath($file)) {
-            $this->close();
-            $this->init($file);
-        } else {
-            $this->init();
-        }
-    }
-
+    /**
+     * Tries to open the file for use.
+     *
+     * Throws IOException if file cannot be open or unable to set exceptional
+     * lock on it. Return true on success.
+     *
+     * @return boolean
+     * @throws IOException
+     */
     protected function _open()
     {
         $this->_fp = fopen($this->protocol.$this->_file, 'r+');
         if (!$this->_fp) {
             throw new IOException('Cannot open file '.$this->_file);
         }
-
         if (flock($this->_fp, LOCK_EX) === false) {
             throw new IOException('Cannot get lock on '.$this->_file);
         }
@@ -95,9 +93,8 @@ class PackedFileDataStore implements StoreEngine
     /**
      * @see Server/Registry/StoreEngine#load()
      */
-    function load($file = null)
+    function load()
     {
-        $this->_reinit($file);
         rewind($this->_fp);
         $data = fgets($this->_fp);
         if (!feof($this->_fp)) {
@@ -120,7 +117,6 @@ class PackedFileDataStore implements StoreEngine
      */
     function save($data)
     {
-        $this->_reinit();
         rewind($this->_fp);
         $res = fwrite($this->_fp, base64_encode(serialize($data)));
         if ($res === false) {
@@ -147,7 +143,6 @@ class PackedFileDataStore implements StoreEngine
     function __destruct()
     {
         $this->close();
-        $this->cleanUp();
     }
 
     /**
@@ -162,11 +157,7 @@ class PackedFileDataStore implements StoreEngine
     {
         clearstatcache();
         if (empty($path)) {
-            if (empty(self::$_lastFile)) {
-                $path = tempnam(getcwd(), self::FN_PREFIX);
-            } else {
-                $path = self::$_lastFile;
-            }
+            $path = tempnam(getcwd(), self::FN_PREFIX);
         } else {
             $path = $this->_getAbsolutePath($path);
         }
@@ -175,7 +166,6 @@ class PackedFileDataStore implements StoreEngine
         }
         if (is_writable(dirname($path))) {
             $this->_file = $path;
-            self::$_lastFile = $this->_file;
             return $this->_file;
         } else {
             throw new IOException('Path '.dirname($path).' is not writable');
@@ -225,14 +215,5 @@ class PackedFileDataStore implements StoreEngine
     function getPath()
     {
         return $this->_file;
-    }
-
-    function cleanUp()
-    {
-        clearstatcache();
-        //because: strlen(base64_encode(serialize(array()))) = 8
-        if (filesize($this->_file) < 9) {
-            unlink($this->_file);
-        }
     }
 }

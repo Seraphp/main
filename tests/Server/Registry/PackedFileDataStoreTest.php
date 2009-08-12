@@ -7,18 +7,19 @@
  */
 require_once 'PHPUnit/Framework.php';
 require_once 'Server/Registry/PackedFileDataStore.class.php';
+require_once 'vfsStream/vfsStream.php';
 /**
  * Class documentation
  */
 class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase{
 
-    private $Testdata;
+    private $testData;
     private $createdFiles;
 
     function setUp()
     {
         $this->createdFiles = array();
-        $this->Testdata = array('ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP', 'árvíztűrő tükörfúrógép');
+        $this->testData = array('ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP', 'árvíztűrő tükörfúrógép');
     }
 
     function testInitNoPath()
@@ -42,7 +43,7 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase{
     {
         $store = new PackedFileDataStore();
         $store->init();
-        $this->assertTrue($store->save($this->Testdata));
+        $this->assertTrue($store->save($this->testData));
         $this->assertThat(
             $this->fileExists($store->getPath()),
             $this->logicalAnd(),
@@ -56,9 +57,10 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase{
     {
         $store = new PackedFileDataStore();
         $store->init();
+        $tempFile = $store->getPath();
         array_push($this->createdFiles, $store->getPath());
-        $this->assertTrue($store->save($this->Testdata));
-        $this->assertEquals($this->Testdata, $store->load());
+        $this->assertTrue($store->save($this->testData));
+        $this->assertEquals($this->testData, $store->load($tempFile));
     }
 
     function testLoadWithFile()
@@ -66,8 +68,8 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase{
         $store = new PackedFileDataStore();
         $store->init('./test1.gz');
         array_push($this->createdFiles, $store->getPath());
-        $this->assertTrue($store->save($this->Testdata));
-        $this->assertEquals($this->Testdata, $store->load('./test1.gz'));
+        $this->assertTrue($store->save($this->testData));
+        $this->assertEquals($this->testData, $store->load('./test1.gz'));
     }
 
     function tearDown()
