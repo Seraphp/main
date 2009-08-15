@@ -135,6 +135,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
         stream_socket_shutdown($this->_sockets[1],STREAM_SHUT_RDWR);
         $request = new HttpRequest($this->_sockets[0]);
         $this->assertEquals('mockObserver',$request->attach($obs));
+        $this->assertType('int', $request->getState());
         $this->assertTrue($request->detach('mockObserver'));
     }
 

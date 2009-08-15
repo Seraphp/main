@@ -282,7 +282,7 @@ class HttpRequest implements Request, Listener
      */
     public function getState()
     {
-        return $this->fullLength / count($this->message);
+        return strlen($this->message);
     }
 
     public function notify()
