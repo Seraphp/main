@@ -27,9 +27,15 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
             $this->_postMessage .= urlencode($key).'='.urlencode($value).'&';
         }
         $this->_postMessage = trim($this->_postMessage, "&");
-        $this->_requestString['get'] = 'GET /index.html HTTP/1.1'.
+        $this->_requestString['get'] = 'GET /index.html?test=1 HTTP/1.1'.
             $this->_sep.
             'Host:example.com'.
+            $this->_sep.
+            'Referer:example.com'.
+            $this->_sep.
+            'Cookie:seraphp=server'.
+            $this->_sep.
+            'Accept-Language:hu-hu,hu;q=0.8,en-us;q=0.5,en;q=0.3'.
             $this->_sep.
             $this->_sep;
         $this->_requestString['post'] = 'POST /index.html HTTP/1.1'.
@@ -67,8 +73,14 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
         $this->assertEquals('1.1',$request->httpVersion);
         $this->assertEquals('GET',$request->method);
         $this->assertEquals('example.com',$request->httpHeaders['Host']);
-        $this->assertEquals('/index.html',$request->url);
-        $this->assertEquals("GET /index.html HTTP/1.1\r\nHost:example.com",
+        $this->assertEquals('example.com',$request->httpHeaders['Referer']);
+        $this->assertContains('hu-hu,hu',$request->httpHeaders['Accept-Language']);
+        $this->assertContains('q=0.8,en-us',$request->httpHeaders['Accept-Language']);
+        $this->assertContains('q=0.5,en',$request->httpHeaders['Accept-Language']);
+        $this->assertContains('q=0.3',$request->httpHeaders['Accept-Language']);
+        $this->assertEquals('/index.html?test=1',$request->url);
+        $this->assertEquals(1, $request->getParams['test']);
+        $this->assertEquals(trim($this->_requestString['get']),
             $request->httpRawHeaders);
     }
 

@@ -47,15 +47,18 @@ class HttpFactory
             500 => 'Internal Server Error',
         );
     /**
-     * @param array $array  An array of cookie settings
+     * @param array|string $array  An array of cookie settings or a string of Cookie header
      * @return array  An array of HttpCookie objects
      */
-    public static function getCookies($array)
+    public static function getCookies($param)
     {
         self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
         $result = array();
-        foreach ($array as $cookieParams) {
+        if (is_string($param)) {
+            $param = array(HttpFactory::parseCookieString($param));
+        }
+        foreach ($param as $cookieParams) {
             $name = null;
             $value = null;
             $expireOn = null;
@@ -133,5 +136,33 @@ class HttpFactory
         } else {
             return null;
         }
+    }
+
+    /**
+     * Parses a HTTP cookies string into an array.
+     *
+     * Parses the fields from the string. Any key which is not in extras
+     * (above 'expireOn','path', 'domain', 'secure', 'onlyHTTP') will be droped.
+     *
+     * @param string $str  HTTP cookie string to parse
+     * @param array $extras  Extra fields in the cookie to parse
+     * @return array
+     */
+    public static function parseCookieString($str, $extras = array())
+    {
+        $parts = array('expireOn','path', 'domain', 'secure', 'onlyHTTP');
+        $parts = array_merge($parts, $extras);
+        $result = array();
+        $props = explode(';', $str);
+        foreach ($props as $prop) {
+            $values = explode('=', trim($prop));
+            if (array_key_exists($values[0], $parts)) {
+                $result[trim($values[0])] = trim($values[1]);
+            } elseif (!array_key_exists('name', $result)){
+                $result['name'] = $values[0];
+                $result['value'] = $values[1];
+            }
+        }
+        return $result;
     }
 }

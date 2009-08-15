@@ -202,7 +202,7 @@ class HttpRequest implements Request, Listener
         list ($this->method, $this->url, $this->httpVersion) =
             explode(' ', $requestLine);
         $this->httpVersion = substr($this->httpVersion, -3);
-        foreach ( $this->httpHeaders as $row ) {
+        foreach ($this->httpHeaders as $row) {
             $item = explode(':', $row, 2);
             if (array_key_exists($item[0], $headers)) {
                 $headers[$item[0]] .= ';'.trim($item[1]);
@@ -213,8 +213,8 @@ class HttpRequest implements Request, Listener
         $this->httpHeaders = $headers;
         self::$_log->debug('setting up get, cookies');
         if (array_key_exists('Cookie', $this->httpHeaders)) {
-            $this->cookies = explode(';', $this->httpHeaders['Cookies']);
-            $this->cookies = HttpFactory::getCookies($this->cookies);
+            //$this->cookies = explode(';', $this->httpHeaders['Cookie']);
+            $this->cookies = HttpFactory::getCookies($this->httpHeaders['Cookie']);
         }
         self::$_log->debug('processing GET parameters');
         if ($pos = strpos($this->url, '?')) {
@@ -238,10 +238,10 @@ class HttpRequest implements Request, Listener
         $rows = explode('&', urldecode($str));
         $params = array();
         $itemNum = count($rows);
-        for ( $idx = 0; $idx < $itemNum; $idx++ ) {
-            $param = explode('=', $rows[ $idx ], 2);
-            unset($rows[ $idx ]);
-            $params[ $param[0] ] = $param[1];
+        for ($idx = 0; $idx < $itemNum; $idx++) {
+            $param = explode('=', $rows[$idx], 2);
+            unset($rows[$idx]);
+            $params[$param[0]] = $param[1];
         }
         return $params;
     }
