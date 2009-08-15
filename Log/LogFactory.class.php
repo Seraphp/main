@@ -173,11 +173,11 @@ class LogFactory
                     break;
                 case 'Mail':
                     $mail = new Zend_Mail();
-                    $mail->setFrom($attribs['from'])
-                        ->addTo($attribs['to']);
+                    $mail->setFrom((string)$attribs['from'])
+                        ->addTo((string)$attribs['to']);
                     if (isset($attribs['layout'])) {
                         $layout = new Zend_Layout();
-                        $format = sprintf($attribs['layout'],
+                        $format = sprintf((string)$attribs['layout'],
                             Zend_Log_Formatter_Simple::DEFAULT_FORMAT);
                         $writer = new $writerClass($mail, $layout);
                         $formatter = new Zend_Log_Formatter_Simple($format);
@@ -185,15 +185,15 @@ class LogFactory
                     } else {
                         $writer = new $writerClass($mail);
                     }
-                    $writer->setSubjectPrependText($attribs['subject']);
+                    $writer->setSubjectPrependText((string)$attribs['subject']);
                     break;
                 case 'Syslog':
                     $writer = new $writerClass();
                     if (isset($attribs['application'])) {
-                        $writer->setApplication($attribs['application']);
+                        $writer->setApplicationName((string)$attribs['application']);
                     }
                     if (isset($attribs['facility'])) {
-                        $writer->setFacility($attribs['facility']);
+                        $writer->setFacility(constant($attribs['facility']));
                     }
                     break;
                 default:
