@@ -118,6 +118,26 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
         $this->assertThat($request->respond('Testing'), $this->isInstanceOf('HttpResponse'));
     }
 
+    function testListener()
+    {
+        require_once 'ObserverListener.interface.php';
+        $obs = $this->getMock('Observer');
+
+        $obs->expects($this->once())->method('getName')
+            ->will($this->returnValue('mockObserver'));
+        $obs->expects($this->any())->method('update');
+
+        if (fwrite($this->_sockets[1],
+            $this->_requestString['get'],
+            strlen($this->_requestString['get']))===false) {
+                $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
+            }
+        stream_socket_shutdown($this->_sockets[1],STREAM_SHUT_RDWR);
+        $request = new HttpRequest($this->_sockets[0]);
+        $this->assertEquals('mockObserver',$request->attach($obs));
+        $this->assertTrue($request->detach('mockObserver'));
+    }
+
     function tearDown()
     {
         foreach ($this->_sockets as $socket) {

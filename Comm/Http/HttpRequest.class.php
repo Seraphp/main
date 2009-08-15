@@ -294,17 +294,19 @@ class HttpRequest implements Request, Listener
 
     public function attach( Observer $observer )
     {
-        if ( !array_key_exists($observer->getName()) ) {
-            return $this->_observers[$observer->getName()] = $observer;
+        $obsName = $observer->getName();
+        if (!array_key_exists($obsName, $this->_observers)) {
+            $this->_observers[$obsName] = $observer;
+            return $obsName;
         } else {
             return false;
         }
     }
 
-    public function detach( Observer $observer )
+    public function detach($observerName)
     {
-        if ( array_key_exists($observer->getName()) ) {
-            unset($this->_observers[$observer->getName()]);
+        if (array_key_exists($observerName, $this->_observers)) {
+            unset($this->_observers[$observerName]);
             return true;
         } else {
             return false;

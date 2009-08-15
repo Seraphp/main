@@ -71,8 +71,8 @@ interface Listener
      *
      * The  instance will not receive updates anymore.
      *
-     * @param Observer $instance
+     * @param string $str  Name of the Observer object
      * @return boolean
      */
-    public function detach(Observer $instance);
+    public function detach($str);
 }
