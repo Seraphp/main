@@ -213,8 +213,8 @@ class HttpRequest implements Request, Listener
         $this->httpHeaders = $headers;
         self::$_log->debug('setting up get, cookies');
         if (array_key_exists('Cookie', $this->httpHeaders)) {
-            //$this->cookies = explode(';', $this->httpHeaders['Cookie']);
-            $this->cookies = HttpFactory::getCookies($this->httpHeaders['Cookie']);
+            $this->cookies =
+                HttpFactory::getCookies($this->httpHeaders['Cookie']);
         }
         self::$_log->debug('processing GET parameters');
         if ($pos = strpos($this->url, '?')) {
@@ -367,7 +367,7 @@ class HttpRequest implements Request, Listener
                 throw new HttpException(curl_error($curlObj));
             }
             curl_close($curlObj);
-            $resp = HttpFactory::create('response',null);
+            $resp = HttpFactory::create('response', null);
             $resp->parse($response);
             return $resp;
         } else throw new HttpException(

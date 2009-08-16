@@ -190,7 +190,7 @@ class LogFactory
                 case 'Syslog':
                     $writer = new $writerClass();
                     if (isset($attribs['application'])) {
-                        $writer->setApplicationName((string)$attribs['application']);
+                        $writer->setApplicationName($attribs['application']);
                     }
                     if (isset($attribs['facility'])) {
                         $writer->setFacility(constant($attribs['facility']));

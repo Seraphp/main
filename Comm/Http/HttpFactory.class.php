@@ -47,7 +47,8 @@ class HttpFactory
             500 => 'Internal Server Error',
         );
     /**
-     * @param array|string $array  An array of cookie settings or a string of Cookie header
+     * @param array|string $array  An array of cookie settings or a string of
+     * Cookie header
      * @return array  An array of HttpCookie objects
      */
     public static function getCookies($param)
@@ -162,7 +163,7 @@ class HttpFactory
             $values = explode('=', trim($prop));
             if (array_key_exists($values[0], $parts)) {
                 $result[trim($values[0])] = trim($values[1]);
-            } elseif (!array_key_exists('name', $result)){
+            } elseif (!array_key_exists('name', $result)) {
                 $result['name'] = $values[0];
                 $result['value'] = $values[1];
             }
