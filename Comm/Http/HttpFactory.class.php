@@ -56,7 +56,11 @@ class HttpFactory
         self::$_log->debug(__METHOD__.' called');
         $result = array();
         if (is_string($param)) {
+            //We have an http Cookie header to parse
             $param = array(HttpFactory::parseCookieString($param));
+        } elseif (isset($param['name'])) {
+            //We have a single cookie request
+            $param = array($param);
         }
         foreach ($param as $cookieParams) {
             $name = null;

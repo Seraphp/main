@@ -139,12 +139,19 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
         $this->assertTrue($request->detach('mockObserver'));
     }
 
-    function testSendingRequest()
+    /**
+     * @dataProvider versions
+     */
+    function testSendingRequest($version)
     {
         $req = new HttpRequest();
         $this->assertFalse($req->isReceived);
         $req->url = 'http://localhost';
         $req->getParams = array('test'=>1);
+        $req->httpVersion = $version;
+        $req->cookies = HttpFactory::create('cookie', null, array('name'=>'test',
+            'value'=>2,
+            'domain'=>'localhost'));
         $resp = $req->send();
         $this->assertThat($resp, $this->isInstanceOf('HttpResponse'));
         $this->assertEquals('text/html', $resp->contentType);
@@ -156,6 +163,11 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
         $this->assertArrayHasKey('Server', $resp->headers);
         $this->assertArrayHasKey('Content-Length', $resp->headers);
         $this->assertEquals('<html><body><h1>It works!</h1></body></html>', $resp->messageBody);
+    }
+
+    function versions()
+    {
+        return array(array('1.x'), array('1.0'), array('1.1'));
     }
 
     function tearDown()
