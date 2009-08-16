@@ -12,6 +12,27 @@ require_once 'Comm/JsonRpc/JsonRpcResponse.class.php';
  */
 class JsonRpcResponseTest extends PHPUnit_Framework_TestCase{
 
+    private $names = array('main', 'mockery');
+
+    function setUp()
+    {
+        foreach ($this->names as $fifo) {
+            $fileName = '/tmp/seraphp/'.$fifo.'I.tmp';
+            if (file_exists($fileName)) {
+                unlink($fileName);
+            }
+            $fileName = '/tmp/seraphp/'.$fifo.'O.tmp';
+            if (file_exists($fileName)) {
+                unlink($fileName);
+            }
+            if(is_dir('/tmp/seraphp')){
+                $curr = getcwd();
+                chdir('/tmp');
+                @rmdir('seraphp');
+                chdir($curr);
+            }
+        }
+    }
 
     function testConstructor()
     {
@@ -33,5 +54,10 @@ class JsonRpcResponseTest extends PHPUnit_Framework_TestCase{
     {
         $response = new JsonRpcResponse('result', null, 1);
         $this->assertEquals('{"result":"result","error":null,"id":1}',$response->__toString());
+    }
+
+    function tearDown()
+    {
+        $this->setUp();
     }
 }
