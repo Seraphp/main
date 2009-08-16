@@ -25,6 +25,7 @@ class HttpResponse
 {
     private static $_log = null;
     public $statusLine = '';
+    public $rawHeaders = '';
     public $headers = array();
     public $cookies = array();
     public $contentType = 'text/plain';
@@ -72,6 +73,30 @@ class HttpResponse
                 $this->_sendBody();
             }
             stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
+        }
+    }
+
+    public function parse($msg)
+    {
+        $lines = explode("\r\n\r\n", $msg, 2);
+        $this->rawHeaders = $lines[0];
+        if (sizeof($lines)>1) {
+            $this->messageBody = trim($lines[1]);
+        }
+        unset($lines);
+        $headers = explode("\r\n", $this->rawHeaders);
+        //Parsing first line
+        preg_match('/^HTTP\/(\d\.\d) (\d*) (.*)$/', $headers[0], $matches);
+        $this->httpVersion = $matches[1];
+        $this->statusCode = $matches[2];
+        $this->statusLine = $matches[3];
+        unset($headers[0]);
+        foreach ($headers as $header) {
+            list($key, $value) = explode(':', $header, 2);
+            $this->headers[trim($key)] = trim($value);
+        }
+        if (isset($this->headers['Content-Type'])) {
+            $this->contentType = $this->headers['Content-Type'];
         }
     }
 

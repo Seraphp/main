@@ -326,6 +326,8 @@ class HttpRequest implements Request, Listener
                 CURLOPT_CUSTOMREQUEST =>
                     (empty($this->method))?'GET':$this->method,
                 CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HEADER =>true,
+                CURLOPT_FRESH_CONNECT =>true
             );
             //Setting HTTP version for Curl
             switch ($this->httpVersion) {
@@ -366,7 +368,9 @@ class HttpRequest implements Request, Listener
             curl_setopt_array($curlObj, $options);
             $response = curl_exec($curlObj);
             curl_close($curlObj);
-            return $response;
+            $resp = HttpFactory::create('response',null);
+            $resp->parse($response);
+            return $resp;
         } else throw new HttpException(
                 'HttpRequest instance is received not to be send out!'
             );

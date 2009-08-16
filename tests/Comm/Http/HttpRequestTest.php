@@ -139,6 +139,25 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
         $this->assertTrue($request->detach('mockObserver'));
     }
 
+    function testSendingRequest()
+    {
+        $req = new HttpRequest();
+        $this->assertFalse($req->isReceived);
+        $req->url = 'http://localhost';
+        $req->getParams = array('test'=>1);
+        $resp = $req->send();
+        $this->assertThat($resp, $this->isInstanceOf('HttpResponse'));
+        $this->assertEquals('text/html', $resp->contentType);
+        $this->assertEquals('1.1', $resp->httpVersion);
+        $this->assertEquals(200, $resp->statusCode);
+        $this->assertEquals('OK', $resp->statusLine);
+        $this->assertArrayHasKey('Date', $resp->headers);
+        $this->assertArrayHasKey('ETag', $resp->headers);
+        $this->assertArrayHasKey('Server', $resp->headers);
+        $this->assertArrayHasKey('Content-Length', $resp->headers);
+        $this->assertEquals('<html><body><h1>It works!</h1></body></html>', $resp->messageBody);
+    }
+
     function tearDown()
     {
         foreach ($this->_sockets as $socket) {
