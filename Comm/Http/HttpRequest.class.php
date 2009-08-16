@@ -358,11 +358,14 @@ class HttpRequest implements Request, Listener
             //Setting up GET parameters for curl
             if ($this->getParams !== array() ) {
                 $sep = (strpos($this->url, '?') !== false)?'&':'?';
-                $options[CURLOPT_URL] = $this->url.
-                     urlencode($sep.$this->_array2params($this->getParams));
+                $options[CURLOPT_URL] = $this->url.$sep.
+                     urlencode($this->_array2params($this->getParams));
             }
             curl_setopt_array($curlObj, $options);
             $response = curl_exec($curlObj);
+            if ($response === false) {
+                throw new HttpException(curl_error($curlObj));
+            }
             curl_close($curlObj);
             $resp = HttpFactory::create('response',null);
             $resp->parse($response);
