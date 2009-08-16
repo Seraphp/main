@@ -357,13 +357,9 @@ class HttpRequest implements Request, Listener
             }
             //Setting up GET parameters for curl
             if ($this->getParams !== array() ) {
-                if (strpos($this->url, '?') !== false) {
-                    $options[CURLOPT_URL] = $this->url .
-                     urlencode('&'.$this->_array2params($this->getParams));
-                } else {
-                   $options[CURLOPT_URL] = $this->url .
-                    '?'. urlencode($this->_array2params($this->getParams));
-                }
+                $sep = (strpos($this->url, '?') !== false)?'&':'?';
+                $options[CURLOPT_URL] = $this->url.
+                     urlencode($sep.$this->_array2params($this->getParams));
             }
             curl_setopt_array($curlObj, $options);
             $response = curl_exec($curlObj);
