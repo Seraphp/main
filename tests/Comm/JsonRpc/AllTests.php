@@ -9,7 +9,7 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'JsonRpcRequestTest.php';
 require_once 'JsonRpcResponseTest.php';
-//require_once 'JsonRpcProxyTest.php';
+require_once 'JsonRpcProxyTest.php';
 /**
  * Class documentation
  */
@@ -20,6 +20,7 @@ class JsonRpc_AllTests{
         $suite = new PHPUnit_Framework_TestSuite('JsonRpc facilities');
         $suite->addTestSuite('JsonRpcRequestTest');
         $suite->addTestSuite('JsonRpcResponseTest');
+        $suite->addTestSuite('JsonRpcProxyTest');
         return $suite;
     }
 }

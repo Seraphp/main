@@ -13,6 +13,7 @@
 //namespace Seraphp\Comm\JsonRpc;
 require_once 'JsonRpcRequest.class.php';
 require_once 'JsonRpcResponse.class.php';
+require_once 'Exceptions/IOException.class.php';
 /**
  * The class receives calls and translate them to RPC calls
  *
@@ -141,6 +142,7 @@ class JsonRpcProxy
      * @param string $role  How to initalize the proxy: 'client'(default) or
      *  'server'
      * @return boolean
+     * @throws IOException
      */
     public function init($role = 'client')
     {
@@ -152,35 +154,36 @@ class JsonRpcProxy
         }
         switch ($this->_type) {
             case 'socket':
-                @mkdir('/tmp/seraphp/', 0700);
-                if ($this->_role == 'server') {
-                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'I.tmp';
-                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'O.tmp';
-                } else {
-                    $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'O.tmp';
-                    $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'I.tmp';
+                if (!is_dir('/tmp/seraphp/')) {
+                    mkdir('/tmp/seraphp/', 0700);
                 }
-                foreach ($this->_fifo as $type => $fifo)
-                if (!file_exists($fifo)) {
-                    posix_mkfifo($fifo, 0700);
+                $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'I.tmp';
+                $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'O.tmp';
+                foreach ($this->_fifo as $type => $pipe){
+                    if (!file_exists($pipe)) {
+                        if (posix_mkfifo($pipe, 0700) === false) {
+                            throw new IOException('Cannot create '.$pipe);
+                        }
+                    }
                 }
                 break;
         }
     }
 
-    protected function _connect($usage)
+    protected function _connect($mode)
     {
         if ($this->_role == 'client') {
             $this->_disconnect();
         }
-        if ($usage == 'read') {
-            $fifoDir = ($this->_role == 'client')?'out':'in';
-            $mode = 'r+';
-        } elseif ($usage == 'write') {
-            $fifoDir = ($this->_role == 'client')?'in':'out';
-            $mode = 'w+';
-        } else throw new Exception('Invalid usage specified: '.$usage);
-        $this->_conn = fopen($this->_fifo[$fifoDir], $mode);
+        if ($mode !== 'read' && $mode !== 'write') {
+             throw new Exception('Invalid mode specified: '.$mode);
+        }
+        if ($this->_role == 'client') {
+            $fifo = $this->_fifo[($mode == 'read')?'out':'in'];
+        } else {
+            $fifo = $this->_fifo[($mode == 'read')?'in':'out'];
+        }
+        $this->_conn = fopen($fifo, substr($mode, 0, 1).'+');
         stream_set_blocking($this->_conn, false);
     }
 
@@ -238,6 +241,8 @@ class JsonRpcProxy
                     }
                     self::$_log->debug(__METHOD__. ' received:'.$reply);
                     return $this->_parseReply($reply);
+                } else {
+                    throw new IOException('FIFO read timed out!');
                 }
             } else {
                 throw new IOException('Cannot write FIFO: '.$this->_fifo);
@@ -261,8 +266,7 @@ class JsonRpcProxy
         $message = json_decode($reply);
         self::$_log->debug('Message: '.$reply);
         if (isset($message->error)) {
-            $exception = $message->error;
-            throw $exception;
+            throw new RuntimeException($message->error);
         } else {
             return $message->result;
         }
@@ -274,28 +278,31 @@ class JsonRpcProxy
      */
     public function parseRequest($msg)
     {
-        fwrite(STDOUT, __METHOD__.' received: '.$msg);
         self::$_log->debug(__METHOD__. ' called');
         self::$_log->debug('Message: '.$msg);
         $message = json_decode($msg);
-        if (is_callable($this->_client, $message->method)) {
-            self::$_log->debug('Method exists: '.$message->method);
+        if (is_callable(array($this->_client, $message->method))) {
+            self::$_log->debug('Method exists: '.
+                get_class($this->_client).'::'.$message->method);
             $error = null;
-            try
-            {
+            try {
                 $result = call_user_func_array(array($this->_client,
                     $message->method), $message->params);
             } catch(Exception $e) {
                 $error = $e;
             }
-            if ($message->id !== null ) {
+            if ($message->id !== null) {
                 $response = (string) new JsonRpcResponse($result,
                     $error, $message->id);
-                self::$_log->debug('Result is: '.$response);
-                $this->_connect('write');
-                fwrite($this->_conn['write'], $response."\n");
             }
+        } else {
+            $response = (string) new JsonRpcResponse(null,
+                new RuntimeException('No such method:' .$message->method),
+                $message->id);
         }
+        self::$_log->debug('Result is: '.$response);
+        $this->_connect('write');
+        fwrite($this->_conn, $response."\n");
     }
 
     /**

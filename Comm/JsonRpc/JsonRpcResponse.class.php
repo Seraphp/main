@@ -26,13 +26,14 @@ class JsonRpcResponse
 
     public function __construct($result, $error = null, $id = null)
     {
-        if ( $result === null && $error === null ) {
-            throw new Exception('Either a result or an error should be set!');
+        if ($result === null ) {
+            if ($error !== null) {
+                $this->error = $error->getMessage();
+            } else throw new Exception('Either a result or an error should be set!');
         } else {
-            $this->error = $error;
             $this->result = $result;
-            $this->id = $id;
         }
+        $this->id = $id;
     }
 
     public function __toString()
