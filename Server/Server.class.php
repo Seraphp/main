@@ -386,7 +386,6 @@ abstract class Server implements Daemon
      */
     public function __destruct()
     {
-        self::$_log->debug(__METHOD__.' called');
         if ($this->_role === 'parent') {
             exit($this->expell());
         }
