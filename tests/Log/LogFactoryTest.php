@@ -115,4 +115,9 @@ XML;
         $log = LogFactory::getInstance($this->xml['syslog']);
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
+    function testWithEmptyConf()
+    {
+        $log = LogFactory::getInstance(new Config('<test/>'));
+        $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
+    }
 }
