@@ -159,7 +159,7 @@ class JsonRpcProxy
                 }
                 $this->_fifo['in'] = '/tmp/seraphp/'.$this->_name.'I.tmp';
                 $this->_fifo['out'] = '/tmp/seraphp/'.$this->_name.'O.tmp';
-                foreach ($this->_fifo as $type => $pipe){
+                foreach ($this->_fifo as $type => $pipe) {
                     if (!file_exists($pipe)) {
                         if (posix_mkfifo($pipe, 0700) === false) {
                             throw new IOException('Cannot create '.$pipe);

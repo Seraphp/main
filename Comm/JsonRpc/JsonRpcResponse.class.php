@@ -29,7 +29,8 @@ class JsonRpcResponse
         if ($result === null ) {
             if ($error !== null) {
                 $this->error = $error->getMessage();
-            } else throw new Exception('Either a result or an error should be set!');
+            } else 
+            	throw new Exception('Either a result or an error should be set!');
         } else {
             $this->result = $result;
         }
