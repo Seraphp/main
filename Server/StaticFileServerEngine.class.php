@@ -25,7 +25,7 @@ class StaticFileServerEngine implements AppEngine
     private static $_log;
     protected $_basePath = '';
 
-    public function __construct(Config $conf)
+    public function __construct(Config $conf = null)
     {
         self::$_log = LogFactory::getInstance($conf->server);
         self::$_log->debug(__METHOD__.' called');
