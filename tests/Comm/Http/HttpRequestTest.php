@@ -120,11 +120,11 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
 
     function testListener()
     {
-        require_once 'ObserverListener.interface.php';
-        $obs = $this->getMock('Observer');
+        require_once 'ObservableListener.interface.php';
+        $obs = $this->getMock('Listener');
 
         $obs->expects($this->once())->method('getName')
-            ->will($this->returnValue('mockObserver'));
+            ->will($this->returnValue('mockListener'));
         $obs->expects($this->any())->method('update');
 
         if (fwrite($this->_sockets[1],
@@ -134,9 +134,9 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase{
             }
         stream_socket_shutdown($this->_sockets[1],STREAM_SHUT_RDWR);
         $request = new HttpRequest($this->_sockets[0]);
-        $this->assertEquals('mockObserver',$request->attach($obs));
+        $this->assertEquals('mockListener',$request->attach($obs));
         $this->assertType('int', $request->getState());
-        $this->assertTrue($request->detach('mockObserver'));
+        $this->assertTrue($request->detach('mockListener'));
     }
 
     /**

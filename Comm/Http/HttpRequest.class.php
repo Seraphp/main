@@ -26,7 +26,7 @@ require_once 'HttpFactory.class.php';
  * @subpackage Http
  * @todo Test HTTPRequest class
  */
-class HttpRequest implements Request, Listener
+class HttpRequest implements Request, Observable
 {
     const REQ_TOSEND = false;
     const REQ_RECEIVED = true;
