@@ -13,7 +13,7 @@
 //namespace Seraphp\Comm\Http;
 require_once 'Comm/Request.interface.php';
 require_once 'Log/LogFactory.class.php';
-require_once 'ObserverListener.interface.php';
+require_once 'ObservableListener.interface.php';
 require_once 'Exceptions/HttpException.class.php';
 require_once 'Exceptions/SocketException.class.php';
 require_once 'Exceptions/IOException.class.php';
@@ -100,7 +100,7 @@ class HttpRequest implements Request, Listener
      * Array of objects listening for status change
      * @var array
      */
-    private $_observers = array();
+    private $_listeners = array();
 
     /**
      * Constructor method
@@ -287,26 +287,26 @@ class HttpRequest implements Request, Listener
 
     public function notify()
     {
-        foreach ( $this->_observers as $observer ) {
-            $observer->update($this);
+        foreach ($this->_listeners as $listener) {
+            $listener->update($this);
         }
     }
 
-    public function attach( Observer $observer )
+    public function attach(Listener $listener)
     {
-        $obsName = $observer->getName();
-        if (!array_key_exists($obsName, $this->_observers)) {
-            $this->_observers[$obsName] = $observer;
-            return $obsName;
+        $objName = $listener->getName();
+        if (!array_key_exists($objName, $this->_listeners)) {
+            $this->_listeners[$objName] = $listener;
+            return $objName;
         } else {
             return false;
         }
     }
 
-    public function detach($observerName)
+    public function detach($listenerName)
     {
-        if (array_key_exists($observerName, $this->_observers)) {
-            unset($this->_observers[$observerName]);
+        if (array_key_exists($listenerName, $this->_listeners)) {
+            unset($this->_listeners[$listenerName]);
             return true;
         } else {
             return false;

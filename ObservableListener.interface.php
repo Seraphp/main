@@ -1,6 +1,6 @@
 <?php
 /**
- * Hold Observer and Listener interface definitions
+ * Hold Observableand Listener interface definitions
  *
  * @version $Id$
  * @filesource
@@ -8,14 +8,14 @@
  * @author Peter Nagy  <antronin@gmail.com>
  */
 /**
- * Observer interface definition
+ * Listener interface definition
  *
  * Classes implementing this interface will be able to receive
- * notification from classes implementing the Listener interface.
+ * notification from classes implementing the Observable interface.
  *
  * @package Seraphp
  */
-interface Observer
+interface Listener
 {
     /**
      * Returns a unique name of the Observer instance
@@ -32,7 +32,7 @@ interface Observer
      * @param Listener $instance
      * @return void
      */
-    public function update(Listener $instance);
+    public function update(Observable $instance);
 }
 /**
  * Listener interface definition
@@ -42,21 +42,21 @@ interface Observer
  *
  * @package Seraphp
  */
-interface Listener
+interface Observable
 {
     /**
-     * Attaches an observer
+     * Attaches an listener
      *
      * The instance will receives the update notifications.
      *
-     * @param Observer $instance
+     * @param Listener $instance
      * @return boolean
      */
-    public function attach(Observer $instance);
+    public function attach(Listener $instance);
     /**
-     * Notifies observers
+     * Notifies listeners
      *
-     * Flicks through all registered observers and notify them about update
+     * Flicks through all registered listeners and notify them about update
      * @return void
      */
     public function notify();
@@ -67,11 +67,11 @@ interface Listener
      */
     public function getState();
     /**
-     * Deatches an observer
+     * Deatches an listener
      *
      * The  instance will not receive updates anymore.
      *
-     * @param string $str  Name of the Observer object
+     * @param string $str  Name of the Listener object
      * @return boolean
      */
     public function detach($str);
