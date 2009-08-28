@@ -14,6 +14,7 @@
 require_once 'Singleton.interface.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Server/Registry/Registry.class.php';
+require_once 'Log/LogFactory.class.php';
 /**
  * Class for parsing xml file and loading the settings into
  * AppRegistry.
@@ -95,26 +96,6 @@ class ConfigFactory implements Singleton
     }
 
     /**
-     * @param string $xpath
-     * @param SimpleXMLElement $node
-     * @return SimpleXMLElement
-     */
-    public function xsearch($xpath, $node = null)
-    {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Xpath: "'.$xpath. '"');
-        $node = ($node === null)?$this->_xml:$node;
-        //Register them with their prefixes
-        foreach ($this->_namespaces as $prefix => $ns) {
-            if ( empty($prefix) ) {
-                $prefix = 'srph';
-            }
-            $res = $node->registerXPathNamespace($prefix, $ns);
-        }
-        return $node->xpath($xpath);
-    }
-
-    /**
      * @param string $xmlFile  Full path of xml file to load
      * @return void
      */
@@ -138,7 +119,7 @@ class ConfigFactory implements Singleton
         }
         self::$_log->debug('Searching for node: "//srph:servers/srph:server'.
         '[@id='.$name. ']"');
-        $serverConfXML = $this->xsearch('//srph:servers/srph:server[@id="'
+        $serverConfXML = $this->_xml->xsearch('//srph:servers/srph:server[@id="'
             .$name.'"]');
         if ($serverConfXML === false) {
             throw new ConfigException('Failed to parse the confg file: '
@@ -152,7 +133,7 @@ class ConfigFactory implements Singleton
                     $this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile));
                 break;
             case 1:
-                $parentNode = $this->xsearch('..', $serverConfXML[0]);
+                $parentNode = $this->_xml->xsearch('..', $serverConfXML[0]);
                 $serverConfXML[0]->addAttribute('pidpath',
                     $parentNode[0]->attributes()->pidpath);
                 $conf = $serverConfXML[0];
