@@ -20,19 +20,22 @@ interface Daemon
     /**
      * Creates a deamon process from the implementing class
      *
-     * @return void
+     * @return mixed
      */
     public function summon();
     /**
      * Spawns a new child process from the current one
+     * 
+     * After forking the processes the method should retrun the PID of the 
+     * created child process either in the parent and the child process.
      *
-     * @return void
+     * @return integer  PID of the created child process
      */
     public function spawn();
     /**
      * Finishes the run of the daemon process
      *
-     * @return void
+     * @return boolean
      */
     public function expell();
     /**
