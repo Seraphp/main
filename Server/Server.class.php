@@ -22,7 +22,15 @@ require_once 'Log/LogFactory.class.php';
  */
 abstract class Server implements Daemon
 {
-    protected $_status = 'exists';
+    /**
+     * @var string  Current status of the instance
+     */
+    public $status = 'exists';
+
+    /**
+     * @var boolean  If false new process not created
+     */
+    public $daemonize = true;
 
     /**
      * Logging engine reference if any
@@ -204,7 +212,7 @@ abstract class Server implements Daemon
     protected function startHart()
     {
         self::$_log->debug(__METHOD__.' called');
-        $this->_status = 'running';
+        $this->status = 'running';
         declare(ticks = 1);
         while (true) {
             $this->hartBeat();
@@ -223,7 +231,7 @@ abstract class Server implements Daemon
     public function spawn()
     {
         self::$_log->debug(__METHOD__.' called');
-        if (count($this->_spawns) < $this->_maxSpawns) {
+        if ($this->daemonize && count($this->_spawns) < $this->_maxSpawns) {
             self::$_log->debug('Forking');
             $pid = pcntl_fork();
             if ($pid < 0) {
@@ -235,15 +243,15 @@ abstract class Server implements Daemon
                     $this->_ipc = IpcFactory::get($this->_ipcType,
                                                   posix_getppid());
                 }
-                return $this->_pid;
             } else {
+                $this->_pid = getmypid();
                 //parent process
                 $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
                 //self::$_log->setIdent(getmypid());
                 self::$_log->debug($pid." spawned\n");
-                return $pid;
             }
         }
+        return $this->_pid;
     }
 
     /**
@@ -263,10 +271,10 @@ abstract class Server implements Daemon
      *
      * @return boolean
      */
-    public function expell()
+    public function expel()
     {
         self::$_log->debug(__METHOD__.' called');
-        $this->onExpell();
+        $this->onExpel();
         self::$_log->debug('children:');
         $success = false;
         foreach ($this->_spawns as $childPid=>$details) {
@@ -294,7 +302,7 @@ abstract class Server implements Daemon
             unlink(realpath($pidData['uri']));
         }
         self::$_log->debug('Parent exiting');
-        $this->_status = 'expelled';
+        $this->status = 'expeled';
         return $success;
     }
 
@@ -387,7 +395,7 @@ abstract class Server implements Daemon
     public function __destruct()
     {
         if ($this->_role === 'parent') {
-            exit($this->expell());
+            exit($this->expel());
         }
     }
 
@@ -398,9 +406,9 @@ abstract class Server implements Daemon
      */
     public function getStatus()
     {
-        return $this->_status;
+        return $this->status;
     }
 
     abstract protected function onSummon();
-    abstract protected function onExpell();
+    abstract protected function onExpel();
 }

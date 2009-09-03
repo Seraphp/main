@@ -25,8 +25,8 @@ interface Daemon
     public function summon();
     /**
      * Spawns a new child process from the current one
-     * 
-     * After forking the processes the method should retrun the PID of the 
+     *
+     * After forking the processes the method should retrun the PID of the
      * created child process either in the parent and the child process.
      *
      * @return integer  PID of the created child process
@@ -37,7 +37,7 @@ interface Daemon
      *
      * @return boolean
      */
-    public function expell();
+    public function expel();
     /**
      * Set the maximum amount of allowed child processes running on the same
      * time

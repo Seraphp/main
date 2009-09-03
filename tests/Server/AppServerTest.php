@@ -14,11 +14,14 @@ require_once 'Server/DefaultEngine.class.php';
 class AppServerTest extends PHPUnit_Framework_TestCase{
     protected $appID;
     protected $server;
+    protected $req;
+    protected $conf;
+    protected $confString;
 
     function setUp()
     {
         $this->appID = 'main';
-        $confString = <<<XML
+        $this->confString = <<<XML
 <servers>
     <server id="$this->appID">
         <instance>
@@ -28,23 +31,19 @@ class AppServerTest extends PHPUnit_Framework_TestCase{
     </server>
 </servers>
 XML;
-        $this->conf = new Config($confString);
-        $this->server = new AppServer($this->conf->server);
+
     }
 
     function testAppServerInstatiation()
     {
+        $this->conf = new Config($this->confString);
+        $this->server = new AppServer($this->conf->server);
+        $this->server->daemonize = false;
         $this->assertEquals($this->appID, $this->server->getAppId());
         $this->assertTrue(is_numeric($this->server->summon()));
         $this->assertFileExists(getcwd().'/.'.$this->appID.'_srphp.pid');
         $this->assertEquals(5, $this->server->getMaxSpawns());
         $this->server->setMaxSpawns(10);
         $this->assertEquals(10, $this->server->getMaxSpawns());
-    }
-
-    function tearDown()
-    {
-        $pid = file_get_contents(getcwd().'/.'.$this->appID.'_srphp.pid');
-        posix_kill($pid, 9);
     }
 }

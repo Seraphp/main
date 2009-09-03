@@ -23,17 +23,49 @@ require_once 'Exceptions/SocketException.class.php';
  */
 class AppServer extends Server
 {
-
+    /**
+     * @var string
+     */
     protected $_appID = '';
+    /**
+     * @var string
+     */
     protected $_pidFolder = '.';
+    /**
+     * @var Registry
+     */
     protected $_appReg = null;
+    /**
+     * @var array
+     */
     protected $_engines = array();
+    /**
+     * @var array
+     */
     private $_includes = array();
+    /**
+     * @var string
+     */
     private $_address = null;
+    /**
+     * @var integer
+     */
     private $_port = null;
+    /**
+     * @var resource
+     */
     private $_socket = null;
+    /**
+     * @var boolean
+     */
     private $_accepting = false;
+    /**
+     * @var array
+     */
     private $_urimap = array();
+    /**
+     * @var RpcPRoxy
+     */
     private $_rpcProxy = null;
 
     const DEFAULT_ADDRESS = '127.0.0.1';
@@ -61,9 +93,18 @@ class AppServer extends Server
         if (isset($conf->instance)) {
             $this->_configInstance($conf->instance);
         }
+        $this->_configUrimap($conf);
+        //This must be called lastly as it depends on other setting above.
         $this->_configRegistry();
     }
 
+    /**
+     * Configures Include paths for the AppServer instance
+     *
+     * @param Config $includes
+     * @return void
+     * @throws Exception
+     */
     protected function _configIncludes($includes)
     {
         self::$_log->debug('Adding include pathes');
@@ -82,6 +123,12 @@ class AppServer extends Server
         }
     }
 
+    /**
+     * Configures engine, IP, port and timeout for the AppServer instance
+     *
+     * @param Config $instance
+     * @return void
+     */
     protected function _configInstance($instance)
     {
         //Calling Parent's constructor...
@@ -102,16 +149,6 @@ class AppServer extends Server
             $conf = '<engine id="default" class="Default" />';
             $this->_engines['default'] = new Config($conf);
         }
-
-        self::$_log->debug('Setting up URImaps');
-        if (isset($conf->urimap)) {
-            $this->_urimap = $conf->urimap;
-        } else {
-            $this->_urimap = new Config('<urimap />');
-            $this->_urimap->url = '/';
-            $this->_urimap->url['engine'] = 'default';
-        }
-
         self::$_log->debug('Setting up socket address, port and timeout');
         //setting up bind address
         if (isset($instance->address)) {
@@ -138,6 +175,13 @@ class AppServer extends Server
                 $this->_timeout));
     }
 
+    /**
+     * Configures internal Registry for the AppServer instance
+     *
+     * If no ipcType is set, using standalone Registry class
+     *
+     * @return void
+     */
     protected function _configRegistry()
     {
         self::$_log->debug('Setting up Application registry');
@@ -150,6 +194,27 @@ class AppServer extends Server
             $this->_appReg = Registry::getInstance();
             self::$_log->debug('Using Registry');
         }
+    }
+
+    /**
+     * Configures URImaps for AppServer instance
+     *
+     * Adds Default entry as fallback engine if no other is specified
+     *
+     * @param Config $conf
+     * @return void
+     */
+    protected function _configUrimap($conf) {
+        self::$_log->debug('Setting up URImaps');
+        if (isset($conf->urimap)) {
+            foreach($conf->urimap->children() as $node=>$value){
+                foreach($value->attributes() as $attName=>$attValue) {
+                    $this->_urimap[(string)$value][$attName] = (string)$attValue;
+                }
+            }
+        }
+        //Adding default item as fallback
+        $this->_urimap['/']['engine'] = 'default';
     }
 
     protected function onSummon()
@@ -320,28 +385,26 @@ class AppServer extends Server
     {
         self::$_log->debug(__METHOD__.' called');
         $path = parse_url($req->url, PHP_URL_PATH);
-        $engines = $this->_urimap->children();
         $engine = false;
-        foreach ($engines as $node=>$value) {
-            if (strpos($path, (string)$value) !== false) {
-                $engine = (string)$value['engine'];
-                continue;
+        foreach ($this->_urimap as $uriEntry=>$uriParams) {
+            if (stripos($path, $uriEntry) !== false) {
+                break;
             }
         }
-        self::$_log->debug("Engine: ".$engine);
-        if ($engine === false) {
+        self::$_log->debug("Engine: ".$uriParams['engine']);
+        if ($uriParams['engine'] === false) {
             $returnCode = 1;
-            self::$_log->debug("Not found: ".$engine);
+            self::$_log->debug("Not found: ".$uriParams['engine']);
             $response = $req->respond('File not found!',
                 array('statusCode'=>$returnCode));
             $response->send();
         } else {
-            if (array_key_exists($engine, $this->_engines)) {
-                self::$_log->debug("Processing w/".$engine);
-                $returnCode = $this->_engines[$engine]->process($req);
+            if (array_key_exists($uriParams['engine'], $this->_engines)) {
+                self::$_log->debug("Processing w/".$uriParams['engine']);
+                $returnCode = $this->_engines[$uriParams['engine']]->process($req);
             } else {
                 $returnCode = 1;
-                self::$_log->debug("Not registered: ".$engine);
+                self::$_log->debug("Not registered: ".$uriParams['engine']);
                 $response = $req->respond('File not found!',
                     array('statusCode'=>$returnCode));
                 $response->send();
@@ -353,7 +416,7 @@ class AppServer extends Server
     /* (non-PHPdoc)
      * @see Server/Server#expell()
      */
-    public function onExpell()
+    public function onExpel()
     {
         self::$_log->debug(__METHOD__.' called');
         if (is_resource($this->_socket)) {
