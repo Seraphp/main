@@ -91,8 +91,6 @@ class ConfigFactory implements Singleton
                                             $this->_configFile,
                                             'Config',
                                             LIBXML_COMPACT|LIBXML_NOBLANKS);
-        //Fetch all namespaces
-        $this->_namespaces = $this->_xml->getNamespaces(true);
     }
 
     /**
