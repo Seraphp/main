@@ -36,10 +36,18 @@ class ExceptionHandler
      */
     public static function handleException(Exception $e)
     {
-         if (self::$_log === null) {
-             self::setup();
-         }
-         self::$_log->alert($e->getMessage());
+        if (self::$_log === null) {
+            self::setup();
+        }
+        if (get_class($e) === "LogException") {
+           throw $e;
+        } else {
+            try{
+                self::$_log->alert($e->getMessage());
+            }catch(Exception $f){
+                throw $e;
+            }
+        }
     }
 
     /**
