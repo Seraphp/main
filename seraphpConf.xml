@@ -18,7 +18,6 @@
 				</engines>
 			</instance>
 			<urimap>
-				<url engine="default">/</url>
 				<url engine="admin" auth="internal">/admin/</url>
 				<url engine="static">/static/</url>
 				<url engine="dispatch" target="test">/test/</url>
