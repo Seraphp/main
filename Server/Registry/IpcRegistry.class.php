@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+require_once 'Server/Registry/Registry.class.php';
 require_once 'Comm/Ipc/IpcAdapter.interface.php';
 /**
  * A singleton registry which communicate any changes through IPC with
