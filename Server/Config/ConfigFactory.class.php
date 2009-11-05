@@ -43,7 +43,7 @@ class ConfigFactory implements Singleton
      * Disabled cloning facility to preserve only 1 instance
      * @throws Exception if used
      */
-    public function __clone()
+    private function __clone()
     {
         throw new Exception('Cloning of'. __CLASS__ .' is disabled!');
     }

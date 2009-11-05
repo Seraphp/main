@@ -23,10 +23,11 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase{
         $this->assertSame($this->cf, ConfigFactory::getInstance());
     }
 
+
     function testCloningDisabled()
     {
-        $this->setExpectedException('Exception');
-        $newCf= clone $this->cf;
+        $Cf= new ReflectionObject($this->cf);
+        $this->assertTrue($Cf->getMethod('__clone')->isPrivate());
     }
 
     function testGetMainConf()
