@@ -132,6 +132,7 @@ abstract class Server implements Daemon
         self::$_log->debug(__METHOD__.' called');
         $pid = $this->spawn();
         if ($this->_role == 'child') {//we are the new process
+            self::$_log->debug('Child procID: '.getmypid());
             $this->_savePid2File();
             $this->setUpSigHandlers();
             //changing back as from now on we are the Parent server process
