@@ -2,7 +2,7 @@
 /**
  * File documentation
  * @author Peter Nagy <antronin@gmail.com>
- * @version $Id: HttpRequestTest.php 566 2009-08-09 19:35:25Z peter $
+ * @version $Id$
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';

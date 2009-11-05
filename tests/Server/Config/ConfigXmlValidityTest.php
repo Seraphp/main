@@ -2,7 +2,7 @@
 /**
  * File documentation
  * @author Peter Nagy <antronin@gmail.com>
- * @version $Id: ConfigFactoryTest.php 360 2009-02-23 21:44:39Z peter $
+ * @version $Id$
  * @filesource
  */
 require_once 'PHPUnit/Framework.php';
