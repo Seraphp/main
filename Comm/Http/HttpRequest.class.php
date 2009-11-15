@@ -139,8 +139,9 @@ class HttpRequest implements Request, Observable
         self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
             $read = array($this->_socket);
-            if (stream_select($read,
-                     $write = null, $except = null, $this->timeout, 200) < 1) {
+            if (stream_select(
+                $read, $write = null, $except = null, $this->timeout, 200
+            ) < 1) {
                 throw new IOException('Connection timed out!');
             }
             self::$_log->debug('Data arriving on socket');
@@ -265,8 +266,9 @@ class HttpRequest implements Request, Observable
                 array_push($items, $this->_array2params($value, $key, $sep));
             } else {
                 if ( $parentKey !== null ) {
-                    array_push($items,
-                           sprintf('%s[%s]=%s', $parentKey, $key, $value));
+                    array_push(
+                        $items, sprintf('%s[%s]=%s', $parentKey, $key, $value)
+                    );
                 } else {
                     array_push($items, sprintf('%s=%s', $key, $value));
                 }
@@ -385,9 +387,11 @@ class HttpRequest implements Request, Observable
     {
         self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
-            $response = HttpFactory::create('response',
+            $response = HttpFactory::create(
+                'response',
                 $this->_socket,
-                $settings);
+                $settings
+            );
             $response->messageBody = $msg;
             return $response;
         } else {
