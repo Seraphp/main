@@ -192,8 +192,9 @@ class PackedFileDataStore implements StoreEngine
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
         if ($parts[0] === '.') {
             $cwd = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, getcwd());
-            $absolutes = array_filter(explode(DIRECTORY_SEPARATOR, $cwd,
-                'strlen'));
+            $absolutes = array_filter(
+                explode(DIRECTORY_SEPARATOR, $cwd, 'strlen')
+            );
         } else {
             $absolutes = array();
         }

@@ -167,14 +167,27 @@ abstract class Server implements Daemon
             if ( ($signal !== 'SIGKILL') &&
                 is_callable(array($this,strtolower($signal).'Callback'))
             ) {
-                if (pcntl_signal(constant($signal),
-                        array($this,'signalHandler'),
-                        true)) {
-                    self::$_log->debug('Signal handler for '.$signal.
-                      '('.constant($signal).') registered');
+                if (pcntl_signal(
+                    constant($signal),
+                    array($this,'signalHandler'),
+                    true
+                )
+                ) {
+                    self::$_log->debug(
+                        sprintf(
+                            'Signal handler for %s (%d) registered',
+                            $signal,
+                            constant($signal)
+                        )
+                    );
                 } else {
-                    self::$_log->debug('Registering signal handler for '.
-                      $signal.'('.constant($signal).') failed');
+                    self::$_log->debug(
+                        sprintf(
+                            'Registering signal handler for %s (%d) failed',
+                            $signal,
+                            constant($signal)
+                        )
+                    );
                 }
             }
         }
@@ -192,9 +205,11 @@ abstract class Server implements Daemon
     private function _savePid2File()
     {
         self::$_log->debug(__METHOD__.' called');
-        $this->_pidFile = fopen($this->_pidFolder.'/'.
-                                $this->_pidFileName,
-                                "w");
+        $this->_pidFile = fopen(
+            $this->_pidFolder.'/'.
+            $this->_pidFileName,
+            "w"
+        );
         if (!$this->_pidFile || !flock($this->_pidFile, LOCK_EX | LOCK_NB)) {
             throw new Exception('Unable to get pid file lock!');
         }
@@ -241,8 +256,9 @@ abstract class Server implements Daemon
                 $this->_pid = getmypid();
                 $this->_role = 'child';
                 if ($this->_ipcType !== '') {
-                    $this->_ipc = IpcFactory::get($this->_ipcType,
-                                                  posix_getppid());
+                    $this->_ipc = IpcFactory::get(
+                        $this->_ipcType, posix_getppid()
+                    );
                 }
             } else {
                 $this->_pid = getmypid();
@@ -360,15 +376,19 @@ abstract class Server implements Daemon
                         self::$_log->debug('Signals[]: '.$signal);
                         $method = strtolower($signal).'Callback';
                         if (method_exists($this, $method)) {
-                            pcntl_signal($sigCode, array($this,'signalHandler'),
-                                true);
+                            pcntl_signal(
+                                $sigCode,
+                                array($this,'signalHandler'),
+                                true
+                            );
                             call_user_func(array($this, $method));
                         }
                     }
                 } elseif ($sigName !== false) {
                     pcntl_signal($sigCode, array($this, 'signalHandler'), true);
-                    call_user_func(array(
-                       $this, strtolower($sigName).'Callback'));
+                    call_user_func(
+                        array($this, strtolower($sigName).'Callback')
+                    );
                 }
                 return;
                 break;

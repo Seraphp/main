@@ -33,8 +33,9 @@ class ServerManager
     {
         self::_init();
         self::writeln('Starting up: '.$appID);
-        $server = AppServerFactory::getAppInstance($appID,
-                            self::$_cf->getConf($appID));
+        $server = AppServerFactory::getAppInstance(
+            $appID, self::$_cf->getConf($appID)
+        );
         $pid = $server->summon();
         self::$_reg->storePid($appID, $pid);
     }
@@ -46,8 +47,9 @@ class ServerManager
         if ($currStatus === 'running') {
             $oldProcess = self::$_reg->getAppInstance($appID);
             self::write('Starting up new server: '.$appID);
-            $newProcess = AppServerFactory::getAppInstance($appID,
-                                self::$_cf->getConf($appID));
+            $newProcess = AppServerFactory::getAppInstance(
+                $appID, self::$_cf->getConf($appID)
+            );
             if ($newProcess === true) {
                 self::writeln('...OK');
             } else {

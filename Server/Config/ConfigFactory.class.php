@@ -86,11 +86,11 @@ class ConfigFactory implements Singleton
         if (!empty($xmlFile)) {
             $this->setXmlSrc($xmlFile);
         }
-        $this->_xml = simplexml_load_file($this->_configPath.
-                                            DIRECTORY_SEPARATOR.
-                                            $this->_configFile,
-                                            'Config',
-                                            LIBXML_COMPACT|LIBXML_NOBLANKS);
+        $this->_xml = simplexml_load_file(
+            $this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile,
+            'Config',
+            LIBXML_COMPACT|LIBXML_NOBLANKS
+        );
     }
 
     /**
@@ -115,34 +115,52 @@ class ConfigFactory implements Singleton
         if ($this->_xml === null) {
             $this->_load();
         }
-        self::$_log->debug('Searching for node: "//srph:servers/srph:server'.
-        '[@id='.$name. ']"');
-        $serverConfXML = $this->_xml->xsearch('//srph:servers/srph:server[@id="'
-            .$name.'"]');
+        self::$_log->debug(
+            'Searching for node: "//srph:servers/srph:server'.
+            '[@id='.$name. ']"'
+        );
+        $serverConfXML = $this->_xml->xsearch(
+            '//srph:servers/srph:server[@id="'.$name.'"]'
+        );
         if ($serverConfXML === false) {
-            throw new ConfigException('Failed to parse the confg file: '
-            .$this->_configFile. ' from '.$this->_configPath);
+            throw new ConfigException(
+                'Failed to parse the confg file: '.
+                $this->_configFile.
+                ' from '.
+                $this->_configPath
+            );
         }
         switch (count($serverConfXML)) {
             case 0:
                 throw new ConfigException(
-                    sprintf("Server ID: '%s' not exists in config file %s!",
-                    $name,
-                    $this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile));
+                    sprintf(
+                        "Server ID: '%s' not exists in config file %s!",
+                        $name,
+                        $this->_configPath.
+                        DIRECTORY_SEPARATOR.
+                        $this->_configFile
+                    )
+                );
                 break;
             case 1:
                 $parentNode = $this->_xml->xsearch('..', $serverConfXML[0]);
-                $serverConfXML[0]->addAttribute('pidpath',
-                    $parentNode[0]->attributes()->pidpath);
+                $serverConfXML[0]->addAttribute(
+                    'pidpath',
+                    $parentNode[0]->attributes()->pidpath
+                );
                 $conf = $serverConfXML[0];
                 break;
             default:
                 throw new ConfigException(
-                    sprintf("Server ID: '%s' exists several ".
-                        "times in config file %s!",
+                    sprintf(
+                        "Server ID: '%s' exists several".
+                        " times in config file %s!",
                         $name,
-                        $this->_configPath.DIRECTORY_SEPARATOR.
-                        $this->_configFile));
+                        $this->_configPath.
+                        DIRECTORY_SEPARATOR.
+                        $this->_configFile
+                    )
+                );
                 break;
         }
         return $conf;

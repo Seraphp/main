@@ -168,11 +168,15 @@ class AppServer extends Server
         } else {
             $this->_timeout = self::DEFAULT_TIMEOUT;
         }
-        self::$_log->info('Using '.
-            sprintf('%s:%d w/ %d sec timeout',
+        self::$_log->info(
+            'Using '.
+            sprintf(
+                '%s:%d w/ %d sec timeout',
                 $this->_address,
                 $this->_port,
-                $this->_timeout));
+                $this->_timeout
+            )
+        );
     }
 
     /**
@@ -204,12 +208,14 @@ class AppServer extends Server
      * @param Config $conf
      * @return void
      */
-    protected function _configUrimap($conf) {
+    protected function _configUrimap($conf)
+    {
         self::$_log->debug('Setting up URImaps');
         if (isset($conf->urimap)) {
-            foreach($conf->urimap->children() as $node=>$value){
-                foreach($value->attributes() as $attName=>$attValue) {
-                    $this->_urimap[(string)$value][$attName] = (string)$attValue;
+            foreach ($conf->urimap->children() as $node=>$value) {
+                foreach ($value->attributes() as $attName=>$attValue) {
+                    $this->_urimap[(string)$value][$attName] =
+                    (string) $attValue;
                 }
             }
         }
@@ -228,12 +234,12 @@ class AppServer extends Server
 
         self::$_log->debug('Initalizing JsonRpc proxy');
         $this->_rpcProxy = new JsonRpcProxy($this->_appID);
-        $this->_rpcProxy->setup($this,
-            array('getAppId',
-                'getStatus'),
-            array('expell'));
+        $this->_rpcProxy->setup(
+            $this,
+            array('getAppId', 'getStatus'),
+            array('expell')
+        );
         $this->_rpcProxy->init();
-
         self::$_log->debug('Initalizing socket listening on');
         $this->initSocket();
     }
@@ -321,16 +327,20 @@ class AppServer extends Server
                 $this->_accepting = false;
                 stream_set_blocking($conn, 0);
                 try {
-                    $result = $this->process(RequestFactory::create($conn),
-                        $this->_timeout);
+                    $result = $this->process(
+                        RequestFactory::create($conn),
+                        $this->_timeout
+                    );
                 } catch (IOException $e) {
                     self::$_log->alert('Error: '.$e->getMessage());
                     stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
                     $result = 0;
                 } catch (Exception $e) {
                     self::$_log->alert('Error: '.$e->getMessage());
-                    stream_socket_sendto($conn,
-                        'HTTP/1.0 500 Internal Server Error');
+                    stream_socket_sendto(
+                        $conn,
+                        'HTTP/1.0 500 Internal Server Error'
+                    );
                     $result = 1;
                 }
                 stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
@@ -352,16 +362,20 @@ class AppServer extends Server
     private function initSocket()
     {
         self::$_log->debug(__METHOD__.' called');
-        $this->_socket = stream_socket_server(sprintf('%s://%s:%s',
+        $this->_socket = stream_socket_server(
+            sprintf(
+                '%s://%s:%s',
                 'tcp',
                 $this->_address,
-                $this->_port),
+                $this->_port
+            ),
             $errNum,
             $errMsg,
-            STREAM_SERVER_BIND | STREAM_SERVER_LISTEN);
+            STREAM_SERVER_BIND | STREAM_SERVER_LISTEN
+        );
         if (!is_resource($this->_socket)) {
-            throw new SocketException('Unable to open socket:'
-                ."$errMsg ($errNum)");
+            throw new SocketException(
+                'Unable to open socket:'."$errMsg ($errNum)");
         } else {
             self::$_log->debug('Setting listening socket to non blocking mode');
             stream_set_blocking($this->_socket, 0);
@@ -395,18 +409,23 @@ class AppServer extends Server
         if ($uriParams['engine'] === false) {
             $returnCode = 1;
             self::$_log->debug("Not found: ".$uriParams['engine']);
-            $response = $req->respond('File not found!',
-                array('statusCode'=>$returnCode));
+            $response = $req->respond(
+                'File not found!',
+                array('statusCode'=>$returnCode)
+            );
             $response->send();
         } else {
             if (array_key_exists($uriParams['engine'], $this->_engines)) {
                 self::$_log->debug("Processing w/".$uriParams['engine']);
-                $returnCode = $this->_engines[$uriParams['engine']]->process($req);
+                $returnCode =
+                $this->_engines[$uriParams['engine']]->process($req);
             } else {
                 $returnCode = 1;
                 self::$_log->debug("Not registered: ".$uriParams['engine']);
-                $response = $req->respond('File not found!',
-                    array('statusCode'=>$returnCode));
+                $response = $req->respond(
+                    'File not found!',
+                    array('statusCode'=>$returnCode)
+                );
                 $response->send();
             }
         }
@@ -420,9 +439,12 @@ class AppServer extends Server
     {
         self::$_log->debug(__METHOD__.' called');
         if (is_resource($this->_socket)) {
-            self::$_log->info('closing down socket on '
-                .$this->_address.':'
-                .$this->_port);
+            self::$_log->info(
+                'closing down socket on '.
+                $this->_address.
+                ':'.
+                $this->_port
+            );
             stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
         }
     }
