@@ -105,9 +105,11 @@ class IpcFactory
         if (empty(self::$_pluginsDir)) {
             self::setPluginsDir();
         }
-        $pluginFile = sprintf('%s/%s.class.php',
-                                self::$_pluginsDir,
-                                self::getClassName($type));
+        $pluginFile = sprintf(
+            '%s/%s.class.php',
+            self::$_pluginsDir,
+            self::getClassName($type)
+        );
         if (is_file($pluginFile)) {
             require_once $pluginFile;
             $class = new ReflectionClass(self::getClassName($type));

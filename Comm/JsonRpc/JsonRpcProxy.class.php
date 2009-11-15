@@ -123,14 +123,18 @@ class JsonRpcProxy
         }
         $list = $this->_analyzeMethods($clientClass);
         if ($methods !== array()) {
-            $this->_allowedMethods = array_intersect($methods,
-                $list['methods']);
+            $this->_allowedMethods = array_intersect(
+                $methods,
+                $list['methods']
+            );
         } else {
             $this->_allowedMethods = $list['methods'];
         }
         if ($notifs !== array()) {
-            $this->_notifications = array_intersect($notifs,
-                $list['notifications']);
+            $this->_notifications = array_intersect(
+                $notifs,
+                $list['notifications']
+            );
         } else {
             $this->_notifications = $list['notifications'];
         }
@@ -248,8 +252,9 @@ class JsonRpcProxy
                 throw new IOException('Cannot write FIFO: '.$this->_fifo);
             }
         } else {
-            throw new Exception(sprintf('No such function: %s::%s()'.
-                $this->_client, $name));
+            throw new Exception(
+                sprintf('No such function: %s::%s()'.$this->_client, $name)
+            );
         }
     }
 
@@ -282,23 +287,35 @@ class JsonRpcProxy
         self::$_log->debug('Message: '.$msg);
         $message = json_decode($msg);
         if (is_callable(array($this->_client, $message->method))) {
-            self::$_log->debug('Method exists: '.
-                get_class($this->_client).'::'.$message->method);
+            self::$_log->debug(
+                'Method exists: '.
+                get_class($this->_client).
+                '::'.
+                $message->method
+            );
             $error = null;
             try {
-                $result = call_user_func_array(array($this->_client,
-                    $message->method), $message->params);
+                $result = call_user_func_array(
+                    array($this->_client, $message->method),
+                    $message->params
+                );
             } catch(Exception $e) {
                 $error = $e;
             }
             if ($message->id !== null) {
-                $response = (string) new JsonRpcResponse($result,
-                    $error, $message->id);
+                $response = (string) new JsonRpcResponse(
+                    $result,
+                    $error,
+                    $message->id
+                );
             }
         } else {
-            $response = (string) new JsonRpcResponse(null,
-                new RuntimeException('No such method:' .$message->method),
-                $message->id);
+            $response = (string) new JsonRpcResponse(
+                null,
+                new RuntimeException(
+                    'No such method:' .$message->method),
+                    $message->id
+                );
         }
         self::$_log->debug('Result is: '.$response);
         $this->_connect('write');
