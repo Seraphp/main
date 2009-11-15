@@ -33,7 +33,8 @@ class FieldGreaterSpecification extends FieldSpecification
     /**
      * Returns true if datasource's field is bigger than the given value
      */
-    public function isSatisfiedBy($src){
+    public function isSatisfiedBy($src)
+    {
         return ($src->{$this->_field} > $this->_value);
     }
 }

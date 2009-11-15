@@ -76,9 +76,9 @@ class PolicyFactory
     public function __call($func, $params)
     {
         $this->_readPlugins();
-        if ( array_key_exists($func, $this->_plugins) ) {
+        if (array_key_exists($func, $this->_plugins)) {
             $class = new ReflectionClass( $this->_plugins[$func] );
-            return ( $class->newInstanceArgs($params) );
+            return ($class->newInstanceArgs($params));
         }
         else throw new PluginException('No plugin mapped to function '.$func);
     }
@@ -121,20 +121,22 @@ class PolicyFactory
      */
     private function _registerPlugin($plugin)
     {
-        $nameMatch = preg_match('/^(.+)Specification.class.php$/',
-                                $plugin,
-                                $matches);
-        if ( $nameMatch !== FALSE && $nameMatch > 0) {
+        $nameMatch = preg_match(
+            '/^(.+)Specification.class.php$/',
+            $plugin,
+            $matches
+        );
+        if ($nameMatch !== FALSE && $nameMatch > 0) {
             require_once $this->_pluginsDir.'/'.$plugin;
             $className = substr($plugin, 0, -10);
             $class = new ReflectionClass($className);
-            if ( $class->implementsInterface('Specification') ) {
-                if ( strpos($matches[1], 'Field') === 0 ) {
+            if ($class->implementsInterface('Specification')) {
+                if (strpos($matches[1], 'Field') === 0) {
                     $key = substr($matches[1], 5);
                 } else {
                     $key = $matches[1].'_';
                 }
-                if ( !empty($key) ) {
+                if (!empty($key)) {
                     $this->_plugins[strtolower($key)] =  $className;
                 }
             } else {
@@ -178,6 +180,6 @@ class PolicyFactory
     public function getPlugins()
     {
         $this->_readPlugins();
-        return ( array_keys($this->_plugins) );
+        return (array_keys($this->_plugins));
     }
 }
