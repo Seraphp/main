@@ -56,9 +56,11 @@ class HttpCookie
         if ($this->secure) {
             $details[] = 'Secure';
         }
-        return sprintf('Set-Cookie:%s=%s;%s',
-                        $this->name,
-                        $this->value,
-                        implode(';', $details));
+        return sprintf(
+            'Set-Cookie:%s=%s;%s',
+            $this->name,
+            $this->value,
+            implode(';', $details)
+        );
     }
 }
