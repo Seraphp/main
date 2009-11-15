@@ -63,8 +63,9 @@ class ExceptionHandler
         } else {
             self::$_log = LogFactory::getInstance($conf->logs);
         }
-        return set_exception_handler(array('ExceptionHandler',
-            'handleException'));
+        return set_exception_handler(
+            array('ExceptionHandler', 'handleException')
+        );
     }
 
     /**
