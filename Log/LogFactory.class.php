@@ -177,8 +177,10 @@ class LogFactory
                         ->addTo((string)$attribs['to']);
                     if (isset($attribs['layout'])) {
                         $layout = new Zend_Layout();
-                        $format = sprintf((string)$attribs['layout'],
-                            Zend_Log_Formatter_Simple::DEFAULT_FORMAT);
+                        $format = sprintf(
+                            (string) $attribs['layout'],
+                            Zend_Log_Formatter_Simple::DEFAULT_FORMAT
+                        );
                         $writer = new $writerClass($mail, $layout);
                         $formatter = new Zend_Log_Formatter_Simple($format);
                         $writer->setLayoutFormatter($formatter);
@@ -210,15 +212,18 @@ class LogFactory
             self::$_instance->addWriter($writer);
         } else { //PEAR Logger used
             $level = constant('PEAR_LOG_'.$logger['level']);
-            $handler = Log::singleton($logger['handler'],
+            $handler = Log::singleton(
+                $logger['handler'],
                 $logger['name'],
                 $logger['ident'],
                 $logger->conf->attributes(),
-                $level);
+                $level
+            );
             $res = self::$_instance->addChild($handler);
             if ($res === false) {
-                throw new LogException('Invalid log handler at '.
-                    $logger->asXML());
+                throw new LogException(
+                    'Invalid log handler at '. $logger->asXML()
+                );
             }
         }
     }
@@ -247,16 +252,20 @@ class LogFactory
             self::$_instance->addWriter($file);
         } else {
             $setup = array('buffering' => false);
-            $console = Log::singleton('console',
+            $console = Log::singleton(
+                'console',
                 '',
                 'SeraPhp',
                 $setup,
-                PEAR_LOG_INFO);
-            $file = Log::singleton('file',
+                PEAR_LOG_INFO
+            );
+            $file = Log::singleton(
+                'file',
                 'out.log',
                 'DEBUG',
                 $setup,
-                PEAR_LOG_DEBUG);
+                PEAR_LOG_DEBUG
+            );
             self::$_instance->addChild($console);
             self::$_instance->addChild($file);
         }
