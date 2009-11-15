@@ -59,10 +59,12 @@ class HttpResponse
         self::$_log->debug(__METHOD__.' called');
         if ($this->toBeSend) {
             //Creating Status line
-            $this->statusLine = sprintf('HTTP/%s %d %s',
-                             $this->httpVersion,
-                             $this->statusCode,
-                             HttpFactory::getHttpStatus($this->statusCode));
+            $this->statusLine = sprintf(
+                'HTTP/%s %d %s',
+                $this->httpVersion,
+                $this->statusCode,
+                HttpFactory::getHttpStatus($this->statusCode)
+            );
             $buffer = $this->statusLine."\r\n";
             $buffer .= $this->_getHeaders()."\r\n";
             self::$_log->debug('Sending out head part');
@@ -107,8 +109,10 @@ class HttpResponse
         $this->headers['Connection'] = 'Closed';
         //If a file is to be sent in the message bdy
         if (is_resource($this->messageBody)) {
-            $data = array_merge(fstat($this->messageBody),
-                stream_get_meta_data($this->messageBody));
+            $data = array_merge(
+                fstat($this->messageBody),
+                stream_get_meta_data($this->messageBody)
+            );
             $this->headers['Content-Length'] = $data['size'];
             $this->headers['Last-Modified'] =
                 date(DATE_RFC1123, $data['mtime']);
@@ -124,16 +128,18 @@ class HttpResponse
     {
         self::$_log->debug('Sending message body');
         if (is_resource($this->messageBody)) {
-            if (stream_copy_to_stream($this->messageBody,
-                $this->_socket) === false) {
+            if (stream_copy_to_stream(
+                $this->messageBody, $this->_socket
+            ) === false) {
                 throw new IOException('Cannot send message body!');
             }
             if (fwrite($this->_socket, "\r\n") === false) {
                 throw new IOException('Cannot send message body!');
             }
         } else {
-            if (fwrite($this->_socket,
-                $this->messageBody."\r\n") === false) {
+            if (fwrite(
+                $this->_socket, $this->messageBody."\r\n"
+            ) === false) {
                 throw new IOException('Cannot send message body!');
             }
         }
