@@ -80,7 +80,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('example.com', $request->httpHeaders['Host']);
         $this->assertEquals('example.com', $request->httpHeaders['Referer']);
         $this->assertContains(
-            'hu-hu, hu', $request->httpHeaders['Accept-Language']
+            'hu-hu,hu', $request->httpHeaders['Accept-Language']
         );
         $this->assertContains(
             'q=0.8,en-us', $request->httpHeaders['Accept-Language']
