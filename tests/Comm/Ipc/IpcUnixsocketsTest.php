@@ -10,41 +10,45 @@ require_once 'Comm/Ipc/IpcUnixsockets.class.php';
 /**
  * Class documentation
  */
-class IpcUnixsocketsTest extends PHPUnit_Framework_TestCase{
+class IpcUnixsocketsTest extends PHPUnit_Framework_TestCase
+{
+    protected $_ipc;
+    protected $_msg;
 
     function setUp()
     {
-        $this->msg = 'Árvíztűrő tükörfúrógép';
-        $this->ipc = new IpcUnixsockets();
-        $this->ipc->init(1234,'child');
+        $this->_msg = 'Árvíztűrő tükörfúrógép';
+        $this->_ipc = new IpcUnixsockets();
+        $this->_ipc->init(1234, 'child');
     }
 
     function testInit()
     {
-        $this->assertEquals('child',$this->ipc->init(1234,'child'));
+        $this->assertEquals('child', $this->_ipc->init(1234, 'child'));
     }
 
     function testRoleSettings()
     {
-        $this->assertEquals('child',$this->ipc->getRole());
-        $this->assertEquals('parent',$this->ipc->setRole('parent'));
-        $this->assertEquals('parent',$this->ipc->setRole('test'));
+        $this->assertEquals('child', $this->_ipc->getRole());
+        $this->assertEquals('parent', $this->_ipc->setRole('parent'));
+        $this->assertEquals('parent', $this->_ipc->setRole('test'));
     }
 
     function testWrite()
     {
-        $this->assertEquals(strlen($this->msg)+1,
-            $this->ipc->write(1234, $this->msg));
+        $this->assertEquals(
+            strlen($this->_msg)+1, $this->_ipc->write(1234, $this->_msg)
+        );
     }
 
 
     function testClose()
     {
-        $this->ipc->close();
+        $this->_ipc->close();
     }
 
     function testDestructor()
     {
-        unset($this->ipc);
+        unset($this->_ipc);
     }
 }

@@ -11,7 +11,8 @@ require_once 'PolicyFactoryTest.php';
 /**
  * Class documentation
  */
-class Policy_AllTests{
+class Policy_AllTests
+{
 
     public static function suite()
     {

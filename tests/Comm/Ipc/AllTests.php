@@ -12,7 +12,8 @@ require_once 'IpcUnixsocketsTest.php';
 /**
  * Class documentation
  */
-class Ipc_AllTests{
+class Ipc_AllTests
+{
 
     public static function suite()
     {

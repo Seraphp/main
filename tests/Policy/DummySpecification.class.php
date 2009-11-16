@@ -10,6 +10,6 @@
 /**
  * Class documentation
  */
-class DummySpecification{
-
+class DummySpecification
+{
 }

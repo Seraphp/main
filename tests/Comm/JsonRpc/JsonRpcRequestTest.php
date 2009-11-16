@@ -10,13 +10,13 @@ require_once 'Comm/JsonRpc/JsonRpcRequest.class.php';
 /**
  * Class documentation
  */
-class JsonRpcRequestTest extends PHPUnit_Framework_TestCase{
-
-    private $names = array('main', 'mockery');
+class JsonRpcRequestTest extends PHPUnit_Framework_TestCase
+{
+    private $_names = array('main', 'mockery');
 
     function setUp()
     {
-        foreach ($this->names as $fifo) {
+        foreach ($this->_names as $fifo) {
             $fileName = '/tmp/seraphp/'.$fifo.'I.tmp';
             if (file_exists($fileName)) {
                 unlink($fileName);
@@ -25,7 +25,7 @@ class JsonRpcRequestTest extends PHPUnit_Framework_TestCase{
             if (file_exists($fileName)) {
                 unlink($fileName);
             }
-            if(is_dir('/tmp/seraphp')){
+            if (is_dir('/tmp/seraphp')) {
                 $curr = getcwd();
                 chdir('/tmp');
                 @rmdir('seraphp');
@@ -37,21 +37,23 @@ class JsonRpcRequestTest extends PHPUnit_Framework_TestCase{
     function testConstructor()
     {
         $request = new JsonRpcRequest('call', null, 1);
-        $this->assertEquals('call',$request->method);
-        $this->assertEquals(1,$request->id);
-        $this->assertEquals(null,$request->params);
+        $this->assertEquals('call', $request->method);
+        $this->assertEquals(1, $request->id);
+        $this->assertEquals(null, $request->params);
     }
 
     function testConstructorNoMethod()
     {
-        $this->setExpectedException('Exception','Method has to be defined!');
+        $this->setExpectedException('Exception', 'Method has to be defined!');
         $request = new JsonRpcRequest(null, null, 1);
     }
 
     function testToString()
     {
         $request = new JsonRpcRequest('call', null, 1);
-        $this->assertEquals('{"id":1,"method":"call","params":null}',$request->__toString());
+        $this->assertEquals(
+            '{"id":1,"method":"call","params":null}', $request->__toString()
+        );
     }
 
     function tearDown()

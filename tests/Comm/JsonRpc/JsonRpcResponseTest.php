@@ -10,13 +10,14 @@ require_once 'Comm/JsonRpc/JsonRpcResponse.class.php';
 /**
  * Class documentation
  */
-class JsonRpcResponseTest extends PHPUnit_Framework_TestCase{
+class JsonRpcResponseTest extends PHPUnit_Framework_TestCase
+{
 
-    private $names = array('main', 'mockery');
+    private $_names = array('main', 'mockery');
 
     function setUp()
     {
-        foreach ($this->names as $fifo) {
+        foreach ($this->_names as $fifo) {
             $fileName = '/tmp/seraphp/'.$fifo.'I.tmp';
             if (file_exists($fileName)) {
                 unlink($fileName);
@@ -25,7 +26,7 @@ class JsonRpcResponseTest extends PHPUnit_Framework_TestCase{
             if (file_exists($fileName)) {
                 unlink($fileName);
             }
-            if(is_dir('/tmp/seraphp')){
+            if (is_dir('/tmp/seraphp')) {
                 $curr = getcwd();
                 chdir('/tmp');
                 @rmdir('seraphp');
@@ -37,15 +38,17 @@ class JsonRpcResponseTest extends PHPUnit_Framework_TestCase{
     function testConstructor()
     {
         $response = new JsonRpcResponse('result', null, 1);
-        $this->assertEquals('result',$response->result);
-        $this->assertEquals(1,$response->id);
-        $this->assertEquals(null,$response->error);
+        $this->assertEquals('result', $response->result);
+        $this->assertEquals(1, $response->id);
+        $this->assertEquals(null, $response->error);
     }
 
     function testConstructorNoResult()
     {
-        $this->setExpectedException('Exception',
-            'Either a result or an error should be set!');
+        $this->setExpectedException(
+            'Exception',
+            'Either a result or an error should be set!'
+        );
         $response = new JsonRpcResponse(null, null, 1);
 
     }
@@ -53,7 +56,9 @@ class JsonRpcResponseTest extends PHPUnit_Framework_TestCase{
     function testToString()
     {
         $response = new JsonRpcResponse('result', null, 1);
-        $this->assertEquals('{"result":"result","error":null,"id":1}',$response->__toString());
+        $this->assertEquals(
+            '{"result":"result","error":null,"id":1}', $response->__toString()
+        );
     }
 
     function tearDown()

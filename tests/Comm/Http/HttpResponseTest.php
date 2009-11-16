@@ -10,20 +10,23 @@ require_once 'Comm/Http/HttpResponse.class.php';
 /**
  * Class documentation
  */
-class HttpResponseTest extends PHPUnit_Framework_TestCase{
-
-    private $_body = 'árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP';
-    private $_md5 = '';
+class HttpResponseTest extends PHPUnit_Framework_TestCase
+{
+    private $_body =
+        'árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP';
+    private $_hash = '';
     private $_sockets = null;
     private $_http = '';
 
     function setUp()
     {
-        $this->_md5 = md5($this->_body);
-        $this->_sockets = stream_socket_pair((strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
+        $this->_hash = md5($this->_body);
+        $this->_sockets = stream_socket_pair(
+            (strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
             STREAM_PF_INET:STREAM_PF_UNIX),
             STREAM_SOCK_STREAM,
-            STREAM_IPPROTO_IP);
+            STREAM_IPPROTO_IP
+        );
         if ($this->_sockets === false) {
             $this->fail(socket_strerror(socket_last_error()));
         }
@@ -35,13 +38,13 @@ Server:Seraphp 0.1
 Date:$date
 Connection:Closed
 Content-Length:$length
-Etag:$this->_md5
+Etag:$this->_hash
 Content-Type:text/plain
 
 $this->_body
 
 MSG;
-    $this->_http = str_replace("\n","\r\n",$this->_http);
+        $this->_http = str_replace("\n", "\r\n", $this->_http);
     }
 
     function testConstructor()

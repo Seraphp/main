@@ -10,60 +10,68 @@ require_once 'Server/Config/ConfigFactory.class.php';
 /**
  * Class documentation
  */
-class ConfigFactoryTest extends PHPUnit_Framework_TestCase{
+class ConfigFactoryTest extends PHPUnit_Framework_TestCase
+{
+    private $_cf;
 
     function setUp()
     {
-        $this->cf = ConfigFactory::getInstance();
+        $this->_cf = ConfigFactory::getInstance();
     }
 
     function testFactoryIsSingleton()
     {
-        $this->assertThat($this->cf, $this->IsInstanceOf('ConfigFactory'));
-        $this->assertSame($this->cf, ConfigFactory::getInstance());
+        $this->assertThat($this->_cf, $this->IsInstanceOf('ConfigFactory'));
+        $this->assertSame($this->_cf, ConfigFactory::getInstance());
     }
 
 
     function testCloningDisabled()
     {
-        $Cf= new ReflectionObject($this->cf);
-        $this->assertTrue($Cf->getMethod('__clone')->isPrivate());
+        $cF= new ReflectionObject($this->_cf);
+        $this->assertTrue($cF->getMethod('__clone')->isPrivate());
     }
 
     function testGetMainConf()
     {
-        $this->cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
-        $conf = $this->cf->getConf('main');
-        $this->assertThat($conf,$this->IsInstanceOf('SimpleXMLElement'));
-        $this->assertEquals('/home/peter/workspace/seraphp',(string)$conf['pidpath']);
-        $this->assertEquals(5,(int)$conf->instance->maxChildren);
-        $this->assertEquals('127.0.0.1',(string)$conf->instance->address);
-        $this->assertEquals(8123,(int)$conf->instance->port);
-        $this->assertType('SimpleXMLElement',$conf->urimap);
-        $this->assertType('SimpleXMLElement',$conf->includes);
+        $this->_cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
+        $conf = $this->_cf->getConf('main');
+        $this->assertThat($conf, $this->IsInstanceOf('SimpleXMLElement'));
+        $this->assertEquals(
+            '/home/peter/workspace/seraphp', (string)$conf['pidpath']
+        );
+        $this->assertEquals(5, (int)$conf->instance->maxChildren);
+        $this->assertEquals('127.0.0.1', (string)$conf->instance->address);
+        $this->assertEquals(8123, (int)$conf->instance->port);
+        $this->assertType('SimpleXMLElement', $conf->urimap);
+        $this->assertType('SimpleXMLElement', $conf->includes);
     }
 
     function testGetSessionConf()
     {
-        $this->cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
-        $conf = $this->cf->getConf('session');
-        $this->assertThat($conf,$this->IsInstanceOf('SimpleXMLElement'));
-        $this->assertEquals('/home/peter/workspace/seraphp',(string)$conf['pidpath']);
-        $this->assertEquals(5,(int)$conf->instance->maxChildren);
-        $this->assertEquals('127.0.0.1',(string)$conf->instance->address);
-        $this->assertEquals(8124,(int)$conf->instance->port);
-        $this->assertType('SimpleXMLElement',$conf->includes);
+        $this->_cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
+        $conf = $this->_cf->getConf('session');
+        $this->assertThat($conf, $this->IsInstanceOf('SimpleXMLElement'));
+        $this->assertEquals(
+            '/home/peter/workspace/seraphp', (string)$conf['pidpath']
+        );
+        $this->assertEquals(5, (int)$conf->instance->maxChildren);
+        $this->assertEquals('127.0.0.1', (string)$conf->instance->address);
+        $this->assertEquals(8124, (int)$conf->instance->port);
+        $this->assertType('SimpleXMLElement', $conf->includes);
     }
 
     function testGetDBPoolConf()
     {
-        $this->cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
-        $conf = $this->cf->getConf('dbpool');
-        $this->assertThat($conf,$this->IsInstanceOf('SimpleXMLElement'));
-        $this->assertEquals('/home/peter/workspace/seraphp',(string)$conf['pidpath']);
-        $this->assertEquals(5,(int)$conf->instance->maxChildren);
-        $this->assertEquals('127.0.0.1',(string)$conf->instance->address);
-        $this->assertEquals(8125,(int)$conf->instance->port);
-        $this->assertType('SimpleXMLElement',$conf->includes);
+        $this->_cf->setXmlSrc(dirname(__FILE__).'/seraphp_test_config.xml');
+        $conf = $this->_cf->getConf('dbpool');
+        $this->assertThat($conf, $this->IsInstanceOf('SimpleXMLElement'));
+        $this->assertEquals(
+            '/home/peter/workspace/seraphp', (string)$conf['pidpath']
+        );
+        $this->assertEquals(5, (int)$conf->instance->maxChildren);
+        $this->assertEquals('127.0.0.1', (string)$conf->instance->address);
+        $this->assertEquals(8125, (int)$conf->instance->port);
+        $this->assertType('SimpleXMLElement', $conf->includes);
     }
 }

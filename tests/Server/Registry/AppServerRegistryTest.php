@@ -12,15 +12,16 @@ require_once 'Server/DefaultEngine.class.php';
 /**
  * Class documentation
  */
-class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
+class AppServerRegistryTest extends PHPUnit_Framework_TestCase
+{
 
-    private $reg = null;
-    private $conf = null;
-    private static $port = 8081;
+    private $_reg = null;
+    private $_conf = null;
+    private static $_port = 8081;
 
     function setUp()
     {
-        $this->reg = AppServerRegistry::getInstance();
+        $this->_reg = AppServerRegistry::getInstance();
         $confString = <<<XML
 <?xml version='1.0' standalone='yes'?>
     <servers>
@@ -32,51 +33,57 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase{
     </servers>
 XML;
 
-        $this->conf = new Config($confString);
-        $this->conf->servers->server->instance->port = self::$port++;
-        $this->mockServer = new AppServer($this->conf);
+        $this->_conf = new Config($confString);
+        $this->_conf->servers->server->instance->port = self::$_port++;
+        $this->mockServer = new AppServer($this->_conf);
     }
 
     function testRegistryIsSingleton()
     {
-        $this->assertThat($this->reg, $this->IsInstanceOf('AppServerRegistry'));
-        $this->assertSame($this->reg, AppServerRegistry::getInstance());
+        $this->assertThat(
+            $this->_reg, $this->IsInstanceOf('AppServerRegistry')
+        );
+        $this->assertSame($this->_reg, AppServerRegistry::getInstance());
     }
 
     function testGetNonRunningServerStatus()
     {
-        $this->assertNull($this->reg->getAppStatus('something'));
+        $this->assertNull($this->_reg->getAppStatus('something'));
     }
 
     function testGetNonRunningServerInstance()
     {
-        $this->assertNull($this->reg->getAppInstance('something'));
+        $this->assertNull($this->_reg->getAppInstance('something'));
     }
 
     function testAddValidApp()
     {
-        $this->assertTrue($this->reg->addApp('mockery', $this->mockServer));
-        $this->assertEquals($this->reg->getAppStatus('mockery'), null);
-        $this->assertThat($this->reg->getAppInstance('mockery'),
-            $this->IsInstanceOf('JsonRpcProxy'));
-        $this->assertThat($this->reg->removeApp('mockery'),
-            $this->IsInstanceOf('JsonRpcProxy'));
+        $this->assertTrue($this->_reg->addApp('mockery', $this->mockServer));
+        $this->assertEquals($this->_reg->getAppStatus('mockery'), null);
+        $this->assertThat(
+            $this->_reg->getAppInstance('mockery'),
+            $this->IsInstanceOf('JsonRpcProxy')
+        );
+        $this->assertThat(
+            $this->_reg->removeApp('mockery'),
+            $this->IsInstanceOf('JsonRpcProxy')
+        );
         $this->setExpectedException('RegistryException');
-        $this->reg->removeApp('mockery');
+        $this->_reg->removeApp('mockery');
     }
 
     function testAddSameApp()
     {
-        $this->assertTrue($this->reg->addApp('mockery', $this->mockServer));
+        $this->assertTrue($this->_reg->addApp('mockery', $this->mockServer));
         $this->setExpectedException('RegistryException');
-        $this->reg->addApp('mockery',$this->mockServer);
-        $this->reg->removeApp('mockery');
+        $this->_reg->addApp('mockery', $this->mockServer);
+        $this->_reg->removeApp('mockery');
     }
 
     function tearDown()
     {
         if (file_exists('./.srpdAppMan')) {
-            //unlink('./.srpdAppMan');
+            unlink('./.srpdAppMan');
         }
     }
 

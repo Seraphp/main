@@ -10,7 +10,8 @@ require_once 'ExceptionHandlerTest.php';
 /**
  * Class documentation
  */
-class Exceptions_AllTests{
+class Exceptions_AllTests
+{
 
     public static function suite()
     {

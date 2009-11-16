@@ -10,7 +10,8 @@ require_once 'Exceptions/ExceptionHandler.class.php';
 /**
  * Class documentation
  */
-class ExceptionHandlerTest extends PHPUnit_Framework_TestCase{
+class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
+{
 
     function testSetupRecall()
     {

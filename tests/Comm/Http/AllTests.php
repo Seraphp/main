@@ -14,7 +14,8 @@ require_once 'HttpResponseTest.php';
 /**
  * Class documentation
  */
-class Http_AllTests{
+class Http_AllTests
+{
 
     public static function suite()
     {

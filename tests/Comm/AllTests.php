@@ -14,7 +14,8 @@ require_once 'RequestFactoryTest.php';
 /**
  * Class documentation
  */
-class Comm_AllTests{
+class Comm_AllTests
+{
 
     public static function suite()
     {

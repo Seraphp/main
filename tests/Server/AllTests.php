@@ -14,7 +14,8 @@ require_once 'Config/AllTests.php';
 /**
  * Class documentation
  */
-class Server_AllTests{
+class Server_AllTests
+{
 
     public static function suite()
     {

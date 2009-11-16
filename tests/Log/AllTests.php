@@ -11,7 +11,8 @@ require_once 'LogFactoryTest.php';
 /**
  * Class documentation
  */
-class Log_AllTests{
+class Log_AllTests
+{
 
     public static function suite()
     {

@@ -13,7 +13,8 @@ require_once 'JsonRpcProxyTest.php';
 /**
  * Class documentation
  */
-class JsonRpc_AllTests{
+class JsonRpc_AllTests
+{
 
     public static function suite()
     {

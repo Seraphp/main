@@ -11,8 +11,9 @@ require_once 'Server/Config/Config.class.php';
 /**
  * Class documentation
  */
-class LogFactoryTest extends PHPUnit_Framework_TestCase{
-    protected $xml = array();
+class LogFactoryTest extends PHPUnit_Framework_TestCase
+{
+    protected $_xml = array();
 
     function setUp()
     {
@@ -31,31 +32,31 @@ class LogFactoryTest extends PHPUnit_Framework_TestCase{
         </logs>
     </server>
 XML;
-        $this->xml['standard'] = new Config($xmlStr);
+        $this->_xml['standard'] = new Config($xmlStr);
     }
 
     function testGetInstanceWithConfPear()
     {
-        $log = LogFactory::getInstance($this->xml['standard'], 'PEAR');
+        $log = LogFactory::getInstance($this->_xml['standard'], 'PEAR');
         $this->assertThat($log, $this->isInstanceOf('Log'));
         $this->assertTrue($log->isComposite());
     }
 
     function testGetInstanceWithConfZend()
     {
-        $log = LogFactory::getInstance($this->xml['standard'], 'Zend');
+        $log = LogFactory::getInstance($this->_xml['standard'], 'Zend');
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
 
     function testGetInstanceWithConfAuto()
     {
-        $log = LogFactory::getInstance($this->xml['standard']);
+        $log = LogFactory::getInstance($this->_xml['standard']);
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
 
     function testGetInstanceWithNoSuchPackage()
     {
-        $log = LogFactory::getInstance($this->xml['standard'], 'Something');
+        $log = LogFactory::getInstance($this->_xml['standard'], 'Something');
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
 
@@ -80,39 +81,40 @@ XML;
 
     function testInstantiateDifferently()
     {
-        $log1 = LogFactory::getInstance();
-        $this->assertThat($log1, $this->isInstanceOf('Zend_Log'));
-        $log2 = LogFactory::getInstance($this->xml['standard']);
-        $this->assertThat($log2, $this->isInstanceOf('Zend_Log'));
+        $logZ = LogFactory::getInstance();
+        $this->assertThat($logZ, $this->isInstanceOf('Zend_Log'));
+        $logS = LogFactory::getInstance($this->_xml['standard']);
+        $this->assertThat($logS, $this->isInstanceOf('Zend_Log'));
     }
 
     function testMissingHandlerInConf()
     {
-        $this->xml['wrong'] = clone $this->xml['standard'];
-        unset($this->xml['wrong']->logs->log[1]['handler']);
+        $this->_xml['wrong'] = clone $this->_xml['standard'];
+        unset($this->_xml['wrong']->logs->log[1]['handler']);
         $this->setExpectedException('LogException');
-        $log = LogFactory::getInstance($this->xml['wrong']);
+        $log = LogFactory::getInstance($this->_xml['wrong']);
     }
 
     function testMailHandler()
     {
-        $this->xml['mail'] = clone $this->xml['standard'];
-        $this->xml['mail']->logs->log[0]['handler'] = 'Mail';
-        $this->xml['mail']->logs->log[0]->conf['from'] = 'antronin+test@gmail.com';
-        $this->xml['mail']->logs->log[0]->conf['to'] = 'antronin@gmail.com';
-        $this->xml['mail']->logs->log[0]->conf['subject'] = 'Log mail';
-        $this->xml['mail']->logs->log[0]->conf['layout'] = 'Entry: %s';
-        $log = LogFactory::getInstance($this->xml['mail']);
+        $this->_xml['mail'] = clone $this->_xml['standard'];
+        $this->_xml['mail']->logs->log[0]['handler'] = 'Mail';
+        $this->_xml['mail']->logs->log[0]->conf['from'] =
+        'antronin+test@gmail.com';
+        $this->_xml['mail']->logs->log[0]->conf['to'] = 'antronin@gmail.com';
+        $this->_xml['mail']->logs->log[0]->conf['subject'] = 'Log mail';
+        $this->_xml['mail']->logs->log[0]->conf['layout'] = 'Entry: %s';
+        $log = LogFactory::getInstance($this->_xml['mail']);
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
 
     function testSyslogHandler()
     {
-        $this->xml['syslog'] = clone $this->xml['standard'];
-        $this->xml['syslog']->logs->log[0]['handler'] = 'Syslog';
-        $this->xml['syslog']->logs->log[0]->conf['application'] = 'Searphp';
-        $this->xml['syslog']->logs->log[0]->conf['facility'] = 'LOG_DAEMON';
-        $log = LogFactory::getInstance($this->xml['syslog']);
+        $this->_xml['syslog'] = clone $this->_xml['standard'];
+        $this->_xml['syslog']->logs->log[0]['handler'] = 'Syslog';
+        $this->_xml['syslog']->logs->log[0]->conf['application'] = 'Searphp';
+        $this->_xml['syslog']->logs->log[0]->conf['facility'] = 'LOG_DAEMON';
+        $log = LogFactory::getInstance($this->_xml['syslog']);
         $this->assertThat($log, $this->isInstanceOf('Zend_Log'));
     }
     function testWithEmptyConf()

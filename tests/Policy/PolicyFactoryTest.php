@@ -10,17 +10,19 @@ require_once 'Policy/PolicyFactory.class.php';
 /**
  * Class documentation
  */
-class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
-    protected $src, $plugins;
+class PolicyFactoryTest extends PHPUnit_Framework_TestCase
+{
+    protected $_src;
+    protected $_plugins;
 
     function setUp()
     {
-        $this->src = (object) array(
+        $this->_src = (object) array(
             'writer' => 'Douglas Adams',
             'numField' => 42,
             'title' => 'Hichhikers guide to the Galaxy'
         );
-        $this->plugins = array(
+        $this->_plugins = array(
             'equal',
             'greater',
             'matches',
@@ -32,71 +34,75 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase{
 
     function testFactoryPluginList()
     {
-        $PF = PolicyFactory::getInstance();
-        $plugins = $PF->getPlugins();
-        foreach($this->plugins as $plugin){
-            $this->assertContains($plugin,$plugins);
+        $pF = PolicyFactory::getInstance();
+        $plugins = $pF->getPlugins();
+        foreach ($this->_plugins as $plugin) {
+            $this->assertContains($plugin, $plugins);
         }
     }
 
-    function testFactoryEqual(){
-        $PF = PolicyFactory::getInstance();
-        $spec = $PF->equal('writer','Douglas Adams');
-        $this->assertTrue($spec->isSatisfiedBy($this->src));
+    function testFactoryEqual()
+    {
+        $pF = PolicyFactory::getInstance();
+        $spec = $pF->equal('writer', 'Douglas Adams');
+        $this->assertTrue($spec->isSatisfiedBy($this->_src));
     }
 
-    function testFactoryGreater(){
-        $PF = PolicyFactory::getInstance();
-        $spec = $PF->greater('numField','40');
-        $this->assertTrue($spec->isSatisfiedBy($this->src));
+    function testFactoryGreater()
+    {
+        $pF = PolicyFactory::getInstance();
+        $spec = $pF->greater('numField', '40');
+        $this->assertTrue($spec->isSatisfiedBy($this->_src));
     }
 
-    function testFactoryMatches(){
-        $PF = PolicyFactory::getInstance();
-        $spec = $PF->matches('numField','/^\d{2}$/');
-        $this->assertTrue($spec->isSatisfiedBy($this->src));
+    function testFactoryMatches()
+    {
+        $pF = PolicyFactory::getInstance();
+        $spec = $pF->matches('numField', '/^\d{2}$/');
+        $this->assertTrue($spec->isSatisfiedBy($this->_src));
     }
 
     function testFactoryFacility()
     {
-        $PF = PolicyFactory::getInstance();
-        $spec = $PF->equal('writer','Douglas Adams')->and_(
-            $PF->matches('numField','/^\d{2}$/')->and_(
-                $PF->greater('numField', 40)
-        ));
-        $this->assertTrue($spec->isSatisfiedBy($this->src));
-
-        $spec = $PF->equal('title','Douglas Adams')->or_(
-            $PF->matches('numField','/^\d{2}$/')->and_(
-                $PF->not_($PF->greater('numField', 40))
+        $pF = PolicyFactory::getInstance();
+        $spec = $pF->equal('writer', 'Douglas Adams')->and_(
+            $pF->matches('numField', '/^\d{2}$/')->and_(
+                $pF->greater('numField', 40)
             )
         );
-        $this->assertFalse($spec->isSatisfiedBy($this->src));
+        $this->assertTrue($spec->isSatisfiedBy($this->_src));
+
+        $spec = $pF->equal('title', 'Douglas Adams')->or_(
+            $pF->matches('numField', '/^\d{2}$/')->and_(
+                $pF->not_($pF->greater('numField', 40))
+            )
+        );
+        $this->assertFalse($spec->isSatisfiedBy($this->_src));
     }
 
     function testCallInvalidPolicy()
     {
-        $PF = PolicyFactory::getInstance();
+        $pF = PolicyFactory::getInstance();
         $this->setExpectedException('PluginException');
-        $spec = $PF->less('numField','');
+        $spec = $pF->less('numField', '');
     }
 
     function testGetInitialPluginsDir()
     {
-        $PF = PolicyFactory::getInstance();
-        $this->assertEquals($PF->getPluginsDir(),getcwd().'/Policy');
+        $pF = PolicyFactory::getInstance();
+        $this->assertEquals($pF->getPluginsDir(), getcwd().'/Policy');
     }
 
     function testInvalidPluginsDir()
     {
-        $PF = PolicyFactory::getInstance();
+        $pF = PolicyFactory::getInstance();
         $this->setExpectedException('PluginException');
-        $PF->setPluginsDir(getcwd().'/tests/Policy');
+        $pF->setPluginsDir(getcwd().'/tests/Policy');
     }
 
     function testValidPluginsDir()
     {
-        $PF = PolicyFactory::getInstance();
-        $PF->setPluginsDir('./Policy');
+        $pF = PolicyFactory::getInstance();
+        $pF->setPluginsDir('./Policy');
     }
 }

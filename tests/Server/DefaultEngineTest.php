@@ -13,33 +13,34 @@ require_once 'Comm/Http/HttpResponse.class.php';
 /**
  * Class documentation
  */
-class DefaultEngineTest extends PHPUnit_Framework_TestCase{
+class DefaultEngineTest extends PHPUnit_Framework_TestCase
+{
 
-    private $request = null;
-    private $response = null;
+    private $_request = null;
+    private $_response = null;
     private $_sep = "\r\n";
-    private $config;
+    private $_config;
 
     function setUp()
     {
-        $this->request = $this->getMock('HttpRequest', array('respond'));
-        $this->response = $this->getMock('HttpResponse', array('send'));
-        $this->request->expects($this->once())
+        $this->_request = $this->getMock('HttpRequest', array('respond'));
+        $this->_response = $this->getMock('HttpResponse', array('send'));
+        $this->_request->expects($this->once())
          ->method('respond')
-         ->will($this->returnValue($this->response));
-        $this->config = new Config('<foo/>');
+         ->will($this->returnValue($this->_response));
+        $this->_config = new Config('<foo/>');
     }
 
     function testProcess()
     {
         $engine = new DefaultEngine($this->config);
-        $this->assertEquals(0, $engine->process($this->request));
+        $this->assertEquals(0, $engine->process($this->_request));
     }
 
     function tearDown()
     {
-        unset($this->request);
-        unset($this->response);
+        unset($this->_request);
+        unset($this->_response);
         unset($this->config);
     }
 

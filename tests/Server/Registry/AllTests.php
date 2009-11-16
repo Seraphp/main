@@ -14,7 +14,8 @@ require_once 'AppServerRegistryTest.php';
 /**
  * Class documentation
  */
-class Registry_AllTests{
+class Registry_AllTests
+{
 
     public static function suite()
     {

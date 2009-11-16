@@ -11,19 +11,19 @@ require_once 'Server/DefaultEngine.class.php';
 /**
  * Class documentation
  */
-class AppServerTest extends PHPUnit_Framework_TestCase{
-    protected $appID;
-    protected $server;
-    protected $req;
-    protected $conf;
-    protected $confString;
+class AppServerTest extends PHPUnit_Framework_TestCase
+{
+    protected $_appID;
+    protected $_server;
+    protected $_conf;
+    protected $_confString;
 
     function setUp()
     {
-        $this->appID = 'main';
-        $this->confString = <<<XML
+        $this->_appID = 'main';
+        $this->_confString = <<<XML
 <servers>
-    <server id="$this->appID">
+    <server id="$this->_appID">
         <instance>
             <address>localhost</address>
             <port>1088</port>
@@ -36,14 +36,14 @@ XML;
 
     function testAppServerInstatiation()
     {
-        $this->conf = new Config($this->confString);
-        $this->server = new AppServer($this->conf->server);
-        $this->server->daemonize = false;
-        $this->assertEquals($this->appID, $this->server->getAppId());
-        $this->assertTrue(is_numeric($this->server->summon()));
-        //$this->assertFileExists(getcwd().'/.'.$this->appID.'_srphp.pid');
-        $this->assertEquals(5, $this->server->getMaxSpawns());
-        $this->server->setMaxSpawns(10);
-        $this->assertEquals(10, $this->server->getMaxSpawns());
+        $this->_conf = new Config($this->_confString);
+        $this->_server = new AppServer($this->_conf->server);
+        $this->_server->daemonize = false;
+        $this->assertEquals($this->_appID, $this->_server->get_appID());
+        $this->assertTrue(is_numeric($this->_server->summon()));
+        //$this->assertFileExists(getcwd().'/.'.$this->_appID.'_srphp.pid');
+        $this->assertEquals(5, $this->_server->getMaxSpawns());
+        $this->_server->setMaxSpawns(10);
+        $this->assertEquals(10, $this->_server->getMaxSpawns());
     }
 }

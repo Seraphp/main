@@ -10,7 +10,8 @@ require_once 'Comm/Http/HttpCookie.class.php';
 /**
  * Class documentation
  */
-class HttpCookieTest extends PHPUnit_Framework_TestCase{
+class HttpCookieTest extends PHPUnit_Framework_TestCase
+{
 
     private $_name = '';
     private $_value = '';
@@ -35,9 +36,15 @@ class HttpCookieTest extends PHPUnit_Framework_TestCase{
 
     function testToString()
     {
-        $cookie = new HttpCookie($this->_name, $this->_value, null, '/', 'localhost', true);
-        $this->assertEquals(sprintf('Set-Cookie:%s=%s;Max-Age=%s;Path=/;Domain=%s;Secure',
-             $this->_name, $this->_value, 0, 'localhost'),
-             $cookie->__toString());
+        $cookie = new HttpCookie(
+            $this->_name, $this->_value, null, '/', 'localhost', true
+        );
+        $this->assertEquals(
+            sprintf(
+                'Set-Cookie:%s=%s;Max-Age=%s;Path=/;Domain=%s;Secure',
+                $this->_name, $this->_value, 0, 'localhost'
+            ),
+            $cookie->__toString()
+        );
     }
 }

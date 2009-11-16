@@ -10,31 +10,36 @@ require_once 'Comm/Ipc/IpcFactory.class.php';
 /**
  * Class documentation
  */
-class IpcFactoryTest extends PHPUnit_Framework_TestCase{
+class IpcFactoryTest extends PHPUnit_Framework_TestCase
+{
 
     function testGetClassName()
     {
-        $this->assertEquals('IpcUnixsockets',IpcFactory::getClassName('unixsockets'));
+        $this->assertEquals(
+            'IpcUnixsockets', IpcFactory::getClassName('unixsockets')
+        );
     }
 
     function testPluginsDir()
     {
-        $this->assertEquals(getcwd().'/Comm/Ipc',IpcFactory::getPluginsDir());
+        $this->assertEquals(getcwd().'/Comm/Ipc', IpcFactory::getPluginsDir());
         IpcFactory::setPluginsDir('./Comm');
-        $this->assertEquals('./Comm',IpcFactory::getPluginsDir());
+        $this->assertEquals('./Comm', IpcFactory::getPluginsDir());
         $this->assertFalse(IpcFactory::setPluginsDir('./seraph'));
-        $this->assertEquals('./Comm',IpcFactory::getPluginsDir());
+        $this->assertEquals('./Comm', IpcFactory::getPluginsDir());
     }
 
     function testValidPlugin()
     {
         IpcFactory::setPluginsDir('./Comm/Ipc');
-        $this->assertThat(IpcFactory::get('unixsockets',0),$this->IsInstanceOf('IpcAdapter'));
+        $this->assertThat(
+            IpcFactory::get('unixsockets', 0), $this->IsInstanceOf('IpcAdapter')
+        );
     }
 
     function testNonexistingPlugin()
     {
         $this->setExpectedException('PluginException');
-        IpcFactory::get('something',0);
+        IpcFactory::get('something', 0);
     }
 }
