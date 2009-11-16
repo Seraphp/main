@@ -39,7 +39,7 @@ XML;
         $this->_conf = new Config($this->_confString);
         $this->_server = new AppServer($this->_conf->server);
         $this->_server->daemonize = false;
-        $this->assertEquals($this->_appID, $this->_server->get_appID());
+        $this->assertEquals($this->_appID, $this->_server->getAppId());
         $this->assertTrue(is_numeric($this->_server->summon()));
         //$this->assertFileExists(getcwd().'/.'.$this->_appID.'_srphp.pid');
         $this->assertEquals(5, $this->_server->getMaxSpawns());
