@@ -17,7 +17,7 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
 
     function testCreateRequest()
     {
-        $res = HttpFactory::create("request");
+        $res = HttpFactory::create("request", array("method"=>"get"));
         $this->assertType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
@@ -26,7 +26,7 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
 
     function testCreateResponse()
     {
-        $res = HttpFactory::create("response");
+        $res = HttpFactory::create("response", array("statusCode"=>"404"));
         $this->assertType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
