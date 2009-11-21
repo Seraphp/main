@@ -13,6 +13,9 @@
   <delete file="${basedir}/source/.srpdAppMan" />
   <delete file="${basedir}/source/.main_srphp.pid" />
   <delete file="${basedir}/source/out.log" />
+  <delete>
+    <fileset dir="${basedir}/source" includes="srpd*"/>
+  </delete>
  </target>
 
  <target name="prepare">
