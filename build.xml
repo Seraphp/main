@@ -39,7 +39,7 @@
         executable="phpcs"
         output="${basedir}/build/logs/checkstyle.xml"
         failonerror="false">
-   <arg line="--report=checkstyle --standard=zend --ignore=*/tests/* ."/>
+   <arg line="--report=checkstyle --standard=zend ."/>
   </exec>
  </target>
 
@@ -64,12 +64,10 @@
         executable="phpunit"
         failonerror="on">
    <arg line="--verbose 
-              --log-xml ${basedir}/build/logs/phpunit.xml
-              --log-pmd ${basedir}/build/logs/phpunit.pmd.xml
-              --log-metrics ${basedir}/build/logs/phpunit.metrics.xml
-              --coverage-xml ${basedir}/build/logs/phpunit.coverage.xml
+              --log-junit ${basedir}/build/logs/phpunit.xml
+              --coverage-clover ${basedir}/build/logs/phpunit.coverage.xml
               --coverage-html ${basedir}/build/coverage
-              phpucAllTests tests/AllTests.php"/>
+              tests/AllTests.php"/>
   </exec>
  </target>
 
