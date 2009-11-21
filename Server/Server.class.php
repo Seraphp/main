@@ -229,7 +229,7 @@ abstract class Server implements Daemon
     {
         self::$_log->debug(__METHOD__.' called');
         $this->status = 'running';
-        declare(ticks = 1);
+        //declare(ticks = 1);
         while (true) {
             $this->hartBeat();
         }
