@@ -7,8 +7,9 @@
  </target>
 
  <target name="clean">
-  <delete dir="${basedir}/build"/>
-  <delete dir="${basedir}/source/docs"/>
+  <delete includeemptydirs="true">
+    <fileset dir="${basedir}/build" includes="**/*"/>
+  </delete>
   <delete file="${basedir}/source/.srpdAppMan" />
   <delete file="${basedir}/source/.main_srphp.pid" />
   <delete file="${basedir}/source/out.log" />
@@ -16,6 +17,8 @@
 
  <target name="prepare">
   <mkdir dir="${basedir}/build/logs"/>
+  <mkdir dir="${basedir}/build/api"/>
+  <mkdir dir="${basedir}/build/coverage"/>
  </target>
 
  <target name="PHPDocs">
