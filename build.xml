@@ -63,7 +63,8 @@
   <exec dir="${basedir}/source/"
         executable="phpunit"
         failonerror="on">
-   <arg line="--verbose 
+   <arg line="--verbose
+              --log-pmd ${basedir}/build/logs/phpunit.pmd.xml 
               --log-junit ${basedir}/build/logs/phpunit.xml
               --coverage-clover ${basedir}/build/logs/phpunit.coverage.xml
               --coverage-html ${basedir}/build/coverage
