@@ -10,6 +10,7 @@
  */
 /***/
 //namespace Seraphp\Policy;
+require_once 'Singleton.interface.php';
 require_once 'Policy/Specification.interface.php';
 require_once 'Exceptions/PluginException.class.php';
 /**
@@ -22,7 +23,7 @@ require_once 'Exceptions/PluginException.class.php';
  * @package Policy
  * @todo: Refactor class to make it static using PHP 5.3 __staticCall feature
  */
-class PolicyFactory
+class PolicyFactory implements Singleton
 {
     /**
      * Stores usable plugins
@@ -117,7 +118,7 @@ class PolicyFactory
      *   AndSpecification.class.php will be registered as "PolicyFactory::and_".
      *
      * @param string $plugin
-     * @throws PolicyPluginException
+     * @throws PluginException
      */
     private function _registerPlugin($plugin)
     {
