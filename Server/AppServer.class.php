@@ -411,7 +411,7 @@ class AppServer extends Server
             self::$_log->debug("Not found: ".$uriParams['engine']);
             $response = $req->respond(
                 'File not found!',
-                array('statusCode'=>$returnCode)
+                array('statusCode'=>404)
             );
             $response->send();
         } else {
@@ -424,7 +424,7 @@ class AppServer extends Server
                 self::$_log->debug("Not registered: ".$uriParams['engine']);
                 $response = $req->respond(
                     'File not found!',
-                    array('statusCode'=>$returnCode)
+                    array('statusCode'=>500)
                 );
                 $response->send();
             }
