@@ -60,16 +60,16 @@ class AppServerRegistry extends Registry
      * exists in the registry or Null
      *
      * @param string $appID
-     * @return string|Null
+     * @return string
      */
     public function getAppStatus($appID)
     {
-        if (isset($this->$appID)) {
-            $instance = $this->getAppInstance($appID);
-            if (is_array($this->$appID)) {
-                return $instance->getStatus();
-            } else return null;
-        } else return null;
+        $instance = $this->getAppInstance($appID);
+        if ($instance == null || is_string($instance)) {
+            return 'not running';
+        } else {
+            return $instance->getStatus();
+        }
     }
 
     /**
@@ -79,15 +79,24 @@ class AppServerRegistry extends Registry
      * key is exists in the registry, or NUll.
      *
      * @param string $appID
-     * @return JsonRpcProxy|null
+     * @return String|JsonRpcProxy|null
      */
     public function getAppInstance($appID)
     {
         if (isset($this->$appID)) {
+            if (!is_array($this->$appID) ||
+                !self::_isPidExists($this->$appID[1])
+            ) {
+                //If a not running instance already exists
+                return $this->$appID;
+            }
+            // If instance already running, return proxy to it.
             $proxy = new JsonRpcProxy($appID, $this->$appID);
             $proxy->init();
             return $proxy;
-        } else return null;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -132,15 +141,53 @@ class AppServerRegistry extends Registry
         }
     }
 
+    /**
+     * Stores the pid of a summoned server
+     *
+     * @param string $appID
+     * @param integer $pid
+     * @return boolean
+     */
     public function storePid($appID, $pid)
     {
         if (isset($this->$appID)) {
-            $this->$appID = array($this->$appID, $pid);
+            if (is_array($this->$appID)) {
+                $this->$appID[1] = $pid;
+            } else {
+                $this->$appID = array($this->$appID, $pid);
+            }
             return true;
         } else {
             throw new RegistryException(
                 'AppServer not yet registered: '.$appID
             );
         }
+    }
+
+    /**
+     * Returns a summoned PID or false if no pid registered.
+     *
+     * @param string $appID
+     * @return integer|boolean
+     */
+    public function getPid($appID)
+    {
+        if (isset($this->$appID) && is_array($this->$appID)) {
+            $details = $this->$appID;
+            return $details[1];
+        } else {
+            return false;
+        }
+    }
+    /**
+     * Tells if a process with that PID exists.
+     *
+     * @param integer $pid
+     * @return boolean
+     * @static
+     */
+    private static function _isPidExists($pid)
+    {
+        return posix_kill($pid, 0);
     }
 }
