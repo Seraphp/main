@@ -74,11 +74,20 @@ class DataStoreTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    function testDestructor()
+    function testDestructorNoDirty()
+    {
+        $engine = $this->getMock('PackedFileDataStore');
+        $engine->expects($this->never())->method('save');
+        $this->_store->setEngine($engine);
+        unset($this->_store);
+    }
+
+    function testDestructorWithDirty()
     {
         $engine = $this->getMock('PackedFileDataStore');
         $engine->expects($this->once())->method('save');
         $this->_store->setEngine($engine);
+        $this->_store->someKey = 'someKey';
         unset($this->_store);
     }
 }

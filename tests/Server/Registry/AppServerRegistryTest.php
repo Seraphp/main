@@ -48,7 +48,9 @@ XML;
 
     function testGetNonRunningServerStatus()
     {
-        $this->assertNull($this->_reg->getAppStatus('something'));
+        $this->assertEquals(
+            $this->_reg->getAppStatus('something'), 'not running'
+        );
     }
 
     function testGetNonRunningServerInstance()
@@ -59,15 +61,41 @@ XML;
     function testAddValidApp()
     {
         $this->assertTrue($this->_reg->addApp('mockery', $this->mockServer));
-        $this->assertEquals($this->_reg->getAppStatus('mockery'), null);
-        $this->assertThat(
+        $this->assertEquals(
+            $this->_reg->getAppStatus('mockery'), 'not running'
+        );
+        $this->_reg->removeApp('mockery');
+    }
+
+    function testGetRpcInstance()
+    {
+        $this->assertTrue($this->_reg->addApp('mockery', $this->mockServer));
+        $this->assertEquals(
             $this->_reg->getAppInstance('mockery'),
-            $this->IsInstanceOf('JsonRpcProxy')
+            'AppServer'
         );
-        $this->assertThat(
+        $this->_reg->removeApp('mockery');
+    }
+
+    function testGetRpcByRemove()
+    {
+        $this->assertTrue($this->_reg->addApp('mockery', $this->mockServer));
+        $this->assertEquals(
             $this->_reg->removeApp('mockery'),
-            $this->IsInstanceOf('JsonRpcProxy')
+            'AppServer'
         );
+    }
+
+    function testRemoveNonExistantIsExcpetion()
+    {
+        $this->setExpectedException('RegistryException');
+        $this->_reg->removeApp('mockery');
+    }
+
+    function testDoubleRemovalException()
+    {
+        $this->assertTrue($this->_reg->addApp('mockery', $this->mockServer));
+        $this->_reg->removeApp('mockery');
         $this->setExpectedException('RegistryException');
         $this->_reg->removeApp('mockery');
     }
@@ -82,6 +110,10 @@ XML;
 
     function tearDown()
     {
+        try {
+            $this->_reg->removeApp('mockery');
+        } catch(Exception $e) {
+        }
         if (file_exists('./.srpdAppMan')) {
             unlink('./.srpdAppMan');
         }
