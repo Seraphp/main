@@ -28,5 +28,8 @@ class ConfigXmlValidityTest extends PHPUnit_Framework_TestCase
             $this->fail('Error at loading XML');
         }
     }
-
+    function tearDown()
+    {
+        unset($this->_dom);
+    }
 }

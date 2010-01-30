@@ -74,4 +74,9 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(8125, (int)$conf->instance->port);
         $this->assertType('SimpleXMLElement', $conf->includes);
     }
+
+    function tearDown()
+    {
+        unset($this->_cf);
+    }
 }
