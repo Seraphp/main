@@ -5,7 +5,6 @@
  * @version $Id$
  * @filesource
  */
-// @codeCoverageIgnoreStart
 require_once 'PHPUnit/Framework.php';
 require_once 'AppServerTest.php';
 require_once 'DefaultEngineTest.php';
@@ -21,12 +20,10 @@ class Server_AllTests
     {
 
         $suite = new PHPUnit_Framework_TestSuite('Seraphp Server');
-        $suite->addTestSuite('DefaultEngineTest');
-        $suite->addTestSuite('AppServerTest');
         $suite->addTest(Registry_AllTests::suite());
         $suite->addTest(Config_AllTests::suite());
+        $suite->addTestSuite('DefaultEngineTest');
+        $suite->addTestSuite('AppServerTest');
         return $suite;
-
     }
 }
-// @codeCoverageIgnoreEnd
