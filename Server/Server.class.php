@@ -229,10 +229,16 @@ abstract class Server implements Daemon
     {
         self::$_log->debug(__METHOD__.' called');
         $this->status = 'running';
-        //declare(ticks = 1);
+        self::$_log->debug('Daemonize: '.(string)$this->daemonize);
+        declare(ticks = 1);
         while (true) {
-            $this->hartBeat();
+            if ($this->daemonize === true) {
+                $this->hartBeat();
+            } else {
+                break;
+            }
         }
+        declare(ticks = 0);
     }
 
     /**
@@ -253,6 +259,7 @@ abstract class Server implements Daemon
             if ($pid < 0) {
                 throw new Exception('Unable to fork!');
             } elseif ($pid == 0) {//child process
+                self::$_log->setEventItem('pid', getmypid());
                 $this->_pid = getmypid();
                 $this->_role = 'child';
                 if ($this->_ipcType !== '') {
@@ -260,15 +267,17 @@ abstract class Server implements Daemon
                         $this->_ipcType, posix_getppid()
                     );
                 }
+                //returns own pid
+                return $this->_pid;
             } else {
                 $this->_pid = getmypid();
                 //parent process
                 $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
-                //self::$_log->setIdent(getmypid());
                 self::$_log->debug($pid." spawned\n");
+                //returns child's pid
+                return $pid;
             }
         }
-        return $this->_pid;
     }
 
     /**
@@ -282,7 +291,7 @@ abstract class Server implements Daemon
     /**
      * Process shutdown method
      *
-     * Sends SIGSTOP to all existing child process and waits for them to exit.
+     * Sends SIGTERM to all existing child process and waits for them to exit.
      * Closes IpcAdapter connections and tries to remove the pidfile created
      * for this process.
      *
@@ -290,24 +299,32 @@ abstract class Server implements Daemon
      */
     public function expel()
     {
-        self::$_log->debug(__METHOD__.' called');
         $this->onExpel();
-        self::$_log->debug('children:');
-        $success = false;
-        foreach ($this->_spawns as $childPid=>$details) {
-            self::$_log->debug('stopping: '.$childPid);
-            if (posix_getpgid($childPid) !== null) {
-                //it seems we have a PHP bug here:
-                //Sending SIGSTOP when $child['pid']
-                //is null is killing the system.
-                //So I'm checking if pid exists.
-                posix_kill($childPid, SIGSTOP);
-                pcntl_waitpid($childPid, $temp = 0, WNOHANG);
-                $success = pcntl_wifexited($temp);
-/*                if ($success && $childPid['ipc'] !== null) {
-                    $childPid['ipc']->close();
-                }*/
+        $this->_daemonize = false;
+        return true;
+    }
+
+    /**
+     * Process shutdown method
+     *
+     * Sends SIGTERM to all existing child process and waits for them to exit.
+     * Closes IpcAdapter connections and tries to remove the pidfile created
+     * for this process.
+     *
+     * @return void
+     */
+    protected function shutdown()
+    {
+        self::$_log->debug(__METHOD__.' called');
+        self::$_log->debug('Waiting children to stop');
+        foreach ($this->_spawns as $pid=>$details) {
+            if (true === posix_kill($pid, 0)) {
+                posix_kill($pid, SIGTERM);
             }
+        }
+        pcntl_wait($temp = 0);
+        if (false === pcntl_wifexited($temp)) {
+            self::$_log->warn('Some child process(es) not exited correctly!');
         }
         if (is_resource($this->_pidFile)) {
             self::$_log->debug('Releasing pidfile lock');
@@ -320,7 +337,6 @@ abstract class Server implements Daemon
         }
         self::$_log->debug('Parent exiting');
         $this->status = 'expeled';
-        return $success;
     }
 
     /**
@@ -342,6 +358,7 @@ abstract class Server implements Daemon
      */
     public function getMaxSpawns()
     {
+        self::$_log->debug(__METHOD__.' called');
         return $this->_maxSpawns;
     }
 
@@ -415,9 +432,11 @@ abstract class Server implements Daemon
      */
     public function __destruct()
     {
+        self::$_log->debug(__METHOD__.' called');
         if ($this->_role === 'parent') {
-            exit($this->expel());
+            $this->shutdown();
         }
+        exit;
     }
 
     /**
@@ -427,6 +446,7 @@ abstract class Server implements Daemon
      */
     public function getStatus()
     {
+        self::$_log->debug(__METHOD__.' called');
         return $this->status;
     }
 
