@@ -152,6 +152,7 @@ class DataStore
         if (isset($this->_engine) && $this->_dirty == true) {
             $this->_engine->save($this->_store);
             unset($this->_engine);
+            $this->_dirty = false;
         }
     }
 
