@@ -65,4 +65,9 @@ class RegistryTest extends PHPUnit_Framework_TestCase
         $this->_reg->someKey = $someKey;
         $this->assertSame($this->_reg->someKey, $someKey);
     }
+
+    function tearDown()
+    {
+        unset($this->_reg);
+    }
 }
