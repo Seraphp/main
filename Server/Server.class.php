@@ -342,7 +342,6 @@ abstract class Server implements Daemon
         }
         self::$_log->debug('Parent exiting');
         $this->status = 'expeled';
-        exit;
     }
 
     /**
