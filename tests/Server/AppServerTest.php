@@ -14,8 +14,8 @@ require_once 'Server/DefaultEngine.class.php';
 class AppServerTest extends PHPUnit_Framework_TestCase
 {
     protected $_appID;
-    protected $_server;
-    protected $_conf;
+    protected $_server = null;
+    protected $_conf = null;
     protected $_confString;
 
     function setUp()
@@ -41,9 +41,15 @@ XML;
         $this->_server->daemonize = false;
         $this->assertEquals($this->_appID, $this->_server->getAppId());
         $this->assertTrue(is_numeric($this->_server->summon()));
-        //$this->assertFileExists(getcwd().'/.'.$this->_appID.'_srphp.pid');
+        $this->assertFileExists(getcwd().'/.'.$this->_appID.'_srphp.pid');
         $this->assertEquals(5, $this->_server->getMaxSpawns());
         $this->_server->setMaxSpawns(10);
         $this->assertEquals(10, $this->_server->getMaxSpawns());
+    }
+
+    function tearDown()
+    {
+        $this->_server->expel();
+        unset($this->_server);
     }
 }
