@@ -72,7 +72,11 @@ class HttpResponse
                 throw new IOException('Cannot send out header part');
             }
             if (!empty($this->messageBody)) {
-                $this->_sendBody();
+                try {
+                    $this->_sendBody();
+                } catch (IOException $e) {
+                    self::$_log->warn($e->getMessage());
+                }
             }
             stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
         }
@@ -134,7 +138,7 @@ class HttpResponse
                 throw new IOException('Cannot send message body!');
             }
             if (fwrite($this->_socket, "\r\n") === false) {
-                throw new IOException('Cannot send message body!');
+                throw new IOException('Cannot close message body!');
             }
         } else {
             if (fwrite(
