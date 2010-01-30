@@ -117,6 +117,7 @@ XML;
         if (file_exists('./.srpdAppMan')) {
             unlink('./.srpdAppMan');
         }
+        unset($this->_reg);
     }
 
 }
