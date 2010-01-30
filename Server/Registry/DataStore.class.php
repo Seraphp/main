@@ -75,6 +75,7 @@ class DataStore
     {
         if (isset($this->$key)) {
             unset($this->_store[$key]);
+            $this->_dirty = true;
         }
     }
 
@@ -95,14 +96,15 @@ class DataStore
         }
         if ($this->_overwrite === true) {
             $this->_store[$key]=$value;
+            $this->_dirty = true;
         } else {
             if (isset($this->$key) === true) {
                  return;
             } else {
                 $this->_store[$key]=$value;
+                $this->_dirty = true;
             }
         }
-        $this->_dirty = true;
         return;
     }
 
@@ -147,7 +149,7 @@ class DataStore
 
     public function __destruct()
     {
-        if (isset($this->_engine)) {
+        if (isset($this->_engine) && $this->_dirty == true) {
             $this->_engine->save($this->_store);
             unset($this->_engine);
         }
