@@ -146,7 +146,6 @@ abstract class Server implements Daemon
             $this->startHart();
         } else {
             //we are the parent process
-            $this->_role = 'exit';
             return $pid;
         }
     }
@@ -253,30 +252,35 @@ abstract class Server implements Daemon
     public function spawn()
     {
         self::$_log->debug(__METHOD__.' called');
-        if ($this->daemonize && count($this->_spawns) < $this->_maxSpawns) {
-            self::$_log->debug('Forking');
-            $pid = pcntl_fork();
-            if ($pid < 0) {
-                throw new Exception('Unable to fork!');
-            } elseif ($pid == 0) {//child process
-                self::$_log->setEventItem('pid', getmypid());
-                $this->_pid = getmypid();
-                $this->_role = 'child';
-                if ($this->_ipcType !== '') {
-                    $this->_ipc = IpcFactory::get(
-                        $this->_ipcType, posix_getppid()
-                    );
+        if ($this->daemonize) {
+            if (count($this->_spawns) < $this->_maxSpawns) {
+                self::$_log->debug('Forking');
+                $pid = pcntl_fork();
+                if ($pid < 0) {
+                    throw new Exception('Unable to fork!');
+                } elseif ($pid == 0) {//child process
+                    self::$_log->setEventItem('pid', getmypid());
+                    $this->_pid = getmypid();
+                    $this->_role = 'child';
+                    if ($this->_ipcType !== '') {
+                        $this->_ipc = IpcFactory::get(
+                            $this->_ipcType, posix_getppid()
+                        );
+                    }
+                    //returns own pid
+                    return $this->_pid;
+                } else {
+                    $this->_pid = getmypid();
+                    //parent process
+                    $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
+                    self::$_log->debug($pid." spawned\n");
+                    //returns child's pid
+                    return $pid;
                 }
-                //returns own pid
-                return $this->_pid;
-            } else {
-                $this->_pid = getmypid();
-                //parent process
-                $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
-                self::$_log->debug($pid." spawned\n");
-                //returns child's pid
-                return $pid;
             }
+        } else {
+            $this->_pid = getmypid();
+            return $this->_pid;
         }
     }
 
@@ -299,8 +303,9 @@ abstract class Server implements Daemon
      */
     public function expel()
     {
+        self::$_log->debug(__METHOD__.' called');
         $this->onExpel();
-        $this->_daemonize = false;
+        $this->daemonize = false;
         return true;
     }
 
@@ -313,7 +318,7 @@ abstract class Server implements Daemon
      *
      * @return void
      */
-    protected function shutdown()
+    protected function _shutdown()
     {
         self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('Waiting children to stop');
@@ -337,6 +342,7 @@ abstract class Server implements Daemon
         }
         self::$_log->debug('Parent exiting');
         $this->status = 'expeled';
+        exit;
     }
 
     /**
@@ -434,9 +440,8 @@ abstract class Server implements Daemon
     {
         self::$_log->debug(__METHOD__.' called');
         if ($this->_role === 'parent') {
-            $this->shutdown();
+            $this->_shutdown();
         }
-        exit;
     }
 
     /**
