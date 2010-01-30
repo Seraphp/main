@@ -44,8 +44,9 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
 
     function testConstructorWithClientArray()
     {
-        $proxy = new JsonRpcProxy($this->_names[0],
-            array($this->_mockClass, getmypid()));
+        $proxy = new JsonRpcProxy(
+            $this->_names[0], array($this->_mockClass, getmypid())
+        );
         $proxy->init('server');
         $this->assertFileExists('/tmp/seraphp/'.$this->_names[0].'I.tmp');
         $this->assertFileExists('/tmp/seraphp/'.$this->_names[0].'O.tmp');
@@ -53,10 +54,12 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
 
     function testCallAtClient()
     {
-        $clientProxy = new JsonRpcProxy($this->_names[0],
-            array($this->_mockClass, getmypid()));
+        $clientProxy = new JsonRpcProxy(
+            $this->_names[0], array($this->_mockClass, getmypid())
+        );
         $clientProxy->init('client');
         $pipe = fopen('/tmp/seraphp/'.$this->_names[0].'O.tmp', 'r+');
+        stream_set_blocking($pipe, false);
         fwrite($pipe, (string) new JsonRpcResponse('running', null, 0));
         pcntl_signal(SIGUSR1, SIG_IGN);
         $status = $clientProxy->getStatus();
@@ -66,11 +69,14 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
 
     function testCallAtServer()
     {
-        $serverProxy = new JsonRpcProxy($this->_names[0],
-            new RunningClass);
+        $serverProxy = new JsonRpcProxy(
+            $this->_names[0], new RunningClass
+        );
         $serverProxy->init('server');
         $pipeO = fopen('/tmp/seraphp/'.$this->_names[0].'O.tmp', 'r+');
+        stream_set_blocking($pipeO, false);
         $pipeI = fopen('/tmp/seraphp/'.$this->_names[0].'I.tmp', 'w+');
+        stream_set_blocking($pipeI, false);
         fwrite($pipeI, (string) new JsonRpcRequest('getStatus', null, 0));
         $serverProxy->listen();
         $read = array($pipeO);
