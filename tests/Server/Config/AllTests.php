@@ -11,7 +11,6 @@ require_once 'tests/Server/Config/ConfigTest.php';
 require_once 'tests/Server/Config/ConfigFactoryTest.php';
 /**
  * Class documentation
- * // @codeCoverageIgnoreStart
  */
 class Config_AllTests
 {
@@ -26,4 +25,3 @@ class Config_AllTests
         return $suite;
     }
 }
-// @codeCoverageIgnoreEnd
