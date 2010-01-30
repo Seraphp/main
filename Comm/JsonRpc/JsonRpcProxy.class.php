@@ -30,6 +30,8 @@ require_once 'Exceptions/IOException.class.php';
  */
 class JsonRpcProxy
 {
+    const TIMEOUT = 10;
+
     private static $_log;
 
     private $_name = '';
@@ -44,9 +46,9 @@ class JsonRpcProxy
      */
     private $_type = 'socket';
     /**
-     * @var mixed  Reference for connection object
+     * @var array  Reference for connection resources
      */
-    private $_conn = null;
+    private $_conn = array();
     /**
      * @var array  Callable methods on our side
      */
@@ -172,43 +174,68 @@ class JsonRpcProxy
                 }
                 break;
         }
+        $this->_connect('read');
     }
 
     protected function _connect($mode)
     {
-        if ($this->_role == 'client') {
-            $this->_disconnect();
+        self::$_log->debug(__METHOD__. ' called');
+        self::$_log->debug('Mode: '.$mode);
+        switch ($mode) {
+            case 'read':
+        	    if ($this->_role == 'client') {
+                    $fifo = $this->_fifo['out'];
+                } else {
+                    $fifo = $this->_fifo['in'];
+                }
+        	   break;
+            case 'write':
+                if ($this->_role == 'client') {
+                    $fifo = $this->_fifo['in'];
+                } else {
+                    $fifo = $this->_fifo['out'];
+                }
+                break;
+            default:
+                return;
         }
-        if ($mode !== 'read' && $mode !== 'write') {
-             throw new Exception('Invalid mode specified: '.$mode);
-        }
-        if ($this->_role == 'client') {
-            $fifo = $this->_fifo[($mode == 'read')?'out':'in'];
-        } else {
-            $fifo = $this->_fifo[($mode == 'read')?'in':'out'];
-        }
-        $this->_conn = fopen($fifo, substr($mode, 0, 1).'+');
-        stream_set_blocking($this->_conn, false);
+        self::$_log->debug('Fifo: '.$fifo);
+        $this->_conn[$mode] = fopen($fifo, substr($mode, 0, 1).'+');
+        stream_set_blocking($this->_conn[$mode], false);
     }
 
-    protected function _disconnect()
+    /**
+     * Depending on the $mode it closes the connection if exists.
+     * Mode can be 'read' or 'write'.
+     *
+     * @param string $mode
+     * @return boolean
+     */
+    protected function _disconnect($mode)
     {
-        if (is_resource($this->_conn)) {
-            fclose($this->_conn);
+        self::$_log->debug(__METHOD__. ' called');
+        if ($mode == 'read' || $mode == 'write') {
+            if (is_resource($this->_conn[$mode])) {
+                return fclose($this->_conn[$mode]);
+            } else {
+                return false;
+            }
         }
+        return false;
     }
 
+    /**
+     * When called checks if there is a message to read and executes it.
+     *
+     * @return void
+     */
     public function listen()
     {
-        self::$_log->debug(__METHOD__.' called');
-        $this->_connect('read');
-        $read = array($this->_conn);
-        $write = array();
-        $exc = array();
-        if (stream_select($read, $write, $exc, 5) > 0) {
-            $this->parseRequest(fgets($this->_conn));
-        } else {
-            self::$_log->debug(__METHOD__.' timed out');
+        self::$_log->debug(__METHOD__. ' called');
+        try {
+            $this->parseRequest($this->_read());
+        } catch(IOException $e) {
+            self::$_log->debug($e->getMessage());
         }
     }
 
@@ -222,38 +249,24 @@ class JsonRpcProxy
         self::$_log->debug(__METHOD__. ' called');
         if (in_array($name, $this->_notifications) ) {
             $message = (string) new JsonRpcRequest($name, $arguments);
-            self::$_log->debug('Message: '.$message);
-            $this->_connect('write');
-            if (fwrite($this->_conn, $message."\n") === false) {
-                 throw new IOException('Cannot write FIFO: '.$this->_fifo);
+            try {
+                $this->_write($message."\n");
+            } catch (IOException $e) {
+                self::$_log->warn($e->getMessage());
             }
-            $this->_sendSignal($this->_pid);
         } elseif (in_array($name, $this->_allowedMethods) ) {
             $message = (string) new JsonRpcRequest($name, $arguments,
                 self::getID());
-            $this->_connect('write');
-            if (fwrite($this->_conn, $message."\n")) {
-                $this->_sendSignal($this->_pid);
-                $this->_connect('read');
-                $read = array($this->_conn);
-                $write = null;
-                $exc = null;
-                if (stream_select($read, $write, $exc, 5) > 0) {
-                    $reply = fgets($this->_conn);
-                    if ($reply === false) {
-                        throw new IOException('No reply in FIFO');
-                    }
-                    self::$_log->debug(__METHOD__. ' received:'.$reply);
-                    return $this->_parseReply($reply);
-                } else {
-                    throw new IOException('FIFO read timed out!');
-                }
-            } else {
-                throw new IOException('Cannot write FIFO: '.$this->_fifo);
+            try {
+                $this->_write($message."\n");
+            } catch (IOException $e) {
+                self::$_log->warn($e->getMessage());
             }
+            return $this->_parseReply($this->_read());
         } else {
             throw new Exception(
-                sprintf('No such function: %s::%s()'.$this->_client, $name)
+                sprintf('No such function allowed: %s::%s()'.
+                    $this->_client, $name)
             );
         }
     }
@@ -264,6 +277,7 @@ class JsonRpcProxy
      *
      * @param string $reply  JSON text to parse
      * @return mixed
+     * @throws RuntimeException
      */
     private function _parseReply($reply)
     {
@@ -287,11 +301,8 @@ class JsonRpcProxy
         self::$_log->debug('Message: '.$msg);
         $message = json_decode($msg);
         if (is_callable(array($this->_client, $message->method))) {
-            self::$_log->debug(
-                'Method exists: '.
-                get_class($this->_client).
-                '::'.
-                $message->method
+            self::$_log->debug('Method exists: '.
+                get_class($this->_client). '::'. $message->method
             );
             $error = null;
             try {
@@ -304,9 +315,7 @@ class JsonRpcProxy
             }
             if ($message->id !== null) {
                 $response = (string) new JsonRpcResponse(
-                    $result,
-                    $error,
-                    $message->id
+                    $result, $error, $message->id
                 );
             }
         } else {
@@ -318,8 +327,11 @@ class JsonRpcProxy
                 );
         }
         self::$_log->debug('Result is: '.$response);
-        $this->_connect('write');
-        fwrite($this->_conn, $response."\n");
+        try {
+            $this->_write($response);
+        } catch (IOException $e) {
+            self::$_log->warn($e->getMessage());
+        }
     }
 
     /**
@@ -359,9 +371,18 @@ class JsonRpcProxy
         return array('methods' => $pubMethods, 'notifications'=>$pubNotifs);
     }
 
+    /**
+     * Sends SIGUSR1 signal to provided PID if process exists.
+     *
+     * @param integer $pid
+     * @return boolean
+     * @throws Exception
+     */
     protected function _sendSignal($pid)
     {
-        if (is_numeric($pid)) {
+        self::$_log->debug(__METHOD__. ' called');
+        if (is_numeric($pid) && posix_kill($pid, 0)) {
+            self::$_log->debug('Sending SIGUSR1 to '.$pid);
             return posix_kill($pid, SIGUSR1);
         } else {
             throw new Exception('Invalid PID provided: '.$pid);
@@ -369,10 +390,70 @@ class JsonRpcProxy
     }
 
     /**
+     * Watches incoming fifo and if something arriving returns it.
+     *
+     * @return string
+     * @throws IOException
+     * @uses JsonRpcProxy::TIMEOUT
+     */
+    private function _read()
+    {
+        self::$_log->debug(__METHOD__. ' called');
+        $read = array($this->_conn['read']);
+        if (stream_select($read, $w = null, $x= null, self::TIMEOUT, 15) > 0) {
+            if ($reply = fgets($this->_conn['read'])) {
+                self::$_log->debug(__METHOD__. ' received:'.$reply);
+                return $reply;
+            } else {
+                throw new IOException('No reply in FIFO');
+            }
+        } else {
+            throw new IOException('FIFO read timed out!');
+        }
+    }
+
+    /**
+     * Writes message to outgoing fifo and closes it.
+     *
+     * @param string $msg
+     * @return boolean
+     * @throws IOException
+     */
+    private function _write($msg)
+    {
+        self::$_log->debug(__METHOD__. ' called');
+        $this->_connect('write');
+        if( $result = fwrite($this->_conn['write'], $msg)) {
+            self::$_log->debug('Message: '.$msg.' sent');
+            if ($this->_role != 'server') {
+                try {
+                    $this->_sendSignal($this->_pid);
+                } catch (Exception $e) {
+                    self::$_log->warn($e->getMessage());
+                }
+            }
+            $this->_disconnect('write');
+        } else {
+            $this->_disconnect('write');
+            throw new IOException('Cannot write FIFO: '.$this->_fifo);
+        }
+        return $result;
+    }
+
+    /**
      * @return void
      */
     public function __destruct()
     {
-        $this->_disconnect();
+        foreach ($this->_conn as $mode=>$conn) {
+            if (is_resource($conn)) {
+                $this->_disconnect($mode);
+            }
+        }
+        if ($this->_role == 'server') {
+            foreach ($this->_fifo as $fifo) {
+                unlink($fifo);
+            }
+        }
     }
 }
