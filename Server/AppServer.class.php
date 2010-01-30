@@ -107,6 +107,7 @@ class AppServer extends Server
      */
     protected function _configIncludes($includes)
     {
+        self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('Adding include pathes');
         //Adding all pathes listed in config "includes/path"
         //They will not be added to include path before daemon is
@@ -131,6 +132,7 @@ class AppServer extends Server
      */
     protected function _configInstance($instance)
     {
+        self::$_log->debug(__METHOD__.' called');
         //Calling Parent's constructor...
         if (isset($instance->ipc)) {
             self::$_log->debug('Initalizing IPC: '.$instance->ipc);
@@ -188,6 +190,7 @@ class AppServer extends Server
      */
     protected function _configRegistry()
     {
+        self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('Setting up Application registry');
         if ($this->_ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
@@ -210,6 +213,7 @@ class AppServer extends Server
      */
     protected function _configUrimap($conf)
     {
+        self::$_log->debug(__METHOD__.' called');
         self::$_log->debug('Setting up URImaps');
         if (isset($conf->urimap)) {
             foreach ($conf->urimap->children() as $node=>$value) {
@@ -237,9 +241,9 @@ class AppServer extends Server
         $this->_rpcProxy->setup(
             $this,
             array('getAppId', 'getStatus'),
-            array('expell')
+            array('expel')
         );
-        $this->_rpcProxy->init();
+        $this->_rpcProxy->init('server');
         self::$_log->debug('Initalizing socket listening on');
         $this->initSocket();
     }
@@ -254,6 +258,7 @@ class AppServer extends Server
      */
     protected function _setupIncludePathes()
     {
+        self::$_log->debug(__METHOD__.' called');
         foreach ($this->_includes as $path) {
             $currIncludePath = get_include_path();
             if (strpos($currIncludePath, $path) === false) {
@@ -273,6 +278,7 @@ class AppServer extends Server
      */
     protected function _initEngines()
     {
+        self::$_log->debug(__METHOD__.' called');
         foreach ($this->_engines as $name=>$conf) {
             $class = $conf['class'].'Engine';
             require_once $class.'.class.php';
@@ -287,6 +293,7 @@ class AppServer extends Server
      */
     public function getAppId()
     {
+        self::$_log->debug(__METHOD__.' called');
         return $this->_appID;
     }
 
@@ -303,7 +310,7 @@ class AppServer extends Server
         if ($this->_accepting === true) {
             $this->_listen();
         }
-        usleep(100);
+        usleep(400);
     }
 
     /**
@@ -320,7 +327,7 @@ class AppServer extends Server
     private function _listen()
     {
         //Function usually called every 200 microsec
-        if ($conn = @stream_socket_accept($this->_socket)) {
+        if ($conn = @stream_socket_accept($this->_socket, 0)) {
             self::$_log->debug('Connection accepted, spawning new child');
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process
@@ -378,7 +385,7 @@ class AppServer extends Server
                 'Unable to open socket:'."$errMsg ($errNum)");
         } else {
             self::$_log->debug('Setting listening socket to non blocking mode');
-            stream_set_blocking($this->_socket, 0);
+            stream_set_blocking($this->_socket, false);
             $this->_accepting = true;
             return true;
         }
@@ -438,8 +445,9 @@ class AppServer extends Server
     public function onExpel()
     {
         self::$_log->debug(__METHOD__.' called');
+        $this->_accepting = false;
         if (is_resource($this->_socket)) {
-            self::$_log->info(
+            self::$_log->debug(
                 'closing down socket on '.
                 $this->_address.
                 ':'.
