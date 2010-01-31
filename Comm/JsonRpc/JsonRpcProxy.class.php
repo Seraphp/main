@@ -183,12 +183,12 @@ class JsonRpcProxy
         self::$_log->debug('Mode: '.$mode);
         switch ($mode) {
             case 'read':
-        	    if ($this->_role == 'client') {
+                if ($this->_role == 'client') {
                     $fifo = $this->_fifo['out'];
                 } else {
                     $fifo = $this->_fifo['in'];
                 }
-        	   break;
+                break;
             case 'write':
                 if ($this->_role == 'client') {
                     $fifo = $this->_fifo['in'];
@@ -265,8 +265,9 @@ class JsonRpcProxy
             return $this->_parseReply($this->_read());
         } else {
             throw new Exception(
-                sprintf('No such function allowed: %s::%s()'.
-                    $this->_client, $name)
+                sprintf(
+                    'No such function allowed: %s::%s()'. $this->_client, $name
+                )
             );
         }
     }
@@ -301,8 +302,9 @@ class JsonRpcProxy
         self::$_log->debug('Message: '.$msg);
         $message = json_decode($msg);
         if (is_callable(array($this->_client, $message->method))) {
-            self::$_log->debug('Method exists: '.
-                get_class($this->_client). '::'. $message->method
+            self::$_log->debug(
+                'Method exists: '. get_class($this->_client). '::'
+                .$message->method
             );
             $error = null;
             try {
@@ -400,7 +402,7 @@ class JsonRpcProxy
     {
         self::$_log->debug(__METHOD__. ' called');
         $read = array($this->_conn['read']);
-        if (stream_select($read, $w = null, $x= null, self::TIMEOUT, 15) > 0) {
+        if (stream_select($read, $w = null, $x = null, self::TIMEOUT, 15) > 0) {
             if ($reply = fgets($this->_conn['read'])) {
                 self::$_log->debug(__METHOD__. ' received:'.$reply);
                 return $reply;
@@ -423,7 +425,7 @@ class JsonRpcProxy
     {
         self::$_log->debug(__METHOD__. ' called');
         $this->_connect('write');
-        if( $result = fwrite($this->_conn['write'], $msg)) {
+        if ( $result = fwrite($this->_conn['write'], $msg)) {
             self::$_log->debug('Message: '.$msg.' sent');
             if ($this->_role != 'server') {
                 try {
