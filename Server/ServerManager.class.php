@@ -63,7 +63,8 @@ class ServerManager
             self::write('Shuting down old: '.$appID);
             $result = $oldProcess->expel();
             if ($result == true) {
-                posix_kill(self::$_reg->getPid($appID), SIGTERM);                self::writeln('...OK');
+                posix_kill(self::$_reg->getPid($appID), SIGTERM);
+                self::writeln('...OK');
                 self::$_reg->removeApp($appID);
                 self::writeln('...OK');
             } else {
