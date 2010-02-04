@@ -18,7 +18,7 @@ require_once 'Exceptions/IOException.class.php';
  *
  * @package Server
  * @subpackage Registry
- * @todo Debug why "compress.zlib://" and suh protocols are not working
+ * @todo Debug why "compress.zlib://" and such protocols are not working
  */
 class PackedFileDataStore implements StoreEngine
 {
@@ -36,6 +36,8 @@ class PackedFileDataStore implements StoreEngine
      */
     private $_fp = null;
 
+    private $_dirty = false;
+
     /**
      * Calls init() if a file is provided
      * @see init()
@@ -51,7 +53,7 @@ class PackedFileDataStore implements StoreEngine
             $this->protocol = $protocol;
         }
         if ($file !== null) {
-            $this->init($file);
+            $this->setUp($file);
         }
     }
 
@@ -62,11 +64,13 @@ class PackedFileDataStore implements StoreEngine
      * @return true  On success
      * @throws IOException
      */
-    function init($file = null)
+    function setUp($file = null)
     {
         $this->setPath($file);
         touch($this->_file);
-        return $this->_open();
+        $this->_open();
+        $this->_close();
+        return true;
     }
 
     /**
@@ -81,7 +85,7 @@ class PackedFileDataStore implements StoreEngine
     protected function _open()
     {
         $this->_fp = fopen($this->protocol.$this->_file, 'r+');
-        if (!$this->_fp) {
+        if (!is_resource($this->_fp)) {
             throw new IOException('Cannot open file '.$this->_file);
         }
         if (flock($this->_fp, LOCK_EX) === false) {
@@ -95,7 +99,9 @@ class PackedFileDataStore implements StoreEngine
      */
     function load()
     {
-        rewind($this->_fp);
+        if (!is_resource($this->_fp)) {
+            $this->_open();
+        }
         $data = fgets($this->_fp);
         if (!feof($this->_fp)) {
             if ($data === false) {
@@ -117,32 +123,24 @@ class PackedFileDataStore implements StoreEngine
      */
     function save($data)
     {
-        rewind($this->_fp);
+        if (!is_resource($this->_fp)) {
+            $this->_open();
+        }
         $res = fwrite($this->_fp, base64_encode(serialize($data)));
         if ($res === false) {
             throw new IOException('Error when writing file '.$this->_file);
         }
         fflush($this->_fp);
+        $this->_close();
         return true;
     }
 
-    function close()
+    protected function _close()
     {
         if (is_resource($this->_fp)) {
             flock($this->_fp, LOCK_UN);
             fclose($this->_fp);
         }
-    }
-
-    /**
-     * Calls save() and release file when called
-     * @see save()
-     *
-     * @return void
-     */
-    function __destruct()
-    {
-        $this->close();
     }
 
     /**
@@ -156,7 +154,7 @@ class PackedFileDataStore implements StoreEngine
     function setPath($path)
     {
         clearstatcache();
-        if (empty($path)) {
+        if (null === $path) {
             $path = tempnam(getcwd(), self::FN_PREFIX);
         } else {
             $path = $this->_getAbsolutePath($path);

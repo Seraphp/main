@@ -34,12 +34,6 @@ class DataStore
      * @var StoreEngine
      */
     protected $_engine = null;
-    /**
-     * Enter description here...
-     *
-     * @var boolean
-     */
-    protected $_dirty = false;
 
     /**
      * Overwrite flag for existing data writing in the registry
@@ -75,7 +69,9 @@ class DataStore
     {
         if (isset($this->$key)) {
             unset($this->_store[$key]);
-            $this->_dirty = true;
+            if (isset($this->_engine)) {
+                $this->_engine->save($this->_store);
+            }
         }
     }
 
@@ -96,13 +92,17 @@ class DataStore
         }
         if ($this->_overwrite === true) {
             $this->_store[$key]=$value;
-            $this->_dirty = true;
+            if (isset($this->_engine)) {
+                $this->_engine->save($this->_store);
+            }
         } else {
             if (isset($this->$key) === true) {
                  return;
             } else {
                 $this->_store[$key]=$value;
-                $this->_dirty = true;
+                if (isset($this->_engine)) {
+                    $this->_engine->save($this->_store);
+                }
             }
         }
         return;
@@ -138,7 +138,7 @@ class DataStore
     public function setEngine(StoreEngine $engine, $savePath = null)
     {
         $this->_engine = $engine;
-        $this->_engine->init($savePath);
+        $this->_engine->setUp($savePath);
         $this->_store = (array) $this->_engine->load();
     }
 
@@ -146,14 +146,4 @@ class DataStore
     {
         return get_class($this->_engine);
     }
-
-    public function __destruct()
-    {
-        if (isset($this->_engine) && $this->_dirty == true) {
-            $this->_engine->save($this->_store);
-            unset($this->_engine);
-            $this->_dirty = false;
-        }
-    }
-
 }

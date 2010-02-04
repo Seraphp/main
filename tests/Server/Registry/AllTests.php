@@ -5,7 +5,6 @@
  * @version $Id$
  * @filesource
  */
-// @codeCoverageIgnoreStart
 require_once 'PHPUnit/Framework.php';
 require_once 'PackedFileDataStoreTest.php';
 require_once 'DataStoreTest.php';
@@ -26,4 +25,4 @@ class Registry_AllTests
         $suite->addTestSuite('AppServerRegistryTest');
         return $suite;
     }
-}// @codeCoverageIgnoreEnd
+}

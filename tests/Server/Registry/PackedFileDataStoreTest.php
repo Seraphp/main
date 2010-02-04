@@ -14,8 +14,9 @@ require_once 'vfsStream/vfsStream.php';
 class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
 {
 
-    private $_testData;
-    private $_createdFiles;
+    private $_testData = null;
+    private $_createdFiles = null;
+    private $_store = null;
 
     function setUp()
     {
@@ -27,56 +28,57 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
 
     function testInitNoPath()
     {
-        $store = new PackedFileDataStore();
-        $this->assertTrue($store->init());
-        $this->assertNotEquals('', $store->getPath());
-        $this->assertFileExists($store->getPath());
-        array_push($this->_createdFiles, $store->getPath());
+        $this->_store = new PackedFileDataStore();
+        $this->assertTrue($this->_store->setUp());
+        $this->assertNotEquals('', $this->_store->getPath());
+        $this->assertFileExists($this->_store->getPath());
+        array_push($this->_createdFiles, $this->_store->getPath());
     }
 
     function testInitWithPath()
     {
-        $store = new PackedFileDataStore('./testDataFile.gz');
-        $this->assertEquals(realpath('./testDataFile.gz'), $store->getPath());
-        $this->assertFileExists($store->getPath());
-        array_push($this->_createdFiles, $store->getPath());
+        $this->_store = new PackedFileDataStore('./testDataFile.gz');
+        $this->assertEquals(realpath('./testDataFile.gz'), $this->_store->getPath());
+        $this->assertFileExists($this->_store->getPath());
+        array_push($this->_createdFiles, $this->_store->getPath());
     }
 
     function testSave()
     {
-        $store = new PackedFileDataStore();
-        $store->init();
-        $this->assertTrue($store->save($this->_testData));
+        $this->_store = new PackedFileDataStore();
+        $this->_store->setUp();
+        $this->assertTrue($this->_store->save($this->_testData));
         $this->assertThat(
-            $this->fileExists($store->getPath()),
+            $this->fileExists($this->_store->getPath()),
             $this->logicalAnd(),
-            filesize($store->getPath()),
+            filesize($this->_store->getPath()),
             $this->greaterThan(0)
         );
-        array_push($this->_createdFiles, $store->getPath());
+        array_push($this->_createdFiles, $this->_store->getPath());
     }
 
     function testLoadWithNoFile()
     {
-        $store = new PackedFileDataStore();
-        $store->init();
-        $tempFile = $store->getPath();
-        array_push($this->_createdFiles, $store->getPath());
-        $this->assertTrue($store->save($this->_testData));
-        $this->assertEquals($this->_testData, $store->load($tempFile));
+        $this->_store = new PackedFileDataStore();
+        $this->_store->setUp();
+        $tempFile = $this->_store->getPath();
+        array_push($this->_createdFiles, $this->_store->getPath());
+        $this->assertTrue($this->_store->save($this->_testData));
+        $this->assertEquals($this->_testData, $this->_store->load($tempFile));
     }
 
     function testLoadWithFile()
     {
-        $store = new PackedFileDataStore();
-        $store->init('./test1.gz');
-        array_push($this->_createdFiles, $store->getPath());
-        $this->assertTrue($store->save($this->_testData));
-        $this->assertEquals($this->_testData, $store->load('./test1.gz'));
+        $this->_store = new PackedFileDataStore();
+        $this->_store->setUp('./test1.gz');
+        array_push($this->_createdFiles, $this->_store->getPath());
+        $this->assertTrue($this->_store->save($this->_testData));
+        $this->assertEquals($this->_testData, $this->_store->load('./test1.gz'));
     }
 
     function tearDown()
     {
+        unset($this->_store);
         foreach ($this->_createdFiles as $file) {
             if (file_exists($file)) unlink($file);
         }

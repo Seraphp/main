@@ -23,7 +23,7 @@ interface StoreEngine
      * @param resource $resource
      * @return boolean
      */
-    public function init($resource = null);
+    public function setUp($resource = null);
     /**
      * Loads the given resource and returns content
      *
@@ -37,10 +37,4 @@ interface StoreEngine
      * @return boolean
      */
     public function save($storeData);
-    /**
-     * Close the datastore
-     *
-     * @return void
-     */
-    public function close();
 }
