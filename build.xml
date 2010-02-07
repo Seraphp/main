@@ -44,12 +44,12 @@
             <arg line="--report=checkstyle --standard=zend ."/>
         </exec>
         </target>
-    <!-- target name="phpcpd">
+    <target name="phpcpd" depends="prepare">
         <exec dir="${basedir}" executable="phpcpd" failonerror="false">
-            <arg line="log-pmd=${basedir}/build/logs/pmd-cpd.xml
-                exclude=${basedir}/source/stests/."/>
+            <arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml
+                --exclude ${basedir}/source/tests/ ."/>
         </exec>
-    </target -->
+    </target>
     <target name="pdepend" depends="prepare">
         <exec dir="${basedir}" executable="pdepend" failonerror="false">
             <arg line="--phpunit-xml=${basedir}/build/logs/pdepend.xml 
