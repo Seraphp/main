@@ -83,7 +83,7 @@
         failonerror="off">
  		<arg line="${basedir}/source/ 
  			xml 
- 			codesize 
+ 			codesize,unusedcode 
  			--reportfile ${basedir}/build/logs/phpunit.pmd.xml
  			--ignore tests/"
  		/>
