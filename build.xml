@@ -70,14 +70,26 @@
         executable="phpunit"
         failonerror="on">
    <arg line="--verbose
-              --log-pmd ${basedir}/build/logs/phpunit.pmd.xml 
               --log-junit ${basedir}/build/logs/phpunit.xml
               --coverage-clover ${basedir}/build/logs/phpunit.coverage.xml
               --coverage-html ${basedir}/build/coverage
               tests/AllTests.php"/>
   </exec>
  </target>
+	
+ <target name="pmd">
+ 	<exec dir="${basedir}/source/"
+ 	    executable="phpmd"
+        failonerror="off">
+ 		<arg line="${basedir}/source/ 
+ 			xml 
+ 			codesize 
+ 			--reportfile ${basedir}/build/logs/phpunit.pmd.xml
+ 			--ignore tests/"
+ 		/>
+ 		</exec>
+ </target>
 
  <target name="build"
-         depends="clean,prepare,checkout,phpcs,phpcpd,pdepend,PHPDocs,phpunit"/>
+         depends="clean,prepare,checkout,phpcs,phpcpd,pdepend,pmd,PHPDocs,phpunit"/>
 </project>
