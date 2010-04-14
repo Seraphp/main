@@ -452,7 +452,7 @@ class JsonRpcProxy
                 $this->_disconnect($mode);
             }
         }
-        if ($this->_role == 'server') {
+        if ($this->_role == 'server' && $this->_client->getRole() == 'parent') {
             foreach ($this->_fifo as $fifo) {
                 unlink($fifo);
             }

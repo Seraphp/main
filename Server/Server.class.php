@@ -270,8 +270,8 @@ abstract class Server implements Daemon
                     //returns own pid
                     return $this->_pid;
                 } else {
-                    $this->_pid = getmypid();
                     //parent process
+                    $this->_pid = getmypid();
                     $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
                     self::$_log->debug($pid." spawned\n");
                     //returns child's pid
@@ -306,6 +306,7 @@ abstract class Server implements Daemon
         self::$_log->debug(__METHOD__.' called');
         $this->onExpel();
         $this->daemonize = false;
+        $this->_shutdown();
         return true;
     }
 
@@ -428,22 +429,6 @@ abstract class Server implements Daemon
     abstract protected function sigchldCallback($pid, $status);
 
     /**
-     * Destructor method
-     *
-     * If we are the parent process and closing, will call expell();
-     * @see Server::expell()
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        self::$_log->debug(__METHOD__.' called');
-        if ($this->_role === 'parent') {
-            $this->_shutdown();
-        }
-    }
-
-    /**
      * Gives back status of the Server instance
      *
      * @return string
@@ -452,6 +437,12 @@ abstract class Server implements Daemon
     {
         self::$_log->debug(__METHOD__.' called');
         return $this->status;
+    }
+
+    public function getRole()
+    {
+        self::$_log->debug(__METHOD__.' called');
+        return $this->_role;
     }
 
     abstract protected function onSummon();

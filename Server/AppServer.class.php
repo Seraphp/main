@@ -327,33 +327,40 @@ class AppServer extends Server
     private function _listen()
     {
         //Function usually called every 200 microsec
-        if ($conn = @stream_socket_accept($this->_socket, 0)) {
+        $read = array($this->_socket);
+        if (socket_select($read, $w=array(), $e=array(), 0)) {
+        //if ($conn = @socket_accept($this->_socket)) {
             self::$_log->debug('Connection accepted, spawning new child');
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process
+                $conn = socket_accept($this->_socket);
+                if (false === $conn) {
+                    throw new IOException(socket_strerror(socket_last_error()));
+                }
                 $this->_accepting = false;
-                stream_set_blocking($conn, 0);
+                socket_set_nonblock($conn);
                 try {
                     $result = $this->process(
-                        RequestFactory::create($conn),
-                        $this->_timeout
+                        RequestFactory::create($conn), $this->_timeout
                     );
                 } catch (IOException $e) {
                     self::$_log->alert('Error: '.$e->getMessage());
-                    stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
+                    //stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
+                    socket_shutdown($conn, 2);
                     $result = 0;
                 } catch (Exception $e) {
                     self::$_log->alert('Error: '.$e->getMessage());
-                    stream_socket_sendto(
+                    //stream_socket_sendto(
+                    fwrite(
                         $conn,
                         'HTTP/1.0 500 Internal Server Error'
                     );
                     $result = 1;
                 }
-                stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
+                //stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
+                socket_shutdown($conn, 2);
                 exit($result);
             }
-            stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
         }
         return;
     }
@@ -369,7 +376,7 @@ class AppServer extends Server
     private function initSocket()
     {
         self::$_log->debug(__METHOD__.' called');
-        $this->_socket = stream_socket_server(
+        /*$this->_socket = stream_socket_server(
             sprintf(
                 '%s://%s:%s',
                 'tcp',
@@ -388,7 +395,23 @@ class AppServer extends Server
             stream_set_blocking($this->_socket, false);
             $this->_accepting = true;
             return true;
+        }*/
+        $this->_socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        if (false === $this->_socket) {
+            throw new IOException(socket_strerror(socket_last_error()));
         }
+        if (false === socket_bind($this->_socket, $this->_address, $this->_port)) {
+            throw new IOException(socket_strerror(socket_last_error()));
+        }
+        self::$_log->debug('Setting listening socket to non blocking mode');
+        /*if (false === socket_set_nonblock($this->_socket)) {
+            throw new IOException(socket_strerror(socket_last_error()));
+        }*/
+        if (false === socket_listen($this->_socket)) {
+            throw new IOException(socket_strerror(socket_last_error()));
+        }
+        $this->_accepting = true;
+        return true;
     }
 
     /**
@@ -453,7 +476,8 @@ class AppServer extends Server
                 ':'.
                 $this->_port
             );
-            stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
+            //stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
+            socket_shutdown($this->_socket, 2);
         }
     }
 

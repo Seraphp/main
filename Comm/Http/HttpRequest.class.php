@@ -111,11 +111,11 @@ class HttpRequest implements Request, Observable
      * @param $sock (optional)
      * @return HttpRequest
      */
-    public function __construct( $sock = null )
+    public function __construct($sock = null)
     {
         self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
-        if ( $sock !== null && is_resource($sock) ) {
+        if ($sock !== null && is_resource($sock)) {
          //If parameter is a resource, it means the class will represent a
          //received request
             $this->_socket = $sock;
@@ -139,14 +139,14 @@ class HttpRequest implements Request, Observable
         self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
             $read = array($this->_socket);
-            if (stream_select(
+            //if (stream_select(
+            if (socket_select(
                 $read, $write = null, $except = null, $this->timeout, 200
             ) < 1) {
                 throw new IOException('Connection timed out!');
             }
             self::$_log->debug('Data arriving on socket');
-            while ($this->_buffer =
-                    fread($this->_socket, 8)) {
+            while ($this->_buffer = socket_read($this->_socket, 8, PHP_BINARY_READ)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
                      $this->_save();
                      continue;
@@ -159,7 +159,7 @@ class HttpRequest implements Request, Observable
             }
             $this->message = trim($this->message);
             //Body also arrived, searching for post
-            if ( $this->method == 'POST' ) {
+            if ($this->method == 'POST') {
                 $this->postParams = $this->_params2array($this->message);
             }
         }
@@ -387,12 +387,12 @@ class HttpRequest implements Request, Observable
     {
         self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
+            $settings['messageBody'] = $msg;
             $response = HttpFactory::create(
                 'response',
                 $this->_socket,
                 $settings
             );
-            $response->messageBody = $msg;
             return $response;
         } else {
             throw new HttpException(

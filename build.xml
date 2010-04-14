@@ -17,25 +17,25 @@
         </delete>
     </target>
     <target name="prepare" depends="clean">
-        <mkdir dir="${basedir}/build/logs"/>
-        <mkdir dir="${basedir}/build/api"/>
-        <mkdir dir="${basedir}/build/coverage"/>
-          <mkdir dir="${basedir}/build/graph"/>
-        <mkdir dir="${basedir}/build/php-code-browser"/>
+        <mkdir dir="${basedir}/build/logs" />
+        <mkdir dir="${basedir}/build/api" />
+        <mkdir dir="${basedir}/build/coverage" />
+        <mkdir dir="${basedir}/build/graph" />
+        <mkdir dir="${basedir}/build/php-code-browser" />
     </target>
     <target name="PHPDocs" depends="prepare">
         <exec executable="phpdoc" dir="${basedir}/source">
-            <arg line="-ct type 
-                -ue on 
+            <arg line="-ct type
+                -ue on
                 -t ${basedir}/build/api
                 -tb /usr/share/php/data/phpUnderControl/data/phpdoc 
-                -o HTML:Phpuc:phpuc 
+                -o HTML:Phpuc:phpuc
                 -d ./
                 -pp on
                 -dc Seraphp
                 -dn Seraphp
                 -i tests/
-                -s on" /> 
+                -s on" />
         </exec>
     </target>
     <target name="phpcs" depends="prepare">
@@ -75,5 +75,5 @@
         </exec>
     </target>
     <target name="build"
-         depends="clean,prepare,checkout,phpcs,pdepend,pmd,PHPDocs,phpunit"/>
+         depends="clean,prepare,checkout,phpcs,pdepend,pmd,PHPDocs,phpunit" />
 </project>

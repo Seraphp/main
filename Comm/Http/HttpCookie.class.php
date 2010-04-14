@@ -19,16 +19,31 @@
  */
 class HttpCookie
 {
+    /**
+     * Constans for HttpCookie::$type. Means to use Set-Cookie header
+     */
+    const COOKIE_TYPE_RFC2109 = 1;
+    /**
+     * Constans for HttpCookie::$type. Means to use Set-Cookie2 header
+     */
+    const COOKIE_TYPE_RFC2965 = 2;
+
+    public $type = COOKIE_TYPE_RFC2109;
     public $name = '';
     public $value = null;
     public $expireOn = null;
     public $path = null;
     public $domain = null;
+    public $comment = null;
+    public $commentUrl = null;
+    public $discard = false;
     public $secure = false;
-    public $onlyHTTP = false;
+    public $porlist = array();
+    public $version = 1;
 
-    public function __construct( $name, $value=false, DateTime $expireOn = null,
-        $path='/', $domain=null, $secure=false, $onlyHTTP=false)
+    public function __construct($name, $value=false, DateTime $expireOn = null,
+        $path='/', $domain=null, $secure=false, $comment=null,
+        $commentUrl = null, $discard = false, $portList=array())
     {
         $this->name = $name;
         $this->value = $value;
@@ -36,14 +51,23 @@ class HttpCookie
         $this->path = $path;
         $this->domain = $domain;
         $this->secure = $secure;
-        $this->onlyHTTP = $onlyHTTP;
+        $this->comment = $comment;
+        $this->commentUrl = $commentUrl;
+        $this->discard = $discard;
+        $this->portList = $portList;
     }
 
     public function __toString()
     {
         $details = array();
         if (isset($this->expireOn)) {
-            $details[] = 'Max-Age='.$date->format('U')-time();
+            if ($this->type == COOKIE_TYPE_RFC2109) {
+                $details[] = 'Max-Age=' .
+                    $this->expireOn->format(DateTime::COOKIE);
+            } else {
+                $details[] = 'Max-Age=' .
+                    $this->expireOn->diff(new DateTime('now'))->format('%r%s');
+            }
         } else {
             $details[] = 'Max-Age=0';
         }
@@ -56,8 +80,12 @@ class HttpCookie
         if ($this->secure) {
             $details[] = 'Secure';
         }
+        if ($this->discard) {
+            $details[] = 'Discard';
+        }
         return sprintf(
-            'Set-Cookie:%s=%s;%s',
+            '%s:%s=%s;%s',
+            ($this->type == COOKIE_TYPE_RFC2965)?'Set-Cookie2':'Set-Cookie',
             $this->name,
             $this->value,
             implode(';', $details)

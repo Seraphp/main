@@ -43,13 +43,15 @@ class RequestFactory
         $read = array($socket);
         $write = null;
         $except = null;
-        if (stream_select($read, $write, $except, $timeout, 200) < 1) {
+        //if (stream_select($read, $write, $except, $timeout, 200) < 1) {
+        if (socket_select($read, $write, $except, $timeout, 200) < 1) {
             throw new IOException('Connection timed out!');
         }
         self::$_log->debug('Data arriving on socket');
         //using socket_recv with STREAM_PEEK to examin the first part
         //of the message without removing it form the socket.
-        $result = stream_socket_recvfrom($socket, 1500, STREAM_PEEK);
+        //$result = stream_socket_recvfrom($socket, 1500, STREAM_PEEK);
+        socket_recv($socket, $result, 1500, STREAM_PEEK);
         self::$_log->debug("Result: ".$result);
         if ($result !== null) {
             if (empty($result)) {
@@ -78,7 +80,7 @@ class RequestFactory
     {
         self::$_log = LogFactory::getInstance();
         self::$_log->debug(__METHOD__.' called');
-        if ( preg_match('/^(GET|POST|HEAD) (.+) HTTP\/(\d\.\d)/', $data) ) {
+        if (preg_match('/^(GET|POST|HEAD) (.+) HTTP\/(\d\.\d)/', $data)) {
             self::$_log->debug('Data is HTTP');
             return 'http';
         } else {

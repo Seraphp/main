@@ -30,10 +30,11 @@ class HttpResponse
     public $cookies = array();
     public $contentType = 'text/plain';
     public $statusCode = 200;
-    public $messageBody = '';
+    public $messageBody = null;
     public $httpVersion = '1.x';
     private $_socket = null;
     public $toBeSend = true;
+    public $timeout = 30;
 
     public function __construct($socket = null)
     {
@@ -68,7 +69,8 @@ class HttpResponse
             $buffer = $this->statusLine."\r\n";
             $buffer .= $this->_getHeaders()."\r\n";
             self::$_log->debug('Sending out head part');
-            if (fwrite($this->_socket, $buffer."\r\n") === false) {
+            //if (stream_socket_sendto($this->_socket, $buffer."\r\n") === false) {
+            if (socket_write($this->_socket, $buffer."\r\n") === false) {
                 throw new IOException('Cannot send out header part');
             }
             if (!empty($this->messageBody)) {
@@ -78,7 +80,8 @@ class HttpResponse
                     self::$_log->warn($e->getMessage());
                 }
             }
-            stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
+            //stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
+            socket_shutdown($this->_socket, 2);
         }
     }
 
@@ -132,21 +135,21 @@ class HttpResponse
     {
         self::$_log->debug('Sending message body');
         if (is_resource($this->messageBody)) {
-            if (stream_copy_to_stream(
-                $this->messageBody, $this->_socket
-            ) === false) {
-                throw new IOException('Cannot send message body!');
-            }
-            if (fwrite($this->_socket, "\r\n") === false) {
-                throw new IOException('Cannot close message body!');
+            /*if (stream_copy_to_stream($this->messageBody, $this->_socket) === false) {
+                throw new IOException('Cannot send file in body!');
+            } else {
+                self::$_log->debug($size.' bytes sent');
+            }*/
+            while (!feof($this->messageBody)) {
+                socket_write($this->_socket, fread($this->messageBody, 1024),1024);
             }
         } else {
-            if (fwrite(
-                $this->_socket, $this->messageBody."\r\n"
-            ) === false) {
+            //if (stream_socket_sendto($this->_socket, $this->messageBody."\r\n") === false) {
+            if (socket_write($this->_socket, $this->messageBody) === false) {
                 throw new IOException('Cannot send message body!');
             }
         }
+        socket_write($this->_socket, "\r\n");
     }
 
     private function _getHeaders()

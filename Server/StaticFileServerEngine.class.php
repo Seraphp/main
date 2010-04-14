@@ -46,18 +46,16 @@ class StaticFileServerEngine implements AppEngine
                 PATH_SEPARATOR,
                 DIRECTORY_SEPARATOR
             );
-        $resp = $req->respond('');
         self::$_log->debug('Serving file: '.$truePath);
         if (file_exists($truePath)) {
             $returnCode = 0;
-            $resp->messageBody = fopen($truePath, 'rb');
-            $resp->send();
+            $resp = $req->respond(fopen($truePath, 'rb'));
         } else {
             $returnCode = 1;
-            $resp->messageBody = 'File not found';
+            $resp = $req->respond('File not found');
             $resp->statusCode = 404;
-            $resp->send();
         }
+        $resp->send();
         return $returnCode;
     }
 }
