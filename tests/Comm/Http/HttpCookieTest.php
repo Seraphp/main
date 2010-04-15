@@ -31,7 +31,10 @@ class HttpCookieTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('/', $cookie->path);
         $this->assertEquals(null, $cookie->domain);
         $this->assertFalse($cookie->secure);
-        $this->assertFalse($cookie->onlyHTTP);
+        $this->assertEquals(null, $cookie->comment);
+        $this->assertEquals(null, $cookie->commentUrl);
+        $this->assertFalse($cookie->discard);
+        $this->assertEquals(array(), $cookie->portList);
     }
 
     function testToString()

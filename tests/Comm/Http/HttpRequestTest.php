@@ -46,13 +46,13 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
             $this->_sep.
             $this->_postMessage.
             $this->_sep;
-        $this->_sockets = stream_socket_pair(
+        if (socket_create_pair(
             (strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
             STREAM_PF_INET:STREAM_PF_UNIX),
             STREAM_SOCK_STREAM,
-            STREAM_IPPROTO_IP
-        );
-        if ($this->_sockets === false) {
+            STREAM_IPPROTO_IP,
+            $this->_sockets
+        ) === false) {
             $this->fail(socket_strerror(socket_last_error()));
         }
     }
@@ -65,14 +65,14 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
 
     function testConstructorWithGet()
     {
-        if (fwrite(
+        if (socket_write(
             $this->_sockets[1],
             $this->_requestString['get'],
             strlen($this->_requestString['get'])
         ) === false) {
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
-        stream_socket_shutdown($this->_sockets[1], STREAM_SHUT_RDWR);
+        socket_shutdown($this->_sockets[1], 2);
         $request = new HttpRequest($this->_sockets[0]);
         $this->assertTrue($request->isReceived);
         $this->assertEquals('1.1', $request->httpVersion);
@@ -101,14 +101,14 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
     function testConstructorWithPost()
     {
 
-        if (fwrite(
+        if (socket_write(
             $this->_sockets[1],
             $this->_requestString['post'],
             strlen($this->_requestString['post'])
         ) === false) {
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
-        stream_socket_shutdown($this->_sockets[1], STREAM_SHUT_RDWR);
+        socket_shutdown($this->_sockets[1], 2);
         $request = new HttpRequest($this->_sockets[0]);
         $this->assertTrue($request->isReceived);
         $this->assertEquals('1.1', $request->httpVersion);
@@ -127,14 +127,14 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
 
     function testResponse()
     {
-        if (fwrite(
+        if (socket_write(
             $this->_sockets[1],
             $this->_requestString['get'],
             strlen($this->_requestString['get'])
         ) === false) {
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
-        stream_socket_shutdown($this->_sockets[1], STREAM_SHUT_RDWR);
+        socket_shutdown($this->_sockets[1], 2);
         $request = new HttpRequest($this->_sockets[0]);
         $this->assertTrue($request->isReceived);
         $this->assertThat(
@@ -151,14 +151,14 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
         );
         $obs->expects($this->any())->method('update');
 
-        if (fwrite(
+        if (socket_write(
             $this->_sockets[1],
             $this->_requestString['get'],
             strlen($this->_requestString['get'])
         ) === false) {
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
-        stream_socket_shutdown($this->_sockets[1], STREAM_SHUT_RDWR);
+        socket_shutdown($this->_sockets[1], 2);
         $request = new HttpRequest($this->_sockets[0]);
         $this->assertEquals('mockListener', $request->attach($obs));
         $this->assertType('int', $request->getState());
@@ -208,7 +208,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
     {
         foreach ($this->_sockets as $socket) {
             if (is_resource($socket)) {
-                stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
+                socket_shutdown($socket, 2);
             }
         }
     }

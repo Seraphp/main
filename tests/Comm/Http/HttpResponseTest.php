@@ -23,13 +23,13 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase
     {
         $this->_bodyFile =realpath(getcwd().'/tests/test.txt');
         $this->_body = file_get_contents($this->_bodyFile);
-        $this->_sockets = stream_socket_pair(
+        if (socket_create_pair(
             (strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
             STREAM_PF_INET:STREAM_PF_UNIX),
             STREAM_SOCK_STREAM,
-            STREAM_IPPROTO_IP
-        );
-        if ($this->_sockets === false) {
+            STREAM_IPPROTO_IP,
+            $this->_sockets
+        ) === false) {
             $this->fail(socket_strerror(socket_last_error()));
         }
         $this->_hash = md5($this->_body);
@@ -82,7 +82,7 @@ MSG;
         $resp = new HttpResponse($this->_sockets[0]);
         $resp->messageBody = $this->_body;
         $resp->send();
-        $result = fread($this->_sockets[1], 2048);
+        $result = socket_read($this->_sockets[1], 2048);
         $this->assertEquals($this->_http, $result);
     }
 
@@ -92,7 +92,7 @@ MSG;
         $bodyRs = fopen($this->_bodyFile, "r");
         $resp->messageBody = $bodyRs;
         $resp->send();
-        $result = fread($this->_sockets[1], 2048);
+        $result = socket_read($this->_sockets[1], 2048);
         $this->assertEquals($this->_httpLastModified, $result);
     }
 
@@ -100,7 +100,7 @@ MSG;
     {
         foreach ($this->_sockets as $socket) {
             if (is_resource($socket)) {
-                stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
+                socket_shutdown($socket, 2);
             }
         }
     }
