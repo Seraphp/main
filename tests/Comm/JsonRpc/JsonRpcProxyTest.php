@@ -105,4 +105,9 @@ class RunningClass
     {
         return 'running';
     }
+
+    public function getRole()
+    {
+        return 'parent';
+    }
 }
