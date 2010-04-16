@@ -30,7 +30,7 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase
             'Host:example.com'.
             $this->_sep.
             $this->_sep;
-        if(socket_create_pair(
+        if (socket_create_pair(
             (strtoupper(substr(PHP_OS, 0, 3))=='WIN'?
             STREAM_PF_INET:STREAM_PF_UNIX
             ),

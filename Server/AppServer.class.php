@@ -328,7 +328,7 @@ class AppServer extends Server
     {
         //Function usually called every 200 microsec
         $read = array($this->_socket);
-        if (socket_select($read, $w=array(), $e=array(), 0)) {
+        if (socket_select($read, $w = array(), $e = array(), 0)) {
         //if ($conn = @socket_accept($this->_socket)) {
             self::$_log->debug('Connection accepted, spawning new child');
             $this->spawn();
@@ -400,7 +400,9 @@ class AppServer extends Server
         if (false === $this->_socket) {
             throw new IOException(socket_strerror(socket_last_error()));
         }
-        if (false === socket_bind($this->_socket, $this->_address, $this->_port)) {
+        if (false === socket_bind(
+            $this->_socket, $this->_address, $this->_port
+        )) {
             throw new IOException(socket_strerror(socket_last_error()));
         }
         self::$_log->debug('Setting listening socket to non blocking mode');

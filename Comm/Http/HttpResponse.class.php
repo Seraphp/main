@@ -69,7 +69,7 @@ class HttpResponse
             $buffer = $this->statusLine."\r\n";
             $buffer .= $this->_getHeaders()."\r\n";
             self::$_log->debug('Sending out head part');
-            //if (stream_socket_sendto($this->_socket, $buffer."\r\n") === false) {
+         //if (stream_socket_sendto($this->_socket, $buffer."\r\n") === false) {
             if (socket_write($this->_socket, $buffer."\r\n") === false) {
                 throw new IOException('Cannot send out header part');
             }
@@ -135,16 +135,19 @@ class HttpResponse
     {
         self::$_log->debug('Sending message body');
         if (is_resource($this->messageBody)) {
-            /*if (stream_copy_to_stream($this->messageBody, $this->_socket) === false) {
-                throw new IOException('Cannot send file in body!');
-            } else {
-                self::$_log->debug($size.' bytes sent');
-            }*/
+        /*if (stream_copy_to_stream($this->messageBody, $this->_socket) === false) {
+            throw new IOException('Cannot send file in body!');
+        } else {
+            self::$_log->debug($size.' bytes sent');
+        }*/
             while (!feof($this->messageBody)) {
-                socket_write($this->_socket, fread($this->messageBody, 1024),1024);
+                socket_write(
+                    $this->_socket,
+                    fread($this->messageBody, 1024),
+                    1024
+                );
             }
         } else {
-            //if (stream_socket_sendto($this->_socket, $this->messageBody."\r\n") === false) {
             if (socket_write($this->_socket, $this->messageBody) === false) {
                 throw new IOException('Cannot send message body!');
             }

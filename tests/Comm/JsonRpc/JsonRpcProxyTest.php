@@ -40,7 +40,7 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
     {
          $this->cleanUp();
          $this->_mockClass = $this->getMock(
-            'runningClass', array('getStatus', 'getRole')
+             'runningClass', array('getStatus', 'getRole')
          );
     }
 

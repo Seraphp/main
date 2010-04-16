@@ -146,7 +146,7 @@ class HttpRequest implements Request, Observable
                 throw new IOException('Connection timed out!');
             }
             self::$_log->debug('Data arriving on socket');
-            while ($this->_buffer = socket_read($this->_socket, 8, PHP_BINARY_READ)) {
+            while ($this->_buffer = socket_read($this->_socket, 8)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
                      $this->_save();
                      continue;

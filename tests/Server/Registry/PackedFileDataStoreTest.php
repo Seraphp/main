@@ -38,7 +38,9 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
     function testInitWithPath()
     {
         $this->_store = new PackedFileDataStore('./testDataFile.gz');
-        $this->assertEquals(realpath('./testDataFile.gz'), $this->_store->getPath());
+        $this->assertEquals(
+            realpath('./testDataFile.gz'), $this->_store->getPath()
+        );
         $this->assertFileExists($this->_store->getPath());
         array_push($this->_createdFiles, $this->_store->getPath());
     }
@@ -73,7 +75,9 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
         $this->_store->setUp('./test1.gz');
         array_push($this->_createdFiles, $this->_store->getPath());
         $this->assertTrue($this->_store->save($this->_testData));
-        $this->assertEquals($this->_testData, $this->_store->load('./test1.gz'));
+        $this->assertEquals(
+            $this->_testData, $this->_store->load('./test1.gz')
+        );
     }
 
     function tearDown()
