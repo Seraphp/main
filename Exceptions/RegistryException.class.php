@@ -8,11 +8,12 @@
  * @package Exceptions
  * @filesource
  */
+require_once 'NestedException.class.php';
 /**
  * RegistryException class
  *
  * @package Exceptions
  */
-class RegistryException extends Exception
+class RegistryException extends NestedException
 {
 }

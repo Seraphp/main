@@ -8,11 +8,12 @@
  * @package Exceptions
  * @filesource
  */
+require_once 'NestedException.class.php';
 /**
  * Exception class for policy plugin related issues
  *
  * @package Exceptions
  */
-class PluginException extends Exception
+class PluginException extends NestedException
 {
 }

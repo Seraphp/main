@@ -8,11 +8,12 @@
  * @package Exceptions
  * @filesource
  */
+require_once 'NestedException.class.php';
 /**
  * HttpException class
  *
  * @package Exceptions
  */
-class HttpException extends Exception
+class HttpException extends NestedException
 {
 }

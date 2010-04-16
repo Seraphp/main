@@ -10,6 +10,7 @@
  */
 /***/
 require_once 'Log/LogFactory.class.php';
+require_once 'NestedException.class.php';
 //namespace Seraphp\Log;
 /**
  * Static class for saetting up & handlin Exception centrally
@@ -45,7 +46,7 @@ class ExceptionHandler
             try{
                 self::$_log->alert($e->getMessage());
             }catch(Exception $f){
-                throw $e;
+                throw $f->setPrior($e);
             }
         }
     }

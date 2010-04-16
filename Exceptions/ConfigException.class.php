@@ -8,11 +8,12 @@
  * @package Exceptions
  * @filesource
  */
+require_once 'NestedException.class.php';
 /**
  * ConfigException class
  *
  * @package Exceptions
  */
-class ConfigException extends Exception
+class ConfigException extends NestedException
 {
 }
