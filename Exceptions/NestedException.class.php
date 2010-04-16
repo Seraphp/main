@@ -17,7 +17,8 @@ class NestedException extends Exception
 {
     protected $_priorException;
 
-    public function __construct($message, $code, Exception $previous = null)
+    public function __construct($message, $code = null,
+        Exception $previous = null)
     {
         $this->_priorException = $previous;
         parent::__construct($message, $code);
