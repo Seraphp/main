@@ -20,7 +20,7 @@
 			<urimap>
 				<url engine="admin" auth="internal">/admin/</url>
 				<url engine="static">/static/</url>
-				<url engine="dispatch" target="test">/test/</url>
+				<url engine="default">/test/</url>
 			</urimap>
 			<resources>
 				<includes>
@@ -42,7 +42,7 @@
 				<log handler="console" ident="Seraphp" level="ERR">
 					<conf stream="STDOUT" buffering="false" />
 				</log>
-				<log handler="file" name="out.log" ident="DEBUG" level="ERR">
+				<log handler="file" name="out.log" ident="DEBUG" level="INFO">
 					<conf />
 				</log>
 			</logs>
