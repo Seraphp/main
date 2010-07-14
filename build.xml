@@ -23,8 +23,16 @@
         <mkdir dir="${basedir}/build/graph" />
         <mkdir dir="${basedir}/build/php-code-browser" />
     </target>
-    <target name="PHPDocs" depends="prepare">
-        <exec executable="phpdoc" dir="${basedir}/source">
+    <target name="lint">
+    <apply executable="php" dir="${basedir}/source" failonerror="on" logerror="on">
+      <arg line="-l"/>
+      <fileset dir="${basedir}/source">
+        <include name="**/*.php"/>
+      </fileset>
+    </apply>
+  </target>
+    <target name="PHPDocs" depends="lint">
+        <exec executable="phpdoc" dir="${basedir}/source" logerror="on">
             <arg line="-ct type
                 -ue on
                 -t ${basedir}/build/api
@@ -41,7 +49,7 @@
     <target name="phpcs" depends="prepare">
         <exec dir="${basedir}/source" executable="phpcs" 
             output="${basedir}/build/logs/checkstyle.xml" failonerror="false">
-            <arg line="--report=checkstyle --standard=zend ."/>
+            <arg line="--report=checkstyle --standard=Zend src"/>
         </exec>
         </target>
     <target name="phpcpd" depends="prepare">
