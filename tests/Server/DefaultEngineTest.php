@@ -33,7 +33,7 @@ class DefaultEngineTest extends PHPUnit_Framework_TestCase
 
     function testProcess()
     {
-        $engine = new DefaultEngine($this->config);
+        $engine = new DefaultEngine($this->_config);
         $this->assertEquals(0, $engine->process($this->_request));
     }
 
