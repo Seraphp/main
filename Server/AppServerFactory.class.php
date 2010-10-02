@@ -60,17 +60,14 @@ class AppServerFactory
     {
         self::_init();
         self::$_log = LogFactory::getInstance($conf);
-        self::$_log->debug(__METHOD__. ' called');
         if (self::$_registry->getAppStatus($appID) !== 'running') {
             try{
                 $instance = new AppServer($conf);
             } catch(Exception $e) {
                 self::$_log->alert($e->getMessage());
             }
-            self::$_log->debug("New '$appID' instance created");
             self::$_registry->addApp($appID, $instance);
         } else {
-            self::$_log->debug("Instance of '$appID' already exists");
             $instance = self::$_registry->getAppInstance($appID);
         }
         return $instance;

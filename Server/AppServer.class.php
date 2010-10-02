@@ -81,11 +81,8 @@ class AppServer extends Server
     public function __construct(Config $conf)
     {
         self::$_log = LogFactory::getInstance($conf->server);
-        self::$_log->debug(__METHOD__.' called');
         $this->_appID = (string)$conf['id'];
-        self::$_log->debug('AppID: '.$this->_appID);
         $this->_pidFileName = sprintf('.%s_srphp.pid', $this->_appID);
-        self::$_log->debug('PidFile name: '.$this->_pidFileName);
         if (isset($conf->includes)) {
             $this->_configIncludes($conf->includes);
         }
@@ -107,16 +104,12 @@ class AppServer extends Server
      */
     protected function _configIncludes($includes)
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Adding include pathes');
         //Adding all pathes listed in config "includes/path"
         //They will not be added to include path before daemon is
         //summoned to lock out other processes seeing those pathes
         foreach ($conf->includes as $key => $resource) {
-            self::$_log->debug('path: '.$resource);
             if (is_dir($resource)) {
                 array_push($this->_includes, $resource);
-                self::$_log->debug($resource. 'added');
             } else {
                 throw new Exception($resource.
                     ' is not a directory to include');
@@ -132,26 +125,21 @@ class AppServer extends Server
      */
     protected function _configInstance($instance)
     {
-        self::$_log->debug(__METHOD__.' called');
         //Calling Parent's constructor...
         if (isset($instance->ipc)) {
-            self::$_log->debug('Initalizing IPC: '.$instance->ipc);
             parent::__construct((string) $instance->ipc);
         } else {
             parent::__construct();
         }
 
-        self::$_log->debug('Setting up server engines');
         if (isset($instance->engines)) {
             foreach ($instance->engines->children() as $engine) {
                 $this->_engines[(string)$engine['id']] = $engine;
             }
         } else {
-            self::$_log->debug('Initalizing default engines');
             $conf = '<engine id="default" class="Default" />';
             $this->_engines['default'] = new Config($conf);
         }
-        self::$_log->debug('Setting up socket address, port and timeout');
         //setting up bind address
         if (isset($instance->address)) {
             $this->_address = (string) $instance->address;
@@ -190,16 +178,12 @@ class AppServer extends Server
      */
     protected function _configRegistry()
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Setting up Application registry');
         if ($this->_ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
             $this->_appReg = IpcRegistry::getInstance();
-            self::$_log->debug('Using IpcRegistry');
         } else {
             require_once 'Server/Registry/Registry.class.php';
             $this->_appReg = Registry::getInstance();
-            self::$_log->debug('Using Registry');
         }
     }
 
@@ -213,8 +197,6 @@ class AppServer extends Server
      */
     protected function _configUrimap($conf)
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Setting up URImaps');
         if (isset($conf->urimap)) {
             foreach ($conf->urimap->children() as $node=>$value) {
                 foreach ($value->attributes() as $attName=>$attValue) {
@@ -229,14 +211,12 @@ class AppServer extends Server
 
     protected function onSummon()
     {
-        self::$_log->debug(__METHOD__.' called');
         if ($this->_ipcType !== '') {
             $this->_appReg->useIpc($this->_ipc);
         }
         $this->_setupIncludePathes();
         $this->_initEngines();
 
-        self::$_log->debug('Initalizing JsonRpc proxy');
         $this->_rpcProxy = new JsonRpcProxy($this->_appID);
         $this->_rpcProxy->setup(
             $this,
@@ -244,7 +224,6 @@ class AppServer extends Server
             array('expel')
         );
         $this->_rpcProxy->init('server');
-        self::$_log->debug('Initalizing socket listening on');
         $this->initSocket();
     }
 
@@ -258,7 +237,6 @@ class AppServer extends Server
      */
     protected function _setupIncludePathes()
     {
-        self::$_log->debug(__METHOD__.' called');
         foreach ($this->_includes as $path) {
             $currIncludePath = get_include_path();
             if (strpos($currIncludePath, $path) === false) {
@@ -278,7 +256,6 @@ class AppServer extends Server
      */
     protected function _initEngines()
     {
-        self::$_log->debug(__METHOD__.' called');
         foreach ($this->_engines as $name=>$conf) {
             $class = $conf['class'].'Engine';
             require_once $class.'.class.php';
@@ -293,7 +270,6 @@ class AppServer extends Server
      */
     public function getAppId()
     {
-        self::$_log->debug(__METHOD__.' called');
         return $this->_appID;
     }
 
@@ -375,7 +351,6 @@ class AppServer extends Server
      */
     private function initSocket()
     {
-        self::$_log->debug(__METHOD__.' called');
         /*$this->_socket = stream_socket_server(
             sprintf(
                 '%s://%s:%s',
@@ -405,7 +380,6 @@ class AppServer extends Server
         )) {
             throw new IOException(socket_strerror(socket_last_error()));
         }
-        self::$_log->debug('Setting listening socket to non blocking mode');
         /*if (false === socket_set_nonblock($this->_socket)) {
             throw new IOException(socket_strerror(socket_last_error()));
         }*/
@@ -429,7 +403,6 @@ class AppServer extends Server
      */
     public function process(Request $req)
     {
-        self::$_log->debug(__METHOD__.' called');
         $path = parse_url($req->url, PHP_URL_PATH);
         $engine = false;
         foreach ($this->_urimap as $uriEntry=>$uriParams) {
@@ -437,10 +410,8 @@ class AppServer extends Server
                 break;
             }
         }
-        self::$_log->debug("Engine: ".$uriParams['engine']);
         if ($uriParams['engine'] === false) {
             $returnCode = 1;
-            self::$_log->debug("Not found: ".$uriParams['engine']);
             $response = $req->respond(
                 'File not found!',
                 array('statusCode'=>404)
@@ -448,12 +419,10 @@ class AppServer extends Server
             $response->send();
         } else {
             if (array_key_exists($uriParams['engine'], $this->_engines)) {
-                self::$_log->debug("Processing w/".$uriParams['engine']);
                 $returnCode =
                 $this->_engines[$uriParams['engine']]->process($req);
             } else {
                 $returnCode = 1;
-                self::$_log->debug("Not registered: ".$uriParams['engine']);
                 $response = $req->respond(
                     'File not found!',
                     array('statusCode'=>500)
@@ -469,15 +438,8 @@ class AppServer extends Server
      */
     public function onExpel()
     {
-        self::$_log->debug(__METHOD__.' called');
         $this->_accepting = false;
         if (is_resource($this->_socket)) {
-            self::$_log->debug(
-                'closing down socket on '.
-                $this->_address.
-                ':'.
-                $this->_port
-            );
             //stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
             socket_shutdown($this->_socket, 2);
         }
@@ -495,10 +457,7 @@ class AppServer extends Server
      */
     protected function sigchldCallback($pid, $status)
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('child exited: '.$pid.' with status:'.$status);
         if ($this->_ipc !== null) {
-            self::$_log->debug('Merging changes through IPC');
             $this->_appReg->mergeChanges();
         }
         unset($this->_spawns[$pid]);
@@ -506,7 +465,6 @@ class AppServer extends Server
 
     protected function sigusr1Callback()
     {
-        self::$_log->debug(__METHOD__.' called');
         $this->_rpcProxy->listen();
     }
 }

@@ -125,7 +125,6 @@ class ServerManager
     static function write($message)
     {
         echo ($message);
-        self::$_log->debug($message);
     }
 
     /**

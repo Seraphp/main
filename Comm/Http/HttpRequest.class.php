@@ -114,7 +114,6 @@ class HttpRequest implements Request, Observable
     public function __construct($sock = null)
     {
         self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__.' called');
         if ($sock !== null && is_resource($sock)) {
          //If parameter is a resource, it means the class will represent a
          //received request
@@ -136,7 +135,6 @@ class HttpRequest implements Request, Observable
      */
     protected function _parse()
     {
-        self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
             $read = array($this->_socket);
             //if (stream_select(
@@ -145,7 +143,6 @@ class HttpRequest implements Request, Observable
             ) < 1) {
                 throw new IOException('Connection timed out!');
             }
-            self::$_log->debug('Data arriving on socket');
             while ($this->_buffer = socket_read($this->_socket, 8)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
                      $this->_save();
@@ -195,7 +192,6 @@ class HttpRequest implements Request, Observable
      */
     protected function _processHeaders()
     {
-        self::$_log->debug(__METHOD__.' called');
         $headers = array();
         //First line in the array should be the reqest line,
         // like 'GET /index.html HTTP/1.1'
@@ -212,16 +208,13 @@ class HttpRequest implements Request, Observable
             }
         }
         $this->httpHeaders = $headers;
-        self::$_log->debug('setting up get, cookies');
         if (array_key_exists('Cookie', $this->httpHeaders)) {
             $this->cookies =
                 HttpFactory::getCookies($this->httpHeaders['Cookie']);
         }
-        self::$_log->debug('processing GET parameters');
         if ($pos = strpos($this->url, '?')) {
             $this->getParams = $this->_params2array(substr($this->url, $pos+1));
         }
-        self::$_log->debug('Setting Referer if any');
         if (array_key_exists('Referer', $this->httpHeaders) ) {
             $this->referer = $this->httpHeaders['Referer'];
         }
@@ -235,7 +228,6 @@ class HttpRequest implements Request, Observable
      */
     private function _params2array($str)
     {
-        self::$_log->debug(__METHOD__.' called');
         $rows = explode('&', urldecode($str));
         $params = array();
         $itemNum = count($rows);
@@ -259,7 +251,6 @@ class HttpRequest implements Request, Observable
      */
     private function _array2params($params, $parentKey = null, $sep = '&')
     {
-        self::$_log->debug(__METHOD__.' called');
         $items = array();
         foreach ( $params as $key => $value ) {
             if ( is_array($value) ) {
@@ -321,7 +312,6 @@ class HttpRequest implements Request, Observable
      */
     public function send()
     {
-        self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_TOSEND) {
             $curlObj = curl_init($this->url);
             $options = array(
@@ -385,7 +375,6 @@ class HttpRequest implements Request, Observable
      */
     public function respond($msg, $settings = null)
     {
-        self::$_log->debug(__METHOD__.' called');
         if ($this->isReceived === self::REQ_RECEIVED) {
             $settings['messageBody'] = $msg;
             $response = HttpFactory::create(

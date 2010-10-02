@@ -54,7 +54,6 @@ class HttpFactory
     public static function getCookies($param)
     {
         self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__.' called');
         $result = array();
         if (is_string($param)) {
             //We have an http Cookie header to parse
@@ -92,11 +91,9 @@ class HttpFactory
     public static function create($type, $socket = null, $settings = null)
     {
         self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__.' called');
         switch ($type)
         {
             case 'request':
-                self::$_log->debug('Creating HTTP Request');
                 $obj = new HttpRequest($socket);
                 if ($settings !== null) {
                     foreach ($settings as $key => $value) {
@@ -105,7 +102,6 @@ class HttpFactory
                 }
                 break;
             case 'response':
-                self::$_log->debug('Creating HTTP Response');
                 $obj = new HttpResponse($socket);
                 if ($settings !== null) {
                     foreach ($settings as $key => $value) {
@@ -114,7 +110,6 @@ class HttpFactory
                 }
                 break;
             case 'cookie':
-                self::$_log->debug('Creating HTTP Cookie');
                 $obj = self::getCookies($settings);
                 break;
             default:
@@ -135,7 +130,6 @@ class HttpFactory
     public static function getHttpStatus($code)
     {
         self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__.' called');
         if (array_key_exists($code, self::$httpStatuses)) {
             return self::$httpStatuses[$code];
         } else {

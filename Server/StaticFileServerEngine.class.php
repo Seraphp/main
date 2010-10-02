@@ -28,25 +28,20 @@ class StaticFileServerEngine implements AppEngine
     public function __construct(Config $conf = null)
     {
         self::$_log = LogFactory::getInstance($conf->server);
-        self::$_log->debug(__METHOD__.' called');
         $param = $conf->xsearch('srph:param[@name="basepath"]');
         if ($param !== false) {
             $this->_basePath = (string)$param[0];
-            self::$_log->debug('BasePath: '.$this->_basePath);
         }
     }
 
     function process(Request $req)
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Requested URL: '.$req->url);
         $truePath = $this->_basePath.
             strtr(
                 substr($req->url, strpos($req->url, '/', 1)),
                 PATH_SEPARATOR,
                 DIRECTORY_SEPARATOR
             );
-        self::$_log->debug('Serving file: '.$truePath);
         if (file_exists($truePath)) {
             $returnCode = 0;
             $resp = $req->respond(fopen($truePath, 'rb'));

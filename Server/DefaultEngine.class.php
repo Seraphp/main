@@ -31,7 +31,6 @@ class DefaultEngine implements AppEngine
 
     function process(Request $req)
     {
-        self::$_log->debug(__METHOD__.' called');
         $msg = <<<HTML
     <html>
         <head>

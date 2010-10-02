@@ -84,7 +84,6 @@ class JsonRpcProxy
             $type='socket', $methods = array(), $notifs = array())
     {
         self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__. ' called');
         $this->_type = $type;
         $this->_name = $name;
         if (isset($client)) {
@@ -103,7 +102,6 @@ class JsonRpcProxy
      */
     public function setup($client, $methods = array(), $notifs = array())
     {
-        self::$_log->debug(__METHOD__. ' called');
         switch (gettype($client)) {
             case 'array':
                 $this->_client = $client[0];
@@ -152,7 +150,6 @@ class JsonRpcProxy
      */
     public function init($role = 'client')
     {
-        self::$_log->debug(__METHOD__. ' called');
         if ($role == 'client' || $role == 'server') {
             $this->_role = $role;
         } else {
@@ -179,8 +176,6 @@ class JsonRpcProxy
 
     protected function _connect($mode)
     {
-        self::$_log->debug(__METHOD__. ' called');
-        self::$_log->debug('Mode: '.$mode);
         switch ($mode) {
             case 'read':
                 if ($this->_role == 'client') {
@@ -199,7 +194,6 @@ class JsonRpcProxy
             default:
                 return;
         }
-        self::$_log->debug('Fifo: '.$fifo);
         $this->_conn[$mode] = fopen($fifo, substr($mode, 0, 1).'+');
         stream_set_blocking($this->_conn[$mode], false);
     }
@@ -213,7 +207,6 @@ class JsonRpcProxy
      */
     protected function _disconnect($mode)
     {
-        self::$_log->debug(__METHOD__. ' called');
         if ($mode == 'read' || $mode == 'write') {
             if (is_resource($this->_conn[$mode])) {
                 return fclose($this->_conn[$mode]);
@@ -231,11 +224,9 @@ class JsonRpcProxy
      */
     public function listen()
     {
-        self::$_log->debug(__METHOD__. ' called');
         try {
             $this->parseRequest($this->_read());
         } catch(IOException $e) {
-            self::$_log->debug($e->getMessage());
         }
     }
 
@@ -246,7 +237,6 @@ class JsonRpcProxy
      */
     public function __call($name, $arguments = array())
     {
-        self::$_log->debug(__METHOD__. ' called');
         if (in_array($name, $this->_notifications) ) {
             $message = (string) new JsonRpcRequest($name, $arguments);
             try {
@@ -282,9 +272,7 @@ class JsonRpcProxy
      */
     private function _parseReply($reply)
     {
-        self::$_log->debug(__METHOD__. ' called');
         $message = json_decode($reply);
-        self::$_log->debug('Message: '.$reply);
         if (isset($message->error)) {
             throw new RuntimeException($message->error);
         } else {
@@ -298,14 +286,8 @@ class JsonRpcProxy
      */
     public function parseRequest($msg)
     {
-        self::$_log->debug(__METHOD__. ' called');
-        self::$_log->debug('Message: '.$msg);
         $message = json_decode($msg);
         if (is_callable(array($this->_client, $message->method))) {
-            self::$_log->debug(
-                'Method exists: '. get_class($this->_client). '::'
-                .$message->method
-            );
             $error = null;
             try {
                 $result = call_user_func_array(
@@ -328,7 +310,6 @@ class JsonRpcProxy
                     $message->id
                 );
         }
-        self::$_log->debug('Result is: '.$response);
         try {
             $this->_write($response);
         } catch (IOException $e) {
@@ -355,7 +336,6 @@ class JsonRpcProxy
      */
     protected function _analyzeMethods($className)
     {
-        self::$_log->debug(__METHOD__. ' called');
         $pubMethods = array();
         $pubNotifs = array();
         $analyzer = new ReflectionClass($className);
@@ -382,9 +362,7 @@ class JsonRpcProxy
      */
     protected function _sendSignal($pid)
     {
-        self::$_log->debug(__METHOD__. ' called');
         if (is_numeric($pid) && posix_kill($pid, 0)) {
-            self::$_log->debug('Sending SIGUSR1 to '.$pid);
             return posix_kill($pid, SIGUSR1);
         } else {
             throw new Exception('Invalid PID provided: '.$pid);
@@ -400,11 +378,9 @@ class JsonRpcProxy
      */
     private function _read()
     {
-        self::$_log->debug(__METHOD__. ' called');
         $read = array($this->_conn['read']);
         if (stream_select($read, $w = null, $x = null, self::TIMEOUT, 15) > 0) {
             if ($reply = fgets($this->_conn['read'])) {
-                self::$_log->debug(__METHOD__. ' received:'.$reply);
                 return $reply;
             } else {
                 throw new IOException('No reply in FIFO');
@@ -423,10 +399,8 @@ class JsonRpcProxy
      */
     private function _write($msg)
     {
-        self::$_log->debug(__METHOD__. ' called');
         $this->_connect('write');
         if ( $result = fwrite($this->_conn['write'], $msg)) {
-            self::$_log->debug('Message: '.$msg.' sent');
             if ($this->_role != 'server') {
                 try {
                     $this->_sendSignal($this->_pid);

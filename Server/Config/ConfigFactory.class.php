@@ -54,8 +54,6 @@ class ConfigFactory implements Singleton
      */
     public function getConf($name)
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Getting "'.$name. '" config');
         if ($this->_registry->$name === null) {
             $this->_registry->$name = $this->_parse($name);
         }
@@ -68,7 +66,6 @@ class ConfigFactory implements Singleton
     public function getInstance()
     {
         self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__.' called');
         if (self::$_instance === null) {
             self::$_instance = new self(Registry::getInstance());
         }
@@ -81,8 +78,6 @@ class ConfigFactory implements Singleton
      */
     private function _load($xmlFile='')
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Loading "'.$xmlFile. '"');
         if (!empty($xmlFile)) {
             $this->setXmlSrc($xmlFile);
         }
@@ -111,14 +106,9 @@ class ConfigFactory implements Singleton
      */
     private function _parse($name)
     {
-        self::$_log->debug(__METHOD__.' called');
         if ($this->_xml === null) {
             $this->_load();
         }
-        self::$_log->debug(
-            'Searching for node: "//srph:servers/srph:server'.
-            '[@id='.$name. ']"'
-        );
         $serverConfXML = $this->_xml->xsearch(
             '//srph:servers/srph:server[@id="'.$name.'"]'
         );

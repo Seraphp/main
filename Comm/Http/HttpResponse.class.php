@@ -39,7 +39,6 @@ class HttpResponse
     public function __construct($socket = null)
     {
         self::$_log = LogFactory::getInstance();
-        self::$_log->debug(__METHOD__.' called');
         if ($socket !== null && is_resource($socket)) {
             $this->_socket = $socket;
             $this->toBeSend = true;
@@ -57,7 +56,6 @@ class HttpResponse
      */
     public function send()
     {
-        self::$_log->debug(__METHOD__.' called');
         if ($this->toBeSend) {
             //Creating Status line
             $this->statusLine = sprintf(
@@ -68,7 +66,6 @@ class HttpResponse
             );
             $buffer = $this->statusLine."\r\n";
             $buffer .= $this->_getHeaders()."\r\n";
-            self::$_log->debug('Sending out head part');
          //if (stream_socket_sendto($this->_socket, $buffer."\r\n") === false) {
             if (socket_write($this->_socket, $buffer."\r\n") === false) {
                 throw new IOException('Cannot send out header part');
@@ -133,12 +130,9 @@ class HttpResponse
 
     private function _sendBody()
     {
-        self::$_log->debug('Sending message body');
         if (is_resource($this->messageBody)) {
         /*if (stream_copy_to_stream($this->messageBody, $this->_socket) === false) {
             throw new IOException('Cannot send file in body!');
-        } else {
-            self::$_log->debug($size.' bytes sent');
         }*/
             while (!feof($this->messageBody)) {
                 socket_write(
@@ -157,12 +151,9 @@ class HttpResponse
 
     private function _getHeaders()
     {
-        self::$_log->debug(__METHOD__.' called');
-        self::$_log->debug('Creating header lines');
         $headers = array();
         $this->_configHeaders();
         foreach ($this->headers as $key=>$value) {
-            self::$_log->debug(sprintf('%s:%s', $key, $value));
             array_push($headers, sprintf('%s:%s', $key, $value));
         }
         $headers = implode("\r\n", $headers);
