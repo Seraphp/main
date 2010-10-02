@@ -254,12 +254,13 @@ abstract class Server implements Daemon
         self::$_log->debug(__METHOD__.' called');
         if ($this->daemonize) {
             if (count($this->_spawns) < $this->_maxSpawns) {
-                self::$_log->debug('Forking');
+                self::$_log->info('Forking starts('.microtime().')');
                 $pid = pcntl_fork();
                 if ($pid < 0) {
                     throw new Exception('Unable to fork!');
                 } elseif ($pid == 0) {//child process
                     self::$_log->setEventItem('pid', getmypid());
+                    self::$_log->info('Forking ends in child('.microtime().')');
                     $this->_pid = getmypid();
                     $this->_role = 'child';
                     if ($this->_ipcType !== '') {
@@ -271,6 +272,7 @@ abstract class Server implements Daemon
                     return $this->_pid;
                 } else {
                     //parent process
+                    self::$_log->info('Forking ends in parent('.microtime().')');
                     $this->_pid = getmypid();
                     $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
                     self::$_log->debug($pid." spawned\n");

@@ -45,6 +45,7 @@ HTML;
         $response->contentType = 'text/html';
         try{
             $response->send();
+            self::$_log->info('Response sent ('.microtime().')');
         } catch (IOException $e) {
             self::$_log->alert($e->getMessage());
             return 1;

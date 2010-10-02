@@ -330,7 +330,7 @@ class AppServer extends Server
         $read = array($this->_socket);
         if (socket_select($read, $w = array(), $e = array(), 0)) {
         //if ($conn = @socket_accept($this->_socket)) {
-            self::$_log->debug('Connection accepted, spawning new child');
+            self::$_log->info('Connection accepted, spawning new child ('.microtime().')');
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process
                 $conn = socket_accept($this->_socket);
