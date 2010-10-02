@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SeraPhp" default="build" basedir="..">
     <target name="checkout">
-        <exec executable="svn" dir="${basedir}/source">
-            <arg line="up 
-            	--username antronin@gmail.com 
-            	--password BZ2v7y780916
-            	--non-interactive
-            	--trust-server-cert"/>
+        <exec executable="svn" dir="${basedir}/source" failonerror="yes">
+            <arg line="up --non-interactive"/>
         </exec>
     </target>
     <target name="clean" depends="checkout">
@@ -83,7 +79,7 @@
         <exec dir="${basedir}/source/" executable="phpmd" failonerror="off">
             <arg line="${basedir}/source/ xml codesize,unusedcode 
                 --reportfile ${basedir}/build/logs/phpunit.pmd.xml
-                --ignore tests/" />
+                --exclude tests/" />
         </exec>
     </target>
     <target name="build"
