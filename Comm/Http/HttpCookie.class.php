@@ -28,7 +28,7 @@ class HttpCookie
      */
     const COOKIE_TYPE_RFC2965 = 2;
 
-    public $type = COOKIE_TYPE_RFC2109;
+    public $type = self::COOKIE_TYPE_RFC2109;
     public $name = '';
     public $value = null;
     public $expireOn = null;
@@ -85,7 +85,7 @@ class HttpCookie
         }
         return sprintf(
             '%s:%s=%s;%s',
-            ($this->type == COOKIE_TYPE_RFC2965)?'Set-Cookie2':'Set-Cookie',
+            ($this->type == self::COOKIE_TYPE_RFC2965)?'Set-Cookie2':'Set-Cookie',
             $this->name,
             $this->value,
             implode(';', $details)
