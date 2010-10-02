@@ -5,7 +5,7 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
+
 require_once 'Comm/JsonRpc/JsonRpcProxy.class.php';
 require_once 'Server/Server.class.php';
 /**

@@ -5,7 +5,7 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
+
 /**
  * Class documentation
  */

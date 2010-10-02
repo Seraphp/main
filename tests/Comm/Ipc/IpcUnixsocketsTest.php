@@ -5,7 +5,7 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
+
 require_once 'Comm/Ipc/IpcUnixsockets.class.php';
 /**
  * Class documentation

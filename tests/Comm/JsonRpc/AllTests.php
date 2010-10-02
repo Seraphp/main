@@ -6,7 +6,7 @@
  * @filesource
  */
 // @codeCoverageIgnoreStart
-require_once 'PHPUnit/Framework.php';
+
 require_once 'JsonRpcRequestTest.php';
 require_once 'JsonRpcResponseTest.php';
 require_once 'JsonRpcProxyTest.php';

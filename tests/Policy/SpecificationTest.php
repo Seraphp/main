@@ -5,7 +5,7 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
+
 require_once 'Policy/FieldEqualSpecification.class.php';
 require_once 'Policy/FieldGreaterSpecification.class.php';
 require_once 'Policy/FieldMatchesSpecification.class.php';

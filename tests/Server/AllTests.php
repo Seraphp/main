@@ -5,13 +5,12 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
 require_once 'AppServerTest.php';
 require_once 'DefaultEngineTest.php';
 require_once 'Registry/AllTests.php';
 require_once 'Config/AllTests.php';
 /**
- * Class documentation
+ * Testing suite for Server package
  */
 class Server_AllTests
 {

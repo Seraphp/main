@@ -1,5 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework.php';
 require_once 'Policy/AllTests.php';
 require_once 'Server/AllTests.php';
 require_once 'Comm/AllTests.php';
@@ -16,8 +15,10 @@ class AllTests
         $suite->addTest(Comm_AllTests::suite());
         $suite->addTest(Exceptions_AllTests::suite());
         $suite->addTest(Log_AllTests::suite());
-        PHPUnit_Util_Filter::addDirectoryToFilter('/usr/share/php');
-        PHPUnit_Util_Filter::addDirectoryToFilter(
+        PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
+            '/usr/share/php'
+        );
+        PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
             '/opt/cruisecontrol/projects/seraphp/source/tests'
         );
         return $suite;

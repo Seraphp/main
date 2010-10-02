@@ -6,7 +6,7 @@
  * @filesource
  */
 // @codeCoverageIgnoreStart
-require_once 'PHPUnit/Framework.php';
+
 require_once 'HttpFactoryTest.php';
 require_once 'HttpCookieTest.php';
 require_once 'HttpRequestTest.php';

@@ -5,7 +5,7 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
+
 require_once 'Server/Registry/PackedFileDataStore.class.php';
 require_once 'vfsStream/vfsStream.php';
 /**

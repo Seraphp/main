@@ -5,7 +5,7 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
+
 require_once 'tests/Server/Config/ConfigXmlValidityTest.php';
 require_once 'tests/Server/Config/ConfigTest.php';
 require_once 'tests/Server/Config/ConfigFactoryTest.php';

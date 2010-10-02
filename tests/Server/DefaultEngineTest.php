@@ -5,7 +5,6 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
 require_once 'Server/DefaultEngine.class.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Comm/Http/HttpRequest.class.php';

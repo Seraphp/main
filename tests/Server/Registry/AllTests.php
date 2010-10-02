@@ -5,7 +5,7 @@
  * @version $Id$
  * @filesource
  */
-require_once 'PHPUnit/Framework.php';
+
 require_once 'PackedFileDataStoreTest.php';
 require_once 'DataStoreTest.php';
 require_once 'RegistryTest.php';

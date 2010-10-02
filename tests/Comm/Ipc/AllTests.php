@@ -6,7 +6,7 @@
  * @filesource
  */
 // @codeCoverageIgnoreStart
-require_once 'PHPUnit/Framework.php';
+
 require_once 'IpcFactoryTest.php';
 require_once 'IpcUnixsocketsTest.php';
 /**
