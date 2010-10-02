@@ -2,7 +2,11 @@
 <project name="SeraPhp" default="build" basedir="..">
     <target name="checkout">
         <exec executable="svn" dir="${basedir}/source">
-            <arg line="up --username antronin@gmail.com --password BZ2v7y780916"/>
+            <arg line="up 
+            	--username antronin@gmail.com 
+            	--password BZ2v7y780916
+            	--non-interactive
+            	--trust-server-cert"/>
         </exec>
     </target>
     <target name="clean" depends="checkout">
