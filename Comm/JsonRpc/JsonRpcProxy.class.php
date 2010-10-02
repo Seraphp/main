@@ -19,14 +19,13 @@ require_once 'Exceptions/IOException.class.php';
  *
  * Received method calls which are not implemented in the class
  * will be cathced and sent to remote service as JSON-RPC method
- * calls. Result will be returned as method result orr Exceptions
+ * calls. Result will be returned as method result or Exceptions
  * will be thrown if error occurs.
  * Same class handles incoming RPC method calls by maintaining
  * the channel with any listener.
  *
  * @package Comm
  * @subpackage JsonRpc
- * @todo Test the class
  */
 class JsonRpcProxy
 {
@@ -400,7 +399,7 @@ class JsonRpcProxy
     private function _write($msg)
     {
         $this->_connect('write');
-        if ( $result = fwrite($this->_conn['write'], $msg)) {
+        if ($result = fwrite($this->_conn['write'], $msg)) {
             if ($this->_role != 'server') {
                 try {
                     $this->_sendSignal($this->_pid);
