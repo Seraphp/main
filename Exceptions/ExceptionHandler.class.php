@@ -9,9 +9,9 @@
  * @filesource
  */
 /***/
+namespace Seraphp\Exceptions;
 require_once 'Log/LogFactory.class.php';
 require_once 'NestedException.class.php';
-//namespace Seraphp\Log;
 /**
  * Static class for saetting up & handlin Exception centrally
  * @package Log
@@ -60,12 +60,12 @@ class ExceptionHandler
     public static function setup(Config $conf = null)
     {
         if ($conf === null) {
-            self::$_log = LogFactory::getInstance();
+            self::$_log = \Seraphp\Log\LogFactory::getInstance();
         } else {
-            self::$_log = LogFactory::getInstance($conf->logs);
+            self::$_log = \Seraphp\Log\LogFactory::getInstance($conf->logs);
         }
         return set_exception_handler(
-            array('ExceptionHandler', 'handleException')
+            array('\Seraphp\Exceptions\ExceptionHandler', 'handleException')
         );
     }
 

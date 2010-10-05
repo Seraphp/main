@@ -28,7 +28,7 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
 
     function testInitNoPath()
     {
-        $this->_store = new PackedFileDataStore();
+        $this->_store = new \Seraphp\Server\Registry\PackedFileDataStore();
         $this->assertTrue($this->_store->setUp());
         $this->assertNotEquals('', $this->_store->getPath());
         $this->assertFileExists($this->_store->getPath());
@@ -37,7 +37,9 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
 
     function testInitWithPath()
     {
-        $this->_store = new PackedFileDataStore('./testDataFile.gz');
+        $this->_store = new \Seraphp\Server\Registry\PackedFileDataStore(
+            './testDataFile.gz'
+        );
         $this->assertEquals(
             realpath('./testDataFile.gz'), $this->_store->getPath()
         );
@@ -47,7 +49,7 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
 
     function testSave()
     {
-        $this->_store = new PackedFileDataStore();
+        $this->_store = new \Seraphp\Server\Registry\PackedFileDataStore();
         $this->_store->setUp();
         $this->assertTrue($this->_store->save($this->_testData));
         $this->assertThat(
@@ -61,7 +63,7 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
 
     function testLoadWithNoFile()
     {
-        $this->_store = new PackedFileDataStore();
+        $this->_store = new \Seraphp\Server\Registry\PackedFileDataStore();
         $this->_store->setUp();
         $tempFile = $this->_store->getPath();
         array_push($this->_createdFiles, $this->_store->getPath());
@@ -71,7 +73,7 @@ class PackedFileDataStoreTest extends PHPUnit_Framework_TestCase
 
     function testLoadWithFile()
     {
-        $this->_store = new PackedFileDataStore();
+        $this->_store = new \Seraphp\Server\Registry\PackedFileDataStore();
         $this->_store->setUp('./test1.gz');
         array_push($this->_createdFiles, $this->_store->getPath());
         $this->assertTrue($this->_store->save($this->_testData));

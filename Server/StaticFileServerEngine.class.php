@@ -9,6 +9,7 @@
  * @filesource
  */
 /***/
+namespace Seraphp\Server;
 require_once 'Server/AppEngine.interface.php';
 /**
  * StaticFileServerEngine class

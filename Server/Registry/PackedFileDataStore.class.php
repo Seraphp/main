@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server\Registry
+namespace Seraphp\Server\Registry;
 require_once 'StoreEngine.interface.php';
 require_once 'Exceptions/IOException.class.php';
 /**
@@ -166,7 +166,9 @@ class PackedFileDataStore implements StoreEngine
             $this->_file = $path;
             return $this->_file;
         } else {
-            throw new IOException('Path '.dirname($path).' is not writable');
+            throw new \Seraphp\Exceptions\IOException(
+                'Path '.dirname($path).' is not writable'
+            );
         }
     }
 
@@ -204,7 +206,7 @@ class PackedFileDataStore implements StoreEngine
                 $absolutes[] = $part;
             }
         }
-        return implode(DIRECTORY_SEPARATOR, $absolutes);
+        return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
     /**

@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server;
+namespace Seraphp\Server;
 require_once 'Server/Daemon.interface.php';
 require_once 'Comm/Ipc/IpcFactory.class.php';
 require_once 'Log/LogFactory.class.php';
@@ -101,7 +101,7 @@ abstract class Server implements Daemon
      */
     public function __construct($ipcType = '')
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         ini_set('max_execution_time', 0);
         ini_set('max_input_time', 0);
         set_time_limit(0);
@@ -129,7 +129,9 @@ abstract class Server implements Daemon
             //changing back as from now on we are the Parent server process
             $this->_role = 'parent';
             if ($this->_ipcType !== '') {
-                $this->_ipc = IpcFactory::get($this->_ipcType, $this->_pid);
+                $this->_ipc = \Seraphp\Comm\Ipc\IpcFactory::get(
+                    $this->_ipcType, $this->_pid
+                );
                 $this->_ipc->setRole($this->_role);
             }
             $this->onSummon();
@@ -190,7 +192,7 @@ abstract class Server implements Daemon
             "w"
         );
         if (!$this->_pidFile || !flock($this->_pidFile, LOCK_EX | LOCK_NB)) {
-            throw new Exception('Unable to get pid file lock!');
+            throw new \Exception('Unable to get pid file lock!');
         }
         fwrite($this->_pidFile, $this->_pid);
         fflush($this->_pidFile);
@@ -230,17 +232,15 @@ abstract class Server implements Daemon
     {
         if ($this->daemonize) {
             if (count($this->_spawns) < $this->_maxSpawns) {
-                self::$_log->info('Forking starts('.microtime().')');
                 $pid = pcntl_fork();
                 if ($pid < 0) {
-                    throw new Exception('Unable to fork!');
+                    throw new \Exception('Unable to fork!');
                 } elseif ($pid == 0) {//child process
                     self::$_log->setEventItem('pid', getmypid());
-                    self::$_log->info('Forking ends in child('.microtime().')');
                     $this->_pid = getmypid();
                     $this->_role = 'child';
                     if ($this->_ipcType !== '') {
-                        $this->_ipc = IpcFactory::get(
+                        $this->_ipc = \Seraphp\Comm\Ipc\IpcFactory::get(
                             $this->_ipcType, posix_getppid()
                         );
                     }
@@ -248,7 +248,6 @@ abstract class Server implements Daemon
                     return $this->_pid;
                 } else {
                     //parent process
-                    self::$_log->info('Forking ends in parent('.microtime().')');
                     $this->_pid = getmypid();
                     $this->_spawns[$pid] = array('ipc'=>$this->_ipcType);
                     //returns child's pid

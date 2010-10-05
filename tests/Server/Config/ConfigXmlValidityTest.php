@@ -16,7 +16,7 @@ class ConfigXmlValidityTest extends PHPUnit_Framework_TestCase
 
     function setUp()
     {
-        $this->_dom = new DOMDocument();
+        $this->_dom = new \DOMDocument();
     }
 
     function testXmlIsValid()

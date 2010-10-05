@@ -1,4 +1,5 @@
 <?php
+require_once 'PHPUnit/Autoload.php';
 require_once 'Policy/AllTests.php';
 require_once 'Server/AllTests.php';
 require_once 'Comm/AllTests.php';

@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+namespace Seraphp\Comm\Ipc;
 require_once 'Comm/Ipc/IpcAdapter.interface.php';
 /**
  * Interprocess communication through unix sockets

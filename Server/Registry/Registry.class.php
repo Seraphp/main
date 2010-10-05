@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+namespace Seraphp\Server\Registry;
 require_once 'Singleton.interface.php';
 require_once 'Server/Registry/DataStore.class.php';
 /**
@@ -21,7 +22,7 @@ require_once 'Server/Registry/DataStore.class.php';
  * @package Server
  * @subpackage Registry
  */
-class Registry extends DataStore implements Singleton
+class Registry extends \Seraphp\Server\Registry\DataStore implements \Seraphp\Singleton
 {
 
     /**
@@ -44,7 +45,7 @@ class Registry extends DataStore implements Singleton
      */
     public function __clone()
     {
-        throw new Exception('Cloning is disabled!');
+        throw new \Exception('Cloning is disabled!');
     }
 
     /**

@@ -46,7 +46,7 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
 
     function testConstructorWithClientArray()
     {
-        $proxy = new JsonRpcProxy(
+        $proxy = new \Seraphp\Comm\JsonRpc\JsonRpcProxy(
             $this->_names[0], array($this->_mockClass, getmypid())
         );
         $proxy->init('server');
@@ -56,13 +56,16 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
 
     function testCallAtClient()
     {
-        $clientProxy = new JsonRpcProxy(
+        $clientProxy = new \Seraphp\Comm\JsonRpc\JsonRpcProxy(
             $this->_names[0], array($this->_mockClass, getmypid())
         );
         $clientProxy->init('client');
         $pipe = fopen('/tmp/seraphp/'.$this->_names[0].'O.tmp', 'r+');
         stream_set_blocking($pipe, false);
-        fwrite($pipe, (string) new JsonRpcResponse('running', null, 0));
+        fwrite(
+            $pipe,
+            (string) new \Seraphp\Comm\JsonRpc\JsonRpcResponse('running', null, 0)
+        );
         pcntl_signal(SIGUSR1, SIG_IGN);
         $status = $clientProxy->getStatus();
         $this->assertEquals('running', $status);
@@ -71,15 +74,18 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
 
     function testCallAtServer()
     {
-        $serverProxy = new JsonRpcProxy(
-            $this->_names[0], new RunningClass
+        $serverProxy = new \Seraphp\Comm\JsonRpc\JsonRpcProxy(
+            $this->_names[0], new \RunningClass
         );
         $serverProxy->init('server');
         $pipeO = fopen('/tmp/seraphp/'.$this->_names[0].'O.tmp', 'r+');
         stream_set_blocking($pipeO, false);
         $pipeI = fopen('/tmp/seraphp/'.$this->_names[0].'I.tmp', 'w+');
         stream_set_blocking($pipeI, false);
-        fwrite($pipeI, (string) new JsonRpcRequest('getStatus', null, 0));
+        fwrite(
+            $pipeI,
+            (string) new \Seraphp\Comm\JsonRpc\JsonRpcRequest('getStatus', null, 0)
+        );
         $serverProxy->listen();
         $read = array($pipeO);
         $write = array();
@@ -89,7 +95,8 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
             $jsonResponse = trim(fgets($pipeO));
         }
         $this->assertEquals(
-            (string) new JsonRpcResponse('running', null, 0), $jsonResponse
+            (string) new \Seraphp\Comm\JsonRpc\JsonRpcResponse('running', null, 0),
+            $jsonResponse
         );
     }
 

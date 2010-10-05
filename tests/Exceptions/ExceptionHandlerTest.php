@@ -15,14 +15,14 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
 
     function testSetupRecall()
     {
-        $this->assertNull(ExceptionHandler::setup());
-        $this->assertTrue(ExceptionHandler::recall());
+        $this->assertNull(\Seraphp\Exceptions\ExceptionHandler::setup());
+        $this->assertTrue(\Seraphp\Exceptions\ExceptionHandler::recall());
     }
 
     function testHandling()
     {
-        ExceptionHandler::setup();
-        $this->setExpectedException('Exception', 'Test Exception');
-        throw new Exception('Test Exception');
+        \Seraphp\Exceptions\ExceptionHandler::setup();
+        $this->setExpectedException('\Exception', 'Test Exception');
+        throw new \Exception('Test Exception');
     }
 }

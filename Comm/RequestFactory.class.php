@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm;
+namespace Seraphp\Comm;
 require_once 'Exceptions/IOException.class.php';
 /**
  * Creates Request object based on socket load's first 100 byte
@@ -38,13 +38,13 @@ class RequestFactory
      */
     public static function create($socket, $timeout=30)
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         $read = array($socket);
         $write = null;
         $except = null;
         //if (stream_select($read, $write, $except, $timeout, 200) < 1) {
         if (socket_select($read, $write, $except, $timeout, 200) < 1) {
-            throw new IOException('Connection timed out!');
+            throw new \Seraphp\Exceptions\IOException('Connection timed out!');
         }
         //using socket_recv with STREAM_PEEK to examin the first part
         //of the message without removing it form the socket.
@@ -52,17 +52,19 @@ class RequestFactory
         socket_recv($socket, $result, 1500, STREAM_PEEK);
         if ($result !== null) {
             if (empty($result)) {
-                throw new IOException('Arrived data is empty!');
+                throw new \Seraphp\Exceptions\IOException(
+                    'Arrived data is empty!'
+                );
             } else {
                 switch (self::getProtocol($result)) {
                     case 'http':
                         require_once 'Comm/Http/HttpFactory.class.php';
-                        return HttpFactory::create('request', $socket);
+                        return Http\HttpFactory::create('request', $socket);
                         break;
                 }
             }
         } else {
-            throw new IOException('No data on line!');
+            throw new \Seraphp\Exceptions\IOException('No data on line!');
         }
     }
 
@@ -75,7 +77,7 @@ class RequestFactory
      */
     public static function getProtocol($data)
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         if (preg_match('/^(GET|POST|HEAD) (.+) HTTP\/(\d\.\d)/', $data)) {
             return 'http';
         } else {

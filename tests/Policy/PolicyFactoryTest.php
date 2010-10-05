@@ -34,7 +34,7 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase
 
     function testFactoryPluginList()
     {
-        $pF = PolicyFactory::getInstance();
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
         $plugins = $pF->getPlugins();
         foreach ($this->_plugins as $plugin) {
             $this->assertContains($plugin, $plugins);
@@ -43,28 +43,28 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase
 
     function testFactoryEqual()
     {
-        $pF = PolicyFactory::getInstance();
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
         $spec = $pF->equal('writer', 'Douglas Adams');
         $this->assertTrue($spec->isSatisfiedBy($this->_src));
     }
 
     function testFactoryGreater()
     {
-        $pF = PolicyFactory::getInstance();
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
         $spec = $pF->greater('numField', '40');
         $this->assertTrue($spec->isSatisfiedBy($this->_src));
     }
 
     function testFactoryMatches()
     {
-        $pF = PolicyFactory::getInstance();
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
         $spec = $pF->matches('numField', '/^\d{2}$/');
         $this->assertTrue($spec->isSatisfiedBy($this->_src));
     }
 
     function testFactoryFacility()
     {
-        $pF = PolicyFactory::getInstance();
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
         $spec = $pF->equal('writer', 'Douglas Adams')->and_(
             $pF->matches('numField', '/^\d{2}$/')->and_(
                 $pF->greater('numField', 40)
@@ -82,27 +82,27 @@ class PolicyFactoryTest extends PHPUnit_Framework_TestCase
 
     function testCallInvalidPolicy()
     {
-        $pF = PolicyFactory::getInstance();
-        $this->setExpectedException('PluginException');
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
+        $this->setExpectedException('\Seraphp\Exceptions\PluginException');
         $spec = $pF->less('numField', '');
     }
 
     function testGetInitialPluginsDir()
     {
-        $pF = PolicyFactory::getInstance();
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
         $this->assertEquals($pF->getPluginsDir(), getcwd().'/Policy');
     }
 
     function testInvalidPluginsDir()
     {
-        $pF = PolicyFactory::getInstance();
-        $this->setExpectedException('PluginException');
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
+        $this->setExpectedException('\Seraphp\Exceptions\PluginException');
         $pF->setPluginsDir(getcwd().'/tests/Policy');
     }
 
     function testValidPluginsDir()
     {
-        $pF = PolicyFactory::getInstance();
+        $pF = \Seraphp\Policy\PolicyFactory::getInstance();
         $pF->setPluginsDir('./Policy');
     }
 }

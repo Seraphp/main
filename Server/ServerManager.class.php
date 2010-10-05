@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server;
+namespace Seraphp\Server;
 require_once 'Exceptions/ExceptionHandler.class.php';
 require_once 'Server/AppServer.class.php';
 require_once 'Server/Config/ConfigFactory.class.php';

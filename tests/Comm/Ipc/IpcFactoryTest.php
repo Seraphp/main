@@ -16,30 +16,40 @@ class IpcFactoryTest extends PHPUnit_Framework_TestCase
     function testGetClassName()
     {
         $this->assertEquals(
-            'IpcUnixsockets', IpcFactory::getClassName('unixsockets')
+            'Seraphp\Comm\Ipc\IpcUnixsockets',
+            \Seraphp\Comm\Ipc\IpcFactory::getClassName('unixsockets')
         );
     }
 
     function testPluginsDir()
     {
-        $this->assertEquals(getcwd().'/Comm/Ipc', IpcFactory::getPluginsDir());
-        IpcFactory::setPluginsDir('./Comm');
-        $this->assertEquals('./Comm', IpcFactory::getPluginsDir());
-        $this->assertFalse(IpcFactory::setPluginsDir('./seraph'));
-        $this->assertEquals('./Comm', IpcFactory::getPluginsDir());
+        $this->assertEquals(
+            getcwd().'/Comm/Ipc', \Seraphp\Comm\Ipc\IpcFactory::getPluginsDir()
+        );
+        \Seraphp\Comm\Ipc\IpcFactory::setPluginsDir('./Comm');
+        $this->assertEquals(
+            './Comm', \Seraphp\Comm\Ipc\IpcFactory::getPluginsDir()
+        );
+        $this->assertFalse(
+            \Seraphp\Comm\Ipc\IpcFactory::setPluginsDir('./seraph')
+        );
+        $this->assertEquals(
+            './Comm', \Seraphp\Comm\Ipc\IpcFactory::getPluginsDir()
+        );
     }
 
     function testValidPlugin()
     {
-        IpcFactory::setPluginsDir('./Comm/Ipc');
+        \Seraphp\Comm\Ipc\IpcFactory::setPluginsDir('./Comm/Ipc');
         $this->assertThat(
-            IpcFactory::get('unixsockets', 0), $this->IsInstanceOf('IpcAdapter')
+            \Seraphp\Comm\Ipc\IpcFactory::get('unixsockets', 0),
+            $this->IsInstanceOf('\Seraphp\Comm\Ipc\IpcAdapter')
         );
     }
 
     function testNonexistingPlugin()
     {
-        $this->setExpectedException('PluginException');
-        IpcFactory::get('something', 0);
+        $this->setExpectedException('\Seraphp\Exceptions\PluginException');
+        \Seraphp\Comm\Ipc\IpcFactory::get('something', 0);
     }
 }

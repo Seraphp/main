@@ -9,6 +9,7 @@
  * @filesource
  */
 /***/
+namespace Seraphp\Server;
 require_once 'Server/AppEngine.interface.php';
 require_once 'Log/LogFactory.class.php';
 /**
@@ -24,12 +25,12 @@ class DefaultEngine implements AppEngine
 {
     private static $_log;
 
-    function __construct(Config $conf = null)
+    function __construct(Config\Config $conf = null)
     {
-        self::$_log = LogFactory::getInstance($conf);
+        self::$_log = \Seraphp\Log\LogFactory::getInstance($conf);
     }
 
-    function process(Request $req)
+    function process(\Seraphp\Comm\Request $req)
     {
         $msg = <<<HTML
     <html>
@@ -44,8 +45,7 @@ HTML;
         $response->contentType = 'text/html';
         try{
             $response->send();
-            self::$_log->info('Response sent ('.microtime().')');
-        } catch (IOException $e) {
+        } catch (\Seraphp\Exceptions\IOException $e) {
             self::$_log->alert($e->getMessage());
             return 1;
         }

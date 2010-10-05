@@ -10,7 +10,7 @@
  * @filesource
  */
  /***/
- //namespace Seraphp\Comm\Http;
+ namespace Seraphp\Comm\Http;
 /**
  * Class representing an HTTP cookie
  *

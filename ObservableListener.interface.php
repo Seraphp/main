@@ -7,6 +7,7 @@
  * @package Seraphp
  * @author Peter Nagy  <antronin@gmail.com>
  */
+namespace Seraphp;
 /**
  * Listener interface definition
  *
@@ -32,7 +33,7 @@ interface Listener
      * @param Listener $instance
      * @return void
      */
-    public function update(Observable $instance);
+    public function update(\Seraphp\Observable $instance);
 }
 /**
  * Listener interface definition
@@ -52,7 +53,7 @@ interface Observable
      * @param Listener $instance
      * @return boolean
      */
-    public function attach(Listener $instance);
+    public function attach(\Seraphp\Listener $instance);
     /**
      * Notifies listeners
      *

@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm\Http;
+namespace Seraphp\Comm\Http;
 require_once 'Comm/Request.interface.php';
 require_once 'Log/LogFactory.class.php';
 require_once 'ObservableListener.interface.php';
@@ -26,7 +26,7 @@ require_once 'HttpFactory.class.php';
  * @subpackage Http
  * @todo Test HTTPRequest class
  */
-class HttpRequest implements Request, Observable
+class HttpRequest implements \Seraphp\Comm\Request, \Seraphp\Observable
 {
     const REQ_TOSEND = false;
     const REQ_RECEIVED = true;
@@ -113,7 +113,7 @@ class HttpRequest implements Request, Observable
      */
     public function __construct($sock = null)
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         if ($sock !== null && is_resource($sock)) {
          //If parameter is a resource, it means the class will represent a
          //received request
@@ -141,7 +141,9 @@ class HttpRequest implements Request, Observable
             if (socket_select(
                 $read, $write = null, $except = null, $this->timeout, 200
             ) < 1) {
-                throw new IOException('Connection timed out!');
+                throw new \Seraphp\Exceptions\IOException(
+                    'Connection timed out!'
+                );
             }
             while ($this->_buffer = socket_read($this->_socket, 8)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
@@ -210,7 +212,8 @@ class HttpRequest implements Request, Observable
         $this->httpHeaders = $headers;
         if (array_key_exists('Cookie', $this->httpHeaders)) {
             $this->cookies =
-                HttpFactory::getCookies($this->httpHeaders['Cookie']);
+                HttpFactory::getCookies(
+                    $this->httpHeaders['Cookie']);
         }
         if ($pos = strpos($this->url, '?')) {
             $this->getParams = $this->_params2array(substr($this->url, $pos+1));
@@ -285,7 +288,7 @@ class HttpRequest implements Request, Observable
         }
     }
 
-    public function attach(Listener $listener)
+    public function attach(\Seraphp\Listener $listener)
     {
         $objName = $listener->getName();
         if (!array_key_exists($objName, $this->_listeners)) {
@@ -356,13 +359,15 @@ class HttpRequest implements Request, Observable
             curl_setopt_array($curlObj, $options);
             $response = curl_exec($curlObj);
             if ($response === false) {
-                throw new HttpException(curl_error($curlObj));
+                throw new \Seraphp\Exceptions\HttpException(
+                    curl_error($curlObj)
+                );
             }
             curl_close($curlObj);
             $resp = HttpFactory::create('response', null);
             $resp->parse($response);
             return $resp;
-        } else throw new HttpException(
+        } else throw new \Seraphp\Exceptions\HttpException(
                 'HttpRequest instance is received not to be send out!'
             );
     }
@@ -384,7 +389,7 @@ class HttpRequest implements Request, Observable
             );
             return $response;
         } else {
-            throw new HttpException(
+            throw new \Seraphp\Exceptions\HttpException(
                 'HttpRequest instance is to be send out: cannot be responded!'
             );
         }

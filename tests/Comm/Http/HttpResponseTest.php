@@ -68,9 +68,9 @@ MSG;
 
     function testConstructor()
     {
-        $resp = new HttpResponse();
+        $resp = new \Seraphp\Comm\Http\HttpResponse();
         $this->assertFalse($resp->toBeSend);
-        $resp = new HttpResponse($this->_sockets[0]);
+        $resp = new \Seraphp\Comm\Http\HttpResponse($this->_sockets[0]);
         $this->assertTrue($resp->toBeSend);
         $this->assertEquals($resp->contentType, 'text/plain');
         $this->assertEquals($resp->statusCode, 200);
@@ -79,7 +79,7 @@ MSG;
 
     function testSend()
     {
-        $resp = new HttpResponse($this->_sockets[0]);
+        $resp = new \Seraphp\Comm\Http\HttpResponse($this->_sockets[0]);
         $resp->messageBody = $this->_body;
         $resp->send();
         $result = socket_read($this->_sockets[1], 2048);
@@ -88,7 +88,7 @@ MSG;
 
     function testSendWithStreamBody()
     {
-        $resp = new HttpResponse($this->_sockets[0]);
+        $resp = new \Seraphp\Comm\Http\HttpResponse($this->_sockets[0]);
         $bodyRs = fopen($this->_bodyFile, "r");
         $resp->messageBody = $bodyRs;
         $resp->send();

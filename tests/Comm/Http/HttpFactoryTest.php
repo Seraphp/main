@@ -17,62 +17,82 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
 
     function testCreateRequest()
     {
-        $res = HttpFactory::create("request", array("method"=>"get"));
+        $res = \Seraphp\Comm\Http\HttpFactory::create(
+            'request', array('method'=>'get')
+        );
         $this->assertType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
-        $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
+        $this->assertThat(
+            $res, $this->isInstanceOf('\Seraphp\Comm\Http\HttpRequest')
+        );
     }
 
     function testCreateResponse()
     {
-        $res = HttpFactory::create("response", array("statusCode"=>"404"));
+        $res = \Seraphp\Comm\Http\HttpFactory::create(
+            'response', array('statusCode'=>'404')
+        );
         $this->assertType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
-        $this->assertThat($res, $this->isInstanceOf('HttpResponse'));
+        $this->assertThat(
+            $res, $this->isInstanceOf('\Seraphp\Comm\Http\HttpResponse')
+        );
     }
 
     function testCreateRequestWithSettings()
     {
-        $res = HttpFactory::create(
-            "request", array('contentType'=>'text/html')
+        $res = \Seraphp\Comm\Http\HttpFactory::create(
+            'request', array('contentType'=>'text/html')
         );
         $this->assertType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
-        $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
+        $this->assertThat(
+            $res, $this->isInstanceOf('\Seraphp\Comm\Http\HttpRequest')
+        );
     }
 
     function testCreateResponseWithSettings()
     {
-        $res = HttpFactory::create(
-            "response", array('contentType'=>'text/html')
+        $res = \Seraphp\Comm\Http\HttpFactory::create(
+            'response', array('contentType'=>'text/html')
         );
         $this->assertType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
-        $this->assertThat($res, $this->isInstanceOf('HttpResponse'));
+        $this->assertThat(
+            $res, $this->isInstanceOf('\Seraphp\Comm\Http\HttpResponse')
+        );
     }
 
     function testCreateCookies()
     {
         $this->_cookies = array();
         array_push($this->_cookies, array('name'=>'testCookie'));
-        $res = HttpFactory::create("cookie", null, $this->_cookies);
+        $res = \Seraphp\Comm\Http\HttpFactory::create(
+            'cookie', null, $this->_cookies
+        );
         $this->assertType(
             PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $res
         );
-        $this->assertThat($res[0], $this->isInstanceOf('HttpCookie'));
+        $this->assertThat(
+            $res[0], $this->isInstanceOf('\Seraphp\Comm\Http\HttpCookie')
+        );
     }
 
     function testGetValidHttpStatusCodes()
     {
-        $this->assertEquals('Continue', HTTPFactory::getHttpStatus(100));
+        $this->assertEquals(
+            'Continue', \Seraphp\Comm\Http\HTTPFactory::getHttpStatus(100)
+        );
     }
 
     function testGetNotValidHttpStatusCodes()
     {
-        $this->assertEquals(null, HTTPFactory::getHttpStatus(900));
+        $this->assertEquals(
+            null, \Seraphp\Comm\Http\HTTPFactory::getHttpStatus(900)
+        );
     }
 }

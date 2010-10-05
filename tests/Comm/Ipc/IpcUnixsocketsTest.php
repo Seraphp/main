@@ -18,7 +18,7 @@ class IpcUnixsocketsTest extends PHPUnit_Framework_TestCase
     function setUp()
     {
         $this->_msg = 'Árvíztűrő tükörfúrógép';
-        $this->_ipc = new IpcUnixsockets();
+        $this->_ipc = new \Seraphp\Comm\Ipc\IpcUnixsockets();
         $this->_ipc->init(1234, 'child');
     }
 

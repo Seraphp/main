@@ -45,21 +45,25 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase
     function testGetProtocolOnGet()
     {
         $this->assertEquals(
-            'http', RequestFactory::getProtocol($this->_requests['get'])
+            'http', \Seraphp\Comm\RequestFactory::getProtocol(
+                $this->_requests['get']
+            )
         );
     }
 
     function testGetProtocolOther()
     {
         $this->assertEquals(
-            'other', RequestFactory::getProtocol($this->_requests['other'])
+            'other',
+            \Seraphp\Comm\RequestFactory::getProtocol($this->_requests['other'])
         );
     }
 
     function testGetProtocolOnHead()
     {
         $this->assertEquals(
-            'http', RequestFactory::getProtocol($this->_requests['head'])
+            'http',
+            \Seraphp\Comm\RequestFactory::getProtocol($this->_requests['head'])
         );
     }
 
@@ -75,8 +79,10 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase
             );
         }
         socket_shutdown($this->_sockets[0], 2);
-        $res = RequestFactory::create($this->_sockets[1]);
-        $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
+        $res = \Seraphp\Comm\RequestFactory::create($this->_sockets[1]);
+        $this->assertThat(
+            $res, $this->isInstanceOf('\Seraphp\Comm\Http\HttpRequest')
+        );
     }
 
     function testCreateOnHead()
@@ -89,8 +95,10 @@ class RequestFactoryTest extends PHPUnit_Framework_TestCase
             $this->fail(socket_strerror(socket_last_error($this->_sockets[0])));
         }
         socket_shutdown($this->_sockets[0], 2);
-        $res = RequestFactory::create($this->_sockets[1]);
-        $this->assertThat($res, $this->isInstanceOf('HttpRequest'));
+        $res = \Seraphp\Comm\RequestFactory::create($this->_sockets[1]);
+        $this->assertThat(
+            $res, $this->isInstanceOf('\Seraphp\Comm\Http\HttpRequest')
+        );
     }
 
     function tearDown()

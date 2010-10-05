@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2008, Peter Nagy
  * @filesource
  */
-//namespace Seraphp\Comm;
+namespace Seraphp\Comm;
 /**
  * Class documentation
  *

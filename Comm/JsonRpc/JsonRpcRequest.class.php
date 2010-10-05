@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm;
+namespace Seraphp\Comm\JsonRpc;
 require_once 'Comm/Request.interface.php';
 /**
  * Implements simple JSON-RPC Request class
@@ -19,7 +19,7 @@ require_once 'Comm/Request.interface.php';
  * @subpackage JsonRpc
  * @since JSON-RPC 1.0
  */
-class JsonRpcRequest implements Request
+class JsonRpcRequest implements \Seraphp\Comm\Request
 {
      public $id = null;
      public $method = '';
@@ -28,7 +28,7 @@ class JsonRpcRequest implements Request
      public function __construct($method, $params = array(), $id = null)
      {
          if ( empty($method) ) {
-             throw new Exception('Method has to be defined!');
+             throw new \Exception('Method has to be defined!');
          } else {
              $this->method = $method;
              $this->params = $params;

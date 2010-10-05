@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server;
+namespace Seraphp\Server;
 require_once 'Server/Server.class.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Comm/Request.interface.php';
@@ -78,9 +78,9 @@ class AppServer extends Server
      * @param Config $conf
      * @return AppServer
      */
-    public function __construct(Config $conf)
+    public function __construct(Config\Config $conf)
     {
-        self::$_log = LogFactory::getInstance($conf->server);
+        self::$_log = \Seraphp\Log\LogFactory::getInstance($conf->server);
         $this->_appID = (string)$conf['id'];
         $this->_pidFileName = sprintf('.%s_srphp.pid', $this->_appID);
         if (isset($conf->includes)) {
@@ -111,7 +111,7 @@ class AppServer extends Server
             if (is_dir($resource)) {
                 array_push($this->_includes, $resource);
             } else {
-                throw new Exception($resource.
+                throw new \Exception($resource.
                     ' is not a directory to include');
             }
         }
@@ -123,7 +123,7 @@ class AppServer extends Server
      * @param Config $instance
      * @return void
      */
-    protected function _configInstance($instance)
+    protected function _configInstance(Config\Config $instance)
     {
         //Calling Parent's constructor...
         if (isset($instance->ipc)) {
@@ -138,7 +138,7 @@ class AppServer extends Server
             }
         } else {
             $conf = '<engine id="default" class="Default" />';
-            $this->_engines['default'] = new Config($conf);
+            $this->_engines['default'] = new Config\Config($conf);
         }
         //setting up bind address
         if (isset($instance->address)) {
@@ -180,10 +180,10 @@ class AppServer extends Server
     {
         if ($this->_ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
-            $this->_appReg = IpcRegistry::getInstance();
+            $this->_appReg = \Seraphp\Comm\Ipc\IpcRegistry::getInstance();
         } else {
             require_once 'Server/Registry/Registry.class.php';
-            $this->_appReg = Registry::getInstance();
+            $this->_appReg = \Seraphp\Server\Registry\Registry::getInstance();
         }
     }
 
@@ -217,7 +217,7 @@ class AppServer extends Server
         $this->_setupIncludePathes();
         $this->_initEngines();
 
-        $this->_rpcProxy = new JsonRpcProxy($this->_appID);
+        $this->_rpcProxy = new \Seraphp\Comm\Json\JsonRpcProxy($this->_appID);
         $this->_rpcProxy->setup(
             $this,
             array('getAppId', 'getStatus'),
@@ -257,7 +257,7 @@ class AppServer extends Server
     protected function _initEngines()
     {
         foreach ($this->_engines as $name=>$conf) {
-            $class = $conf['class'].'Engine';
+            $class = '\Seraphp\Server\\'.$conf['class'].'Engine';
             require_once $class.'.class.php';
             $this->_engines[$name] = new $class($conf);
         }
@@ -311,20 +311,23 @@ class AppServer extends Server
             if ($this->_role == 'child') {//we are the new process
                 $conn = socket_accept($this->_socket);
                 if (false === $conn) {
-                    throw new IOException(socket_strerror(socket_last_error()));
+                    throw new \Seraphp\Exceptions\IOException(
+                        socket_strerror(socket_last_error())
+                    );
                 }
                 $this->_accepting = false;
                 socket_set_nonblock($conn);
                 try {
                     $result = $this->process(
-                        RequestFactory::create($conn), $this->_timeout
+                        \Seraphp\Server\Comm\RequestFactory::create($conn),
+                        $this->_timeout
                     );
-                } catch (IOException $e) {
+                } catch (\Seraphp\Exceptions\IOException $e) {
                     self::$_log->alert('Error: '.$e->getMessage());
                     //stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
                     socket_shutdown($conn, 2);
                     $result = 0;
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     self::$_log->alert('Error: '.$e->getMessage());
                     //stream_socket_sendto(
                     fwrite(
@@ -363,7 +366,7 @@ class AppServer extends Server
             STREAM_SERVER_BIND | STREAM_SERVER_LISTEN
         );
         if (!is_resource($this->_socket)) {
-            throw new SocketException(
+            throw new \Seraphp\Exceptions\SocketException(
                 'Unable to open socket:'."$errMsg ($errNum)");
         } else {
             self::$_log->debug('Setting listening socket to non blocking mode');
@@ -373,18 +376,24 @@ class AppServer extends Server
         }*/
         $this->_socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if (false === $this->_socket) {
-            throw new IOException(socket_strerror(socket_last_error()));
+            throw new \Seraphp\Exceptions\IOException(
+                socket_strerror(socket_last_error())
+            );
         }
         if (false === socket_bind(
             $this->_socket, $this->_address, $this->_port
         )) {
-            throw new IOException(socket_strerror(socket_last_error()));
+            throw new \Seraphp\Exceptions\IOException(
+                socket_strerror(socket_last_error())
+            );
         }
         /*if (false === socket_set_nonblock($this->_socket)) {
             throw new IOException(socket_strerror(socket_last_error()));
         }*/
         if (false === socket_listen($this->_socket)) {
-            throw new IOException(socket_strerror(socket_last_error()));
+            throw new \Seraphp\Exceptions\IOException(
+                socket_strerror(socket_last_error())
+            );
         }
         $this->_accepting = true;
         return true;
@@ -401,7 +410,7 @@ class AppServer extends Server
      * @param Request $req
      * @return integer
      */
-    public function process(Request $req)
+    public function process(\Seraphp\Server\Comm\Request $req)
     {
         $path = parse_url($req->url, PHP_URL_PATH);
         $engine = false;

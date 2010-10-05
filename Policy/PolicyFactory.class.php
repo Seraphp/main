@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Policy;
+namespace Seraphp\Policy;
 require_once 'Singleton.interface.php';
 require_once 'Policy/Specification.interface.php';
 require_once 'Exceptions/PluginException.class.php';
@@ -23,7 +23,7 @@ require_once 'Exceptions/PluginException.class.php';
  * @package Policy
  * @todo: Refactor class to make it static using PHP 5.3 __staticCall feature
  */
-class PolicyFactory implements Singleton
+class PolicyFactory implements \Seraphp\Singleton
 {
     /**
      * Stores usable plugins
@@ -78,10 +78,12 @@ class PolicyFactory implements Singleton
     {
         $this->_readPlugins();
         if (array_key_exists($func, $this->_plugins)) {
-            $class = new ReflectionClass( $this->_plugins[$func] );
+            $class = new \ReflectionClass( $this->_plugins[$func] );
             return ($class->newInstanceArgs($params));
         }
-        else throw new PluginException('No plugin mapped to function '.$func);
+        else throw new \Seraphp\Exceptions\PluginException(
+            'No plugin mapped to function '.$func
+        );
     }
 
     /**
@@ -93,11 +95,9 @@ class PolicyFactory implements Singleton
         if ($this->_plugins === array()) {
             if ($this->_pluginsDir === '') {
                 $this->_pluginsDir = dirname(__FILE__);
-            } else {
-                $this->_pluginsDir = $this->_pluginsDir;
             }
             $d = dir($this->_pluginsDir);
-            while ( false !== ( $entry = $d->read() ) ) {
+            while (false !== ($entry = $d->read())) {
                 if ($entry != '.' && $entry != '..') {
                     $this->_registerPlugin($entry);
                 }
@@ -120,7 +120,7 @@ class PolicyFactory implements Singleton
      * @param string $plugin
      * @throws PluginException
      */
-    private function _registerPlugin($plugin)
+    private function _registerPlugin($plugin, $nameSpace='\Seraphp\Policy')
     {
         $nameMatch = preg_match(
             '/^(.+)Specification.class.php$/',
@@ -129,9 +129,9 @@ class PolicyFactory implements Singleton
         );
         if ($nameMatch !== FALSE && $nameMatch > 0) {
             require_once $this->_pluginsDir.'/'.$plugin;
-            $className = substr($plugin, 0, -10);
-            $class = new ReflectionClass($className);
-            if ($class->implementsInterface('Specification')) {
+            $className = $nameSpace.'\\'.substr($plugin, 0, -10);
+            $class = new \ReflectionClass($className);
+            if ($class->implementsInterface('\Seraphp\Policy\Specification')) {
                 if (strpos($matches[1], 'Field') === 0) {
                     $key = substr($matches[1], 5);
                 } else {
@@ -141,8 +141,9 @@ class PolicyFactory implements Singleton
                     $this->_plugins[strtolower($key)] =  $className;
                 }
             } else {
-                throw new PluginException(
-                    'Specification interface not implemented in '.$plugin
+                throw new \Seraphp\Exceptions\PluginException(
+                    'Specification interface not implemented in '.
+                    $nameSpace.'\\'.$plugin
                 );
             }
         }

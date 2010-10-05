@@ -22,17 +22,23 @@ class DefaultEngineTest extends PHPUnit_Framework_TestCase
 
     function setUp()
     {
-        $this->_request = $this->getMock('HttpRequest', array('respond'));
-        $this->_response = $this->getMock('HttpResponse', array('send'));
+        $this->_request = $this->getMock(
+            '\Seraphp\Comm\Http\HttpRequest',
+            array('respond')
+        );
+        $this->_response = $this->getMock(
+            '\Seraphp\Comm\Http\HttpResponse',
+            array('send')
+        );
         $this->_request->expects($this->once())
-         ->method('respond')
-         ->will($this->returnValue($this->_response));
-        $this->_config = new Config('<foo/>');
+            ->method('respond')
+            ->will($this->returnValue($this->_response));
+        $this->_config = new \Seraphp\Server\Config\Config('<foo/>');
     }
 
     function testProcess()
     {
-        $engine = new DefaultEngine($this->_config);
+        $engine = new \Seraphp\Server\DefaultEngine($this->_config);
         $this->assertEquals(0, $engine->process($this->_request));
     }
 
@@ -40,7 +46,6 @@ class DefaultEngineTest extends PHPUnit_Framework_TestCase
     {
         unset($this->_request);
         unset($this->_response);
-        unset($this->config);
+        unset($this->_config);
     }
-
 }

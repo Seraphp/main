@@ -59,7 +59,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
 
     function testConstructor()
     {
-        $request = new HttpRequest();
+        $request = new \Seraphp\Comm\Http\HttpRequest();
         $this->assertFalse($request->isReceived);
     }
 
@@ -73,7 +73,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
         socket_shutdown($this->_sockets[1], 2);
-        $request = new HttpRequest($this->_sockets[0]);
+        $request = new \Seraphp\Comm\Http\HttpRequest($this->_sockets[0]);
         $this->assertTrue($request->isReceived);
         $this->assertEquals('1.1', $request->httpVersion);
         $this->assertEquals('GET', $request->method);
@@ -109,7 +109,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
         socket_shutdown($this->_sockets[1], 2);
-        $request = new HttpRequest($this->_sockets[0]);
+        $request = new \Seraphp\Comm\Http\HttpRequest($this->_sockets[0]);
         $this->assertTrue($request->isReceived);
         $this->assertEquals('1.1', $request->httpVersion);
         $this->assertEquals('POST', $request->method);
@@ -135,17 +135,18 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
         socket_shutdown($this->_sockets[1], 2);
-        $request = new HttpRequest($this->_sockets[0]);
+        $request = new \Seraphp\Comm\Http\HttpRequest($this->_sockets[0]);
         $this->assertTrue($request->isReceived);
         $this->assertThat(
-            $request->respond('Testing'), $this->isInstanceOf('HttpResponse')
+            $request->respond('Testing'),
+            $this->isInstanceOf('\Seraphp\Comm\Http\HttpResponse')
         );
     }
 
     function testListener()
     {
         require_once 'ObservableListener.interface.php';
-        $obs = $this->getMock('Listener');
+        $obs = $this->getMock('\Seraphp\Listener');
         $obs->expects($this->once())->method('getName')->will(
             $this->returnValue('mockListener')
         );
@@ -159,7 +160,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
             $this->fail(socket_strerror(socket_last_error($this->_sockets[1])));
         }
         socket_shutdown($this->_sockets[1], 2);
-        $request = new HttpRequest($this->_sockets[0]);
+        $request = new \Seraphp\Comm\Http\HttpRequest($this->_sockets[0]);
         $this->assertEquals('mockListener', $request->attach($obs));
         $this->assertType('int', $request->getState());
         $this->assertTrue($request->detach('mockListener'));
@@ -170,12 +171,12 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
      */
     function testSendingRequest($version)
     {
-        $req = new HttpRequest();
+        $req = new \Seraphp\Comm\Http\HttpRequest();
         $this->assertFalse($req->isReceived);
         $req->url = 'http://localhost';
         $req->getParams = array('test'=>1);
         $req->httpVersion = $version;
-        $req->cookies = HttpFactory::create(
+        $req->cookies = \Seraphp\Comm\Http\HttpFactory::create(
             'cookie',
             null,
             array(
@@ -185,7 +186,9 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
             )
         );
         $resp = $req->send();
-        $this->assertThat($resp, $this->isInstanceOf('HttpResponse'));
+        $this->assertThat(
+            $resp, $this->isInstanceOf('\Seraphp\Comm\Http\HttpResponse')
+        );
         $this->assertEquals('text/html', $resp->contentType);
         $this->assertEquals('1.1', $resp->httpVersion);
         $this->assertEquals(200, $resp->statusCode);

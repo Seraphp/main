@@ -9,6 +9,7 @@
  * @package Server
  */
 /***/
+namespace Seraphp\Server;
 require_once 'Comm/Request.interface.php';
 require_once 'Server/Config/Config.class.php';
 /**
@@ -24,12 +25,12 @@ interface AppEngine
      * @param Config $conf  Configuration part from xml
      * @return void
      */
-    function __construct(Config $conf= null);
+    function __construct(Config\Config $conf= null);
     /**
      * Method to process the received Request
      *
      * @param Request $req  Incoming request in wrapper object
      * @return integer  exit statuscode
      */
-    function process(Request $req);
+    function process(\Seraphp\Comm\Request $req);
 }

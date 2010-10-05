@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Policy;
+namespace Seraphp\Policy;
 require_once 'Policy/Specification.interface.php';
 /**
  * Implements "And" type specification policy

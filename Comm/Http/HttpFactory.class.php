@@ -11,7 +11,7 @@
  * @todo Implement HttpFactory class
  */
 /***/
-//namespace Seraphp\Comm\Http
+namespace Seraphp\Comm\Http;
 require_once 'Comm/Http/HttpCookie.class.php';
 require_once 'Comm/Http/HttpRequest.class.php';
 require_once 'Comm/Http/HttpResponse.class.php';
@@ -53,7 +53,7 @@ class HttpFactory
      */
     public static function getCookies($param)
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         $result = array();
         if (is_string($param)) {
             //We have an http Cookie header to parse
@@ -90,7 +90,7 @@ class HttpFactory
      */
     public static function create($type, $socket = null, $settings = null)
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         switch ($type)
         {
             case 'request':
@@ -129,7 +129,7 @@ class HttpFactory
      */
     public static function getHttpStatus($code)
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         if (array_key_exists($code, self::$httpStatuses)) {
             return self::$httpStatuses[$code];
         } else {

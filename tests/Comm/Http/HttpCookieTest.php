@@ -24,7 +24,7 @@ class HttpCookieTest extends PHPUnit_Framework_TestCase
 
     function testConstructor()
     {
-        $cookie = new HttpCookie($this->_name);
+        $cookie = new \Seraphp\Comm\Http\HttpCookie($this->_name);
         $this->assertEquals($this->_name, $cookie->name);
         $this->assertFalse($cookie->value);
         $this->assertEquals(null, $cookie->expireOn);
@@ -39,7 +39,7 @@ class HttpCookieTest extends PHPUnit_Framework_TestCase
 
     function testToString()
     {
-        $cookie = new HttpCookie(
+        $cookie = new \Seraphp\Comm\Http\HttpCookie(
             $this->_name, $this->_value, null, '/', 'localhost', true
         );
         $this->assertEquals(

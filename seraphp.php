@@ -5,7 +5,7 @@
  * @package Seraphp
  */
 require_once 'Server/ServerManager.class.php';
-$cf = ConfigFactory::getInstance();
+$cf = \Seraphp\Server\Config\ConfigFactory::getInstance();
 if ($argc > 1) {
     if (isset($argv[2])) {
         $server = $argv[2];
@@ -19,13 +19,13 @@ if ($argc > 1) {
     }
     switch ($argv[1]) {
         case 'start':
-            ServerManager::startup($server);
+            \Seraphp\Server\ServerManager::startup($server);
             break;
         case 'stop':
-            ServerManager::shutdown($server);
+            \Seraphp\Server\ServerManager::shutdown($server);
             break;
         case 'restart':
-            ServerManager::restart($server);
+            \Seraphp\Server\ServerManager::restart($server);
             break;
         default: echo '1st paramter has to be the required action:'.
          'start|stop|restart';

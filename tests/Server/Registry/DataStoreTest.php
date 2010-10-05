@@ -17,7 +17,7 @@ class DataStoreTest extends PHPUnit_Framework_TestCase
 
     function setUp()
     {
-        $this->_store = new DataStore();
+        $this->_store = new \Seraphp\Server\Registry\DataStore();
     }
 
     function testEmptyKeyIsInvalid()
@@ -59,8 +59,9 @@ class DataStoreTest extends PHPUnit_Framework_TestCase
 
     function testSetEngine()
     {
-        $this->assertFalse($this->_store->getEngineType());
-        $engine = $this->getMock('PackedFileDataStore');
+        $engine = $this->getMock(
+            '\Seraphp\Server\Registry\PackedFileDataStore'
+        );
         $engine->expects($this->once())->method('setUp');
         $engine->expects($this->once())->method('load');
         $this->_store->setEngine($engine);
@@ -68,9 +69,12 @@ class DataStoreTest extends PHPUnit_Framework_TestCase
 
     function testGetEngine()
     {
-        $this->_store->setEngine(new PackedFileDataStore());
+        $this->_store->setEngine(
+            new \Seraphp\Server\Registry\PackedFileDataStore()
+        );
         $this->assertEquals(
-            'PackedFileDataStore', $this->_store->getEngineType()
+            'Seraphp\Server\Registry\PackedFileDataStore',
+            $this->_store->getEngineType()
         );
     }
 

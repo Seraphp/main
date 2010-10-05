@@ -36,7 +36,7 @@ class JsonRpcRequestTest extends PHPUnit_Framework_TestCase
 
     function testConstructor()
     {
-        $request = new JsonRpcRequest('call', null, 1);
+        $request = new \Seraphp\Comm\JsonRpc\JsonRpcRequest('call', null, 1);
         $this->assertEquals('call', $request->method);
         $this->assertEquals(1, $request->id);
         $this->assertEquals(null, $request->params);
@@ -44,13 +44,13 @@ class JsonRpcRequestTest extends PHPUnit_Framework_TestCase
 
     function testConstructorNoMethod()
     {
-        $this->setExpectedException('Exception', 'Method has to be defined!');
-        $request = new JsonRpcRequest(null, null, 1);
+        $this->setExpectedException('\Exception', 'Method has to be defined!');
+        $request = new \Seraphp\Comm\JsonRpc\JsonRpcRequest(null, null, 1);
     }
 
     function testToString()
     {
-        $request = new JsonRpcRequest('call', null, 1);
+        $request = new \Seraphp\Comm\JsonRpc\JsonRpcRequest('call', null, 1);
         $this->assertEquals(
             '{"id":1,"method":"call","params":null}', $request->__toString()
         );

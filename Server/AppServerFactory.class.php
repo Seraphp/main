@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server;
+namespace Seraphp\Server;
 require_once 'Registry/AppServerRegistry.class.php';
 /**
  * Class documentation

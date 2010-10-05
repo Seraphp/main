@@ -8,6 +8,7 @@
  * @package Exceptions
  * @filesource
  */
+namespace Seraphp\Exceptions;
 require_once 'NestedException.class.php';
 /**
  * RegistryException class

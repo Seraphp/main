@@ -13,10 +13,10 @@ require_once 'Server/DefaultEngine.class.php';
  */
 class AppServerTest extends PHPUnit_Framework_TestCase
 {
-    protected $_appID;
-    protected $_server = null;
-    protected $_conf = null;
-    protected $_confString;
+    private $_appID;
+    private $_server = null;
+    private $_conf = null;
+    private $_confString;
 
     function setUp()
     {
@@ -36,8 +36,8 @@ XML;
 
     function testAppServerInstatiation()
     {
-        $this->_conf = new Config($this->_confString);
-        $this->_server = new AppServer($this->_conf->server);
+        $this->_conf = new \Seraphp\Server\Config\Config($this->_confString);
+        $this->_server = new \Seraphp\Server\AppServer($this->_conf->server);
         $this->_server->daemonize = false;
         $this->assertEquals($this->_appID, $this->_server->getAppId());
         $this->assertTrue(is_numeric($this->_server->summon()));

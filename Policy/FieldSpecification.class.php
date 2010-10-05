@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Policy;
+namespace Seraphp\Policy;
 require_once 'Policy/Specification.interface.php';
 require_once 'Policy/AndSpecification.class.php';
 require_once 'Policy/OrSpecification.class.php';

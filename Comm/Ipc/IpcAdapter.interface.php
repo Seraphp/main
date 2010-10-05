@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm\Ipc;
+namespace Seraphp\Comm\Ipc;
 /**
  * IpcAdapter interface definition
  *

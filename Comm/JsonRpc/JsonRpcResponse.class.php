@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm;
+namespace Seraphp\Comm\JsonRpc;
 /**
  * Implements simple JSON-RPC Response class
  *
@@ -30,7 +30,7 @@ class JsonRpcResponse
             if ($error !== null) {
                 $this->error = $error->getMessage();
             } else
-                throw new Exception(
+                throw new \Exception(
                     'Either a result or an error should be set!'
                 );
         } else {

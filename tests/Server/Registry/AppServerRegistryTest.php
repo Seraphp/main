@@ -25,7 +25,7 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase
         if (file_exists('./.srpdAppMan')) {
             unlink('./.srpdAppMan');
         }
-        $this->_reg = AppServerRegistry::getInstance();
+        $this->_reg = \Seraphp\Server\Registry\AppServerRegistry::getInstance();
         $confString = <<<XML
 <?xml version='1.0' standalone='yes'?>
     <servers>
@@ -37,17 +37,23 @@ class AppServerRegistryTest extends PHPUnit_Framework_TestCase
     </servers>
 XML;
 
-        $this->_conf = new Config($confString);
+        $this->_conf = new \Seraphp\Server\Config\Config($confString);
         $this->_conf->server->instance->port = self::$_port++;
-        $this->_mockServer = new AppServer($this->_conf->server);
+        $this->_mockServer = new \Seraphp\Server\AppServer(
+            $this->_conf->server
+        );
     }
 
     function testRegistryIsSingleton()
     {
         $this->assertThat(
-            $this->_reg, $this->IsInstanceOf('AppServerRegistry')
+            $this->_reg,
+            $this->IsInstanceOf('Seraphp\Server\Registry\AppServerRegistry')
         );
-        $this->assertSame($this->_reg, AppServerRegistry::getInstance());
+        $this->assertSame(
+            $this->_reg,
+            \Seraphp\Server\Registry\AppServerRegistry::getInstance()
+        );
     }
 
     function testGetNonRunningServerStatus()
@@ -114,7 +120,7 @@ XML;
     {
         try {
             $this->_reg->removeApp('mockery');
-        } catch(RegistryException $e) {
+        } catch(\Seraphp\Exceptions\RegistryException $e) {
         }
         unset($this->_mockServer);
         unset($this->_conf);

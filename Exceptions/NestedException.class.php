@@ -8,12 +8,13 @@
  * @package Exceptions
  * @filesource
  */
+namespace Seraphp\Exceptions;
 /**
  * NestedException class
  *
  * @package Exceptions
  */
-class NestedException extends Exception
+class NestedException extends \Exception
 {
     protected $_priorException;
 

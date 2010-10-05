@@ -9,6 +9,7 @@
  * @subpackage Registry
  * @filesource
  */
+namespace Seraphp\Server\Registry;
 /**
  * Defines how data in a store will be handled
  *

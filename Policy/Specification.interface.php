@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Policy;
+namespace Seraphp\Policy;
 /**
  * Specification interface
  *

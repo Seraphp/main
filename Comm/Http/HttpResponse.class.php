@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm\Http;
+namespace Seraphp\Comm\Http;
 //require_once 'ObserverListener.interface.php';
 require_once 'Log/LogFactory.class.php';
 /**
@@ -38,7 +38,7 @@ class HttpResponse
 
     public function __construct($socket = null)
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         if ($socket !== null && is_resource($socket)) {
             $this->_socket = $socket;
             $this->toBeSend = true;
@@ -68,12 +68,12 @@ class HttpResponse
             $buffer .= $this->_getHeaders()."\r\n";
          //if (stream_socket_sendto($this->_socket, $buffer."\r\n") === false) {
             if (socket_write($this->_socket, $buffer."\r\n") === false) {
-                throw new IOException('Cannot send out header part');
+                throw new \Seraphp\Exceptions\IOException('Cannot send out header part');
             }
             if (!empty($this->messageBody)) {
                 try {
                     $this->_sendBody();
-                } catch (IOException $e) {
+                } catch (\Seraphp\Exceptions\IOException $e) {
                     self::$_log->warn($e->getMessage());
                 }
             }
@@ -143,7 +143,9 @@ class HttpResponse
             }
         } else {
             if (socket_write($this->_socket, $this->messageBody) === false) {
-                throw new IOException('Cannot send message body!');
+                throw new \Seraphp\Exceptions\IOException(
+                    'Cannot send message body!'
+                );
             }
         }
         socket_write($this->_socket, "\r\n");

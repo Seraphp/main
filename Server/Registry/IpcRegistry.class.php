@@ -10,6 +10,7 @@
  * @filesource
  */
 /***/
+namespace Seraphp\Server\Registry;
 require_once 'Server/Registry/Registry.class.php';
 require_once 'Comm/Ipc/IpcAdapter.interface.php';
 /**

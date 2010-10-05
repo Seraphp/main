@@ -17,10 +17,12 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     function setUp()
     {
-        $this->_conf = new Config('<test><foo/><bar/></test>');
+        $this->_conf = new \Seraphp\Server\Config\Config(
+            '<test><foo/><bar/></test>'
+        );
         $this->_xml = simplexml_load_file(
             getcwd().'/tests/Server/Config/seraphp_test_config.xml',
-            'Config'
+            '\Seraphp\Server\Config\Config'
         );
     }
 

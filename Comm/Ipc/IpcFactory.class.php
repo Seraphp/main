@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm\Ipc;
+namespace Seraphp\Comm\Ipc;
 require_once 'Comm/Ipc/IpcAdapter.interface.php';
 require_once 'Exceptions/PluginException.class.php';
 /**
@@ -65,9 +65,13 @@ class IpcFactory
         }
     }
 
-    static function getClassName($type)
+    static function getClassName($type, $withNameSpace = true)
     {
-        return sprintf('Ipc%s', ucfirst($type));
+        if(true === $withNameSpace) {
+            return sprintf('Seraphp\Comm\Ipc\Ipc%s', ucfirst($type));
+        } else {
+            return sprintf('Ipc%s', ucfirst($type));
+        }
     }
 
     static function setPluginsDir($dir = '')
@@ -108,20 +112,20 @@ class IpcFactory
         $pluginFile = sprintf(
             '%s/%s.class.php',
             self::$_pluginsDir,
-            self::getClassName($type)
+            self::getClassName($type, false)
         );
         if (is_file($pluginFile)) {
             require_once $pluginFile;
-            $class = new ReflectionClass(self::getClassName($type));
-            if ($class->implementsInterface('IpcAdapter')) {
+            $class = new \ReflectionClass(self::getClassName($type));
+            if ($class->implementsInterface('\Seraphp\Comm\Ipc\IpcAdapter')) {
                 return true;
             } else {
-                throw new PluginException(
+                throw new \Seraphp\Exceptions\PluginException(
                     'IpcAdapter interface not implemented in '.$type
                 );
             }
         } else {
-            throw new PluginException(
+            throw new \Seraphp\Exceptions\PluginException(
                 self::getClassName($type).'.class.php not exists!'
             );
         }

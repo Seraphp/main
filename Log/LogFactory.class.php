@@ -9,7 +9,7 @@
  * @package Log
  */
 /***/
-//namespace Seraphp\Log
+namespace Seraphp\Log;
 require_once 'Exceptions/LogException.class.php';
 /**
  * LogFactory class instantiate a logger class instance using PEAR
@@ -69,7 +69,7 @@ class LogFactory
      * @param string $provider Accepted 'Zend' or 'PEAR' (Optional)
      * @return SeraphpLog
      */
-    public static function getInstance(Config $conf = null, $provider = 'Zend')
+    public static function getInstance(\Seraphp\Server\Config\Config $conf = null, $provider = 'Zend')
     {
         if ($conf !== null) {
             $key = md5($provider.$conf->asXml().$provider);
@@ -91,28 +91,28 @@ class LogFactory
         switch ($provider) {
             case 'Zend':
                 if (include_once('Zend/Loader/Autoloader.php')) {
-                    Zend_Loader_Autoloader::getInstance();
-                    self::$_instance = new Zend_Log();
+                    \Zend_Loader_Autoloader::getInstance();
+                    self::$_instance = new \Zend_Log();
                     self::$provider = 'Zend';
                 } else {
-                    throw new Exception("Zend_Log package not available!");
+                    throw new \Exception("Zend_Log package not available!");
                 }
                 break;
             case 'PEAR':
                 if (include_once('Log.php')) {
-                    self::$_instance = Log::singleton('composite');
+                    self::$_instance = \Log::singleton('composite');
                     self::$provider = 'PEAR';
                 } else {
-                    throw new Exception("PEAR Log package not available!");
+                    throw new \Exception("PEAR Log package not available!");
                 }
                 break;
             default:
                 if (include_once('Zend/Loader/Autoloader.php')) {
-                    Zend_Loader_Autoloader::getInstance();
-                    self::$_instance = new Zend_Log();
+                    \Zend_Loader_Autoloader::getInstance();
+                    self::$_instance = new \Zend_Log();
                     self::$provider = 'Zend';
                 } elseif (include_once('Log.php')) {
-                    self::$_instance = Log::singleton('composite');
+                    self::$_instance = \Log::singleton('composite');
                     self::$provider = 'PEAR';
                 } else {
                     throw new Exception('No logger package available'.
@@ -132,7 +132,7 @@ class LogFactory
      * @return void
      * @throws LogException
      */
-    private static function _setup(Config $conf = null)
+    private static function _setup(\Seraphp\Server\Config\Config $conf = null)
     {
         self::_defaultSetup();
         if ($conf !== null && isset($conf->logs) ) {
@@ -141,8 +141,9 @@ class LogFactory
                 if (isset($logger['handler']) && isset($logger['level'])) {
                     self::_addWriter($logger);
                 } else {
-                    throw new LogException('Invalid log handler at '.
-                        $logger->asXML());
+                    throw new \Seraphp\Exceptions\LogException(
+                        'Invalid log handler at '. $logger->asXML()
+                    );
                 }
             }
         }
@@ -156,33 +157,33 @@ class LogFactory
             $attribs = $logger->conf->attributes();
             switch ($logger['handler']) {
                 case 'console':
-                    $writer = new Zend_Log_Writer_Stream('php://output');
+                    $writer = new \Zend_Log_Writer_Stream('php://output');
                     break;
                 case 'file':
                 case 'Stream':
                     if (isset($attribs['mode'])) {
                         $stream = @fopen($logger['name'], $attribs['mode'], 0);
                         if (! $stream) {
-                            throw new Exception('Failed to open stream: '.
+                            throw new \Exception('Failed to open stream: '.
                             $logger['name']);
                         }
                     } else {
                             $stream = $logger['name'];
                     }
-                    $writer = new Zend_Log_Writer_Stream($stream);
+                    $writer = new \Zend_Log_Writer_Stream($stream);
                     break;
                 case 'Mail':
-                    $mail = new Zend_Mail();
+                    $mail = new \Zend_Mail();
                     $mail->setFrom((string)$attribs['from'])
                         ->addTo((string)$attribs['to']);
                     if (isset($attribs['layout'])) {
-                        $layout = new Zend_Layout();
+                        $layout = new \Zend_Layout();
                         $format = sprintf(
                             (string) $attribs['layout'],
-                            Zend_Log_Formatter_Simple::DEFAULT_FORMAT
+                            \Zend_Log_Formatter_Simple::DEFAULT_FORMAT
                         );
                         $writer = new $writerClass($mail, $layout);
-                        $formatter = new Zend_Log_Formatter_Simple($format);
+                        $formatter = new \Zend_Log_Formatter_Simple($format);
                         $writer->setLayoutFormatter($formatter);
                     } else {
                         $writer = new $writerClass($mail);
@@ -204,24 +205,24 @@ class LogFactory
             }
 
             $format = '%timestamp% %pid% (%priorityName%): %message%' . PHP_EOL;
-            $formatter = new Zend_Log_Formatter_Simple($format);
+            $formatter = new \Zend_Log_Formatter_Simple($format);
             $writer->setFormatter($formatter);
-            $filter = new Zend_Log_Filter_Priority($level);
+            $filter = new \Zend_Log_Filter_Priority($level);
             $writer->addFilter($filter);
 
             self::$_instance->addWriter($writer);
         } else { //PEAR Logger used
             $level = constant('PEAR_LOG_'.$logger['level']);
-            $handler = Log::singleton(
-                $logger['handler'],
-                $logger['name'],
-                $logger['ident'],
-                $logger->conf->attributes(),
+            $handler = \Log::singleton(
+                (string) $logger['handler'],
+                (string) $logger['name'],
+                (string) $logger['ident'],
+                (string) $logger->conf->attributes(),
                 $level
             );
             $res = self::$_instance->addChild($handler);
             if ($res === false) {
-                throw new LogException(
+                throw new \Seraphp\Exceptions\LogException(
                     'Invalid log handler at '. $logger->asXML()
                 );
             }
@@ -236,30 +237,30 @@ class LogFactory
         if (self::$provider === 'Zend') {
             self::$_instance->setEventItem('pid', getmypid());
             $format = '%timestamp% %pid% (%priorityName%): %message%' . PHP_EOL;
-            $formatter = new Zend_Log_Formatter_Simple($format);
+            $formatter = new \Zend_Log_Formatter_Simple($format);
 
-            $debugFilter = new Zend_Log_Filter_Priority(Zend_Log::DEBUG);
-            $infoFilter = new Zend_Log_Filter_Priority(Zend_Log::INFO);
+            $debugFilter = new \Zend_Log_Filter_Priority(\Zend_Log::DEBUG);
+            $infoFilter = new \Zend_Log_Filter_Priority(\Zend_Log::INFO);
 
-            $console = new Zend_Log_Writer_Stream('php://output');
+            $console = new \Zend_Log_Writer_Stream('php://output');
             $console->setFormatter($formatter);
             $console->addFilter($infoFilter);
             self::$_instance->addWriter($console);
 
-            $file = new Zend_Log_Writer_Stream('out.log');
+            $file = new \Zend_Log_Writer_Stream('out.log');
             $file->setFormatter($formatter);
             $file->addFilter($debugFilter);
             self::$_instance->addWriter($file);
         } else {
             $setup = array('buffering' => false);
-            $console = Log::singleton(
+            $console = \Log::singleton(
                 'console',
                 '',
                 'SeraPhp',
                 $setup,
                 PEAR_LOG_INFO
             );
-            $file = Log::singleton(
+            $file = \Log::singleton(
                 'file',
                 'out.log',
                 'DEBUG',

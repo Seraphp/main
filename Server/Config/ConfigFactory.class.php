@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server\Config;
+namespace Seraphp\Server\Config;
 require_once 'Singleton.interface.php';
 require_once 'Server/Config/Config.class.php';
 require_once 'Server/Registry/Registry.class.php';
@@ -22,7 +22,7 @@ require_once 'Log/LogFactory.class.php';
  * @package Server
  * @subpackage Config
  */
-class ConfigFactory implements Singleton
+class ConfigFactory implements \Seraphp\Singleton
 {
     private static $_log;
     private static $_instance = null;
@@ -32,7 +32,7 @@ class ConfigFactory implements Singleton
     private $_xml = null;
     private $_namespaces = array();
 
-    private function __construct(Registry $reg)
+    private function __construct(\Seraphp\Server\Registry\Registry $reg)
     {
         $this->_registry = $reg;
         $this->_configPath = dirname(__FILE__);
@@ -45,7 +45,7 @@ class ConfigFactory implements Singleton
      */
     private function __clone()
     {
-        throw new Exception('Cloning of'. __CLASS__ .' is disabled!');
+        throw new \Exception('Cloning of'. __CLASS__ .' is disabled!');
     }
 
     /**
@@ -65,9 +65,11 @@ class ConfigFactory implements Singleton
      */
     public function getInstance()
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         if (self::$_instance === null) {
-            self::$_instance = new self(Registry::getInstance());
+            self::$_instance = new self(
+                \Seraphp\Server\Registry\Registry::getInstance()
+            );
         }
         return self::$_instance;
     }
@@ -83,7 +85,7 @@ class ConfigFactory implements Singleton
         }
         $this->_xml = simplexml_load_file(
             $this->_configPath.DIRECTORY_SEPARATOR.$this->_configFile,
-            'Config',
+            '\Seraphp\Server\Config\Config',
             LIBXML_COMPACT|LIBXML_NOBLANKS
         );
     }
@@ -97,7 +99,7 @@ class ConfigFactory implements Singleton
         if (is_file($xmlFile)) {
             $this->_configPath = dirname($xmlFile);
             $this->_configFile = basename($xmlFile);
-        } else throw new Exception("$xmlFile cannot be loaded!");
+        } else throw new \Exception("$xmlFile cannot be loaded!");
     }
 
     /**
@@ -113,7 +115,7 @@ class ConfigFactory implements Singleton
             '//srph:servers/srph:server[@id="'.$name.'"]'
         );
         if ($serverConfXML === false) {
-            throw new ConfigException(
+            throw new \Seraphp\Exceptions\ConfigException(
                 'Failed to parse the confg file: '.
                 $this->_configFile.
                 ' from '.
@@ -122,7 +124,7 @@ class ConfigFactory implements Singleton
         }
         switch (count($serverConfXML)) {
             case 0:
-                throw new ConfigException(
+                throw new \Seraphp\Exceptions\ConfigException(
                     sprintf(
                         "Server ID: '%s' not exists in config file %s!",
                         $name,
@@ -141,7 +143,7 @@ class ConfigFactory implements Singleton
                 $conf = $serverConfXML[0];
                 break;
             default:
-                throw new ConfigException(
+                throw new \Seraphp\Exceptions\ConfigException(
                     sprintf(
                         "Server ID: '%s' exists several".
                         " times in config file %s!",

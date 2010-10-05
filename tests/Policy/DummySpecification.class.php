@@ -10,6 +10,7 @@
 /**
  * Class documentation
  */
+namespace Seraphp\Policy;
 class DummySpecification
 {
 }

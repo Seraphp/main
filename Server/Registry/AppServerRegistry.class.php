@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server\Registry;
+namespace Seraphp\Server\Registry;
 require_once 'Server/Registry/Registry.class.php';
 require_once 'Server/AppServer.class.php';
 require_once 'Exceptions/RegistryException.class.php';
@@ -31,7 +31,7 @@ class AppServerRegistry extends Registry
      */
     static private $_instance = null;
 
-    private function __construct(StoreEngine $engine = null)
+    private function __construct(Seraphp\Server\Registry\StoreEngine $engine = null)
     {
         if (isset($engine)) {
             $this->setEngine($engine);
@@ -42,7 +42,7 @@ class AppServerRegistry extends Registry
      *
      * @return self
      */
-    public function getInstance(StoreEngine $engine = null)
+    public function getInstance(Seraphp\Server\Registry\StoreEngine $engine = null)
     {
         if (self::$_instance === null) {
             self::$_instance = new self($engine);
@@ -88,7 +88,7 @@ class AppServerRegistry extends Registry
                 return $this->$appID;
             }
             // If instance already running, return proxy to it.
-            $proxy = new JsonRpcProxy($appID, $this->$appID);
+            $proxy = new \Seraphp\Comm\JsonRpc\JsonRpcProxy($appID, $this->$appID);
             $proxy->init();
             return $proxy;
         } else {
@@ -112,7 +112,7 @@ class AppServerRegistry extends Registry
             unset($this->$appID);
             return $ref;
         } else {
-            throw new RegistryException(
+            throw new \Seraphp\Exceptions\RegistryException(
                 'AppServer instance '.$appID.' not exists in registry!'
             );
         }
@@ -126,13 +126,13 @@ class AppServerRegistry extends Registry
      * @return boolean
      * @throws RegistryException
      */
-    public function addApp($appID, Server $appRef)
+    public function addApp($appID, \Seraphp\Server\Server $appRef)
     {
         if (!isset($this->$appID)) {
             $this->$appID = get_class($appRef);
             return true;
         } else {
-            throw new RegistryException(
+            throw new \Seraphp\Exceptions\RegistryException(
                 'AppServer already registered: '.$appID
             );
         }
@@ -155,7 +155,7 @@ class AppServerRegistry extends Registry
             }
             return true;
         } else {
-            throw new RegistryException(
+            throw new \Seraphp\Exceptions\RegistryException(
                 'AppServer not yet registered: '.$appID
             );
         }

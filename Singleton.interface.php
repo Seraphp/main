@@ -6,7 +6,7 @@
  * @filesource
  * @package Seraphp
  */
-//namespace Seraphp;
+namespace Seraphp;
 /**
  * Realize a class with only one existing instance.
  * @package Seraphp

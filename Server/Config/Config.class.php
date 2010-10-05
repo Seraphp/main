@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server\Config;
+namespace Seraphp\Server\Config;
 /**
  * Config class decorates SimpleXMLElement
  *
@@ -20,7 +20,7 @@
  * @package Server
  * @subpackage Config
  */
-class Config extends SimpleXMLElement
+class Config extends \SimpleXMLElement
 {
     private static $_namespaces = array();
 

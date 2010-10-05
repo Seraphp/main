@@ -8,6 +8,7 @@
  * @package Server
  * @filesource
  */
+namespace Seraphp\Server;
 /**
  * Daemon Interface definition for creating processes running on their
  * own (as a daemon in UNIX terminology).

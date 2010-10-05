@@ -17,18 +17,22 @@ class RegistryTest extends PHPUnit_Framework_TestCase
 
     function setUp()
     {
-        $this->_reg = Registry::getInstance();
+        $this->_reg = \Seraphp\Server\Registry\Registry::getInstance();
     }
 
     function testRegistryIsSingleton()
     {
-        $this->assertThat($this->_reg, $this->IsInstanceOf('Singleton'));
-        $this->assertSame($this->_reg, Registry::getInstance());
+        $this->assertThat(
+            $this->_reg, $this->IsInstanceOf('\Seraphp\Singleton')
+        );
+        $this->assertSame(
+            $this->_reg, \Seraphp\Server\Registry\Registry::getInstance()
+        );
     }
 
     function testCloningDisabled()
     {
-        $this->setExpectedException('Exception');
+        $this->setExpectedException('\Exception');
         $newReg = clone $this->_reg;
     }
 
@@ -37,9 +41,14 @@ class RegistryTest extends PHPUnit_Framework_TestCase
         //TODO: adding simply the real Data Store here stops testing script.
         //Figure it out!
         require_once 'Server/Registry/PackedFileDataStore.class.php';
-        $engine = $this->getMock('PackedFileDataStore');
-        $this->_reg = Registry::getInstance($engine);
-        $this->assertThat($this->_reg, $this->IsInstanceOf('Registry'));
+        $engine = $this->getMock(
+            '\Seraphp\Server\Registry\PackedFileDataStore'
+        );
+        $this->_reg = \Seraphp\Server\Registry\Registry::getInstance($engine);
+        $this->assertThat(
+            $this->_reg,
+            $this->IsInstanceOf('\Seraphp\Server\Registry\Registry')
+        );
     }
 
     function testEmptyRegistryKeyIsInvalid()

@@ -9,7 +9,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Policy;
+namespace Seraphp\Policy;
 require_once 'Policy/FieldSpecification.class.php';
 /**
  * Implements 'field matches with value' policy.

@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Server;
+namespace Seraphp\Server\Registry;
 /**
  * DataStore class for storing keys with values
  *

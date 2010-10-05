@@ -10,7 +10,7 @@
  * @filesource
  */
 /***/
-//namespace Seraphp\Comm\JsonRpc;
+namespace Seraphp\Comm\JsonRpc;
 require_once 'JsonRpcRequest.class.php';
 require_once 'JsonRpcResponse.class.php';
 require_once 'Exceptions/IOException.class.php';
@@ -82,7 +82,7 @@ class JsonRpcProxy
     public function __construct($name, $client = null,
             $type='socket', $methods = array(), $notifs = array())
     {
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
         $this->_type = $type;
         $this->_name = $name;
         if (isset($client)) {
@@ -152,7 +152,7 @@ class JsonRpcProxy
         if ($role == 'client' || $role == 'server') {
             $this->_role = $role;
         } else {
-            throw new Exception('Role can only be client or server!');
+            throw new \Exception('Role can only be client or server!');
         }
         switch ($this->_type) {
             case 'socket':
@@ -164,7 +164,9 @@ class JsonRpcProxy
                 foreach ($this->_fifo as $type => $pipe) {
                     if (!file_exists($pipe)) {
                         if (posix_mkfifo($pipe, 0700) === false) {
-                            throw new IOException('Cannot create '.$pipe);
+                            throw new \Seraphp\Exceptions\IOException(
+                                'Cannot create '.$pipe
+                            );
                         }
                     }
                 }
@@ -225,7 +227,8 @@ class JsonRpcProxy
     {
         try {
             $this->parseRequest($this->_read());
-        } catch(IOException $e) {
+        } catch(\Seraphp\Exceptions\IOException $e) {
+            //TODO: Handle IOException correctly
         }
     }
 
@@ -248,12 +251,12 @@ class JsonRpcProxy
                 self::getID());
             try {
                 $this->_write($message."\n");
-            } catch (IOException $e) {
+            } catch (\Seraphp\Exceptions\IOException $e) {
                 self::$_log->warn($e->getMessage());
             }
             return $this->_parseReply($this->_read());
         } else {
-            throw new Exception(
+            throw new \Exception(
                 sprintf(
                     'No such function allowed: %s::%s()'. $this->_client, $name
                 )
@@ -273,7 +276,7 @@ class JsonRpcProxy
     {
         $message = json_decode($reply);
         if (isset($message->error)) {
-            throw new RuntimeException($message->error);
+            throw new \Seraphp\Exceptions\RuntimeException($message->error);
         } else {
             return $message->result;
         }
@@ -286,6 +289,9 @@ class JsonRpcProxy
     public function parseRequest($msg)
     {
         $message = json_decode($msg);
+        if(null === $message->params) {
+            $message->params = array();
+        }
         if (is_callable(array($this->_client, $message->method))) {
             $error = null;
             try {
@@ -311,7 +317,7 @@ class JsonRpcProxy
         }
         try {
             $this->_write($response);
-        } catch (IOException $e) {
+        } catch (\Seraphp\Exceptions\IOException $e) {
             self::$_log->warn($e->getMessage());
         }
     }
@@ -337,7 +343,7 @@ class JsonRpcProxy
     {
         $pubMethods = array();
         $pubNotifs = array();
-        $analyzer = new ReflectionClass($className);
+        $analyzer = new \ReflectionClass($className);
         $methods = $analyzer->getMethods();
         for ($idx = 0; $idx < count($methods); $idx++) {
             if ($methods[$idx]->isPublic() &&
@@ -364,7 +370,7 @@ class JsonRpcProxy
         if (is_numeric($pid) && posix_kill($pid, 0)) {
             return posix_kill($pid, SIGUSR1);
         } else {
-            throw new Exception('Invalid PID provided: '.$pid);
+            throw new \Exception('Invalid PID provided: '.$pid);
         }
     }
 
@@ -382,10 +388,10 @@ class JsonRpcProxy
             if ($reply = fgets($this->_conn['read'])) {
                 return $reply;
             } else {
-                throw new IOException('No reply in FIFO');
+                throw new \Seraphp\Exceptions\IOException('No reply in FIFO');
             }
         } else {
-            throw new IOException('FIFO read timed out!');
+            throw new \Seraphp\Exceptions\IOException('FIFO read timed out!');
         }
     }
 
@@ -403,14 +409,16 @@ class JsonRpcProxy
             if ($this->_role != 'server') {
                 try {
                     $this->_sendSignal($this->_pid);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     self::$_log->warn($e->getMessage());
                 }
             }
             $this->_disconnect('write');
         } else {
             $this->_disconnect('write');
-            throw new IOException('Cannot write FIFO: '.$this->_fifo);
+            throw new \Seraphp\Exceptions\IOException(
+                'Cannot write FIFO: '.$this->_fifo
+            );
         }
         return $result;
     }
