@@ -148,9 +148,9 @@ class ServerManager
      */
     private static function _init()
     {
-        ExceptionHandler::setup();
-        self::$_log = LogFactory::getInstance();
-        self::$_cf = ConfigFactory::getInstance();
-        self::$_reg = AppServerRegistry::getInstance();
+        \Seraphp\Exceptions\ExceptionHandler::setup();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
+        self::$_cf = \Seraphp\Server\Config\ConfigFactory::getInstance();
+        self::$_reg = \Seraphp\Server\Registry\AppServerRegistry::getInstance();
     }
 }

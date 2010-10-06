@@ -44,9 +44,9 @@ class AppServerFactory
     private static function _init()
     {
         if (!isset(self::$_registry)) {
-            self::$_registry = AppServerRegistry::getInstance();
+            self::$_registry = Registry\AppServerRegistry::getInstance();
         }
-        self::$_log = LogFactory::getInstance();
+        self::$_log = \Seraphp\Log\LogFactory::getInstance();
     }
 
     /**
@@ -56,14 +56,14 @@ class AppServerFactory
      * @param $conf
      * @return AppServer|JsonRpcProxy
      */
-    public static function getAppInstance($appID, Config $conf)
+    public static function getAppInstance($appID, Config\Config $conf)
     {
         self::_init();
-        self::$_log = LogFactory::getInstance($conf);
+        self::$_log = \Seraphp\Log\LogFactory::getInstance($conf);
         if (self::$_registry->getAppStatus($appID) !== 'running') {
             try{
                 $instance = new AppServer($conf);
-            } catch(Exception $e) {
+            } catch(\Exception $e) {
                 self::$_log->alert($e->getMessage());
             }
             self::$_registry->addApp($appID, $instance);

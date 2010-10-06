@@ -26,16 +26,16 @@ class StaticFileServerEngine implements AppEngine
     private static $_log;
     protected $_basePath = '';
 
-    public function __construct(Config $conf = null)
+    public function __construct(Config\Config $conf = null)
     {
-        self::$_log = LogFactory::getInstance($conf->server);
+        self::$_log = \Seraphp\Log\LogFactory::getInstance($conf->server);
         $param = $conf->xsearch('srph:param[@name="basepath"]');
         if ($param !== false) {
             $this->_basePath = (string)$param[0];
         }
     }
 
-    function process(Request $req)
+    function process(\Seraphp\Comm\Request $req)
     {
         $truePath = $this->_basePath.
             strtr(

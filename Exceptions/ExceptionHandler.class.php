@@ -35,17 +35,17 @@ class ExceptionHandler
      * @param Exception $e
      * @return void
      */
-    public static function handleException(Exception $e)
+    public static function handleException(\Exception $e)
     {
         if (self::$_log === null) {
             self::setup();
         }
-        if (get_class($e) === "LogException") {
+        if (get_class($e) === "\Seraphp\Exceptions\LogException") {
            throw $e;
         } else {
             try{
                 self::$_log->alert($e->getMessage());
-            }catch(Exception $f){
+            }catch(\Exception $f){
                 throw $f->setPrior($e);
             }
         }

@@ -56,7 +56,7 @@ class IpcRegistry extends Registry
      */
     public function __clone()
     {
-        throw new Exception('Cloning is disabled!');
+        throw new \Exception('Cloning is disabled!');
     }
 
     /**
@@ -77,7 +77,7 @@ class IpcRegistry extends Registry
      *
      * @param IpcAdapter $ipc
      */
-    public function useIpc(IpcAdapter $ipc)
+    public function useIpc(\Seraphp\Comm\Ipc\IpcAdapter $ipc)
     {
         $this->_ipc = $ipc;
     }
