@@ -78,7 +78,8 @@ class HttpResponse
                 }
             }
             //stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
-            socket_shutdown($this->_socket, 2);
+            @socket_shutdown($this->_socket, 2);
+            @socket_close($this->_socket);
         }
     }
 
