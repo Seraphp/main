@@ -20,6 +20,12 @@ class AllTests
             '/usr/share/php'
         );
         PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
+            '/opt'
+        );
+        PHP_CodeCoverage_Filter::getInstance()->removeDirectoryToBlacklist(
+            '/opT/cruisecontrol/projects/seraphp/source/'
+        );
+        PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
             '/opt/cruisecontrol/projects/seraphp/source/tests'
         );
         return $suite;
