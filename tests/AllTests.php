@@ -22,8 +22,8 @@ class AllTests
         PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
             '/opt'
         );
-        PHP_CodeCoverage_Filter::getInstance()->removeDirectoryToBlacklist(
-            '/opT/cruisecontrol/projects/seraphp/source/'
+        PHP_CodeCoverage_Filter::getInstance()->removeDirectoryFromBlacklist(
+        	'/opt/cruisecontrol/projects/seraphp/source/'
         );
         PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
             '/opt/cruisecontrol/projects/seraphp/source/tests'
