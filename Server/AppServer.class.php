@@ -106,7 +106,7 @@ class AppServer extends Server
     {
         //Adding all pathes listed in config "includes/path"
         //They will not be added to include path before daemon is
-        //summoned to lock out other processes seeing those pathes
+        //summoned to lock out other processes seeing those paths
         foreach ($conf->includes as $key => $resource) {
             if (is_dir($resource)) {
                 array_push($this->_includes, $resource);
@@ -180,7 +180,7 @@ class AppServer extends Server
     {
         if ($this->_ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
-            $this->_appReg = \Seraphp\Comm\Ipc\IpcRegistry::getInstance();
+            $this->_appReg = \Seraphp\Server\Registry\IpcRegistry::getInstance();
         } else {
             require_once 'Server/Registry/Registry.class.php';
             $this->_appReg = \Seraphp\Server\Registry\Registry::getInstance();
@@ -195,7 +195,7 @@ class AppServer extends Server
      * @param Config $conf
      * @return void
      */
-    protected function _configUrimap($conf)
+    protected function _configUrimap(Config\Config $conf)
     {
         if (isset($conf->urimap)) {
             foreach ($conf->urimap->children() as $node=>$value) {
@@ -217,7 +217,9 @@ class AppServer extends Server
         $this->_setupIncludePathes();
         $this->_initEngines();
 
-        $this->_rpcProxy = new \Seraphp\Comm\Json\JsonRpcProxy($this->_appID);
+        $this->_rpcProxy = new \Seraphp\Comm\JsonRpc\JsonRpcProxy(
+            $this->_appID
+        );
         $this->_rpcProxy->setup(
             $this,
             array('getAppId', 'getStatus'),
@@ -257,9 +259,9 @@ class AppServer extends Server
     protected function _initEngines()
     {
         foreach ($this->_engines as $name=>$conf) {
-            $class = '\Seraphp\Server\\'.$conf['class'].'Engine';
-            require_once $class.'.class.php';
-            $this->_engines[$name] = new $class($conf);
+            $className = '\Seraphp\Server\\'.$conf['class'].'Engine';
+            require_once $conf['class'].'Engine.class.php';
+            $this->_engines[$name] = new $className($conf);
         }
     }
 
@@ -306,7 +308,6 @@ class AppServer extends Server
         $read = array($this->_socket);
         if (socket_select($read, $w = array(), $e = array(), 0)) {
         //if ($conn = @socket_accept($this->_socket)) {
-            self::$_log->info('Connection accepted, spawning new child ('.microtime().')');
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process
                 $conn = socket_accept($this->_socket);
@@ -319,7 +320,7 @@ class AppServer extends Server
                 socket_set_nonblock($conn);
                 try {
                     $result = $this->process(
-                        \Seraphp\Server\Comm\RequestFactory::create($conn),
+                        \Seraphp\Comm\RequestFactory::create($conn),
                         $this->_timeout
                     );
                 } catch (\Seraphp\Exceptions\IOException $e) {
@@ -337,7 +338,8 @@ class AppServer extends Server
                     $result = 1;
                 }
                 //stream_socket_shutdown($conn, STREAM_SHUT_RDWR);
-                socket_shutdown($conn, 2);
+                @socket_shutdown($conn, 2);
+                @socket_close($conn);
                 exit($result);
             }
         }
@@ -410,7 +412,7 @@ class AppServer extends Server
      * @param Request $req
      * @return integer
      */
-    public function process(\Seraphp\Server\Comm\Request $req)
+    public function process(\Seraphp\Comm\Request $req)
     {
         $path = parse_url($req->url, PHP_URL_PATH);
         $engine = false;
