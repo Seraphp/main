@@ -4,6 +4,20 @@ use \Seraphp\Process\System;
 
 class SystemTest extends PHPUnit_Framework_TestCase
 {
+    function setUp()
+    {
+        if (file_exists('\tmp\testFIFO')) {
+           unlink('\tmp\testFIFO');
+        }
+        if (file_exists('\tmp\testNode')) {
+           unlink('\tmp\testNode');
+        }
+    }
+
+    function tearDown() {
+        $this->setUp();
+    }
+
     function testGetInstance()
     {
         $inst = System::getInstance();
@@ -41,11 +55,11 @@ class SystemTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('soft core', $limits);
     }
 
-    function testIsNONTerminal()
+    function testIsTerminal()
     {
         $this->assertFalse(System::getInstance()->isTerminal(STDOUT));
         $this->assertTrue(
-            System::getInstance()->isTerminal(fopen('/dev/pts/0', 'r+'))
+            System::getInstance()->isTerminal(fopen('/dev/tty7', 'r+'))
         );
         $this->setExpectedException(
         	'\Seraphp\Exceptions\ProcessException',
@@ -98,7 +112,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
 
     function testGetTerminalName()
     {
-        $path = '/dev/pts/0';
+        $path = '/dev/tty7';
         $this->assertEquals(
             $path,
             System::getInstance()->getTerminalName(fopen($path,"r+"))
