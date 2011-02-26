@@ -40,8 +40,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     function testXSearch()
     {
         $result = $this->_conf->xsearch('/test');
-        $this->assertType('array', $result);
-        $this->assertType('object', $result[0]);
+        $this->assertInternalType('array', $result);
+        $this->assertInternalType('object', $result[0]);
         $this->assertObjectHasAttribute('foo', $result[0]);
         $this->assertObjectHasAttribute('bar', $result[0]);
     }
@@ -49,7 +49,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     function testXSearchFromNode()
     {
         $result = $this->_xml->xsearch('//srph:server', $this->_xml->servers);
-        $this->assertType('array', $result);
+        $this->assertInternalType('array', $result);
         $this->assertObjectHasAttribute('instance', $result[0]);
     }
 

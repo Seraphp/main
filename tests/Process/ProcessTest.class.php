@@ -22,7 +22,7 @@ class ProcessTest extends PHPUnit_Framework_TestCase
     function testGetId()
     {
         $proc = new Process();
-        $this->assertType('integer', $proc->getId());
+        $this->assertInternalType('integer', $proc->getId());
     }
 
     function testGetUser()
@@ -48,19 +48,19 @@ class ProcessTest extends PHPUnit_Framework_TestCase
     function testGetProcGroup()
     {
         $proc = new Process();
-        $this->assertType('integer', $proc->getProcGrp());
+        $this->assertInternalType('integer', $proc->getProcGrp());
     }
 
     function testGetSessionID()
     {
         $proc = new Process();
-        $this->assertType('integer', $proc->getSessionID());
+        $this->assertInternalType('integer', $proc->getSessionID());
     }
 
     function testGetTimes()
     {
         $proc = new Process();
-        $this->assertType('array', $proc->getTimes());
+        $this->assertInternalType('array', $proc->getTimes());
         $this->assertArrayHasKey('ticks', $proc->getTimes());
         $this->assertArrayHasKey('utime', $proc->getTimes());
         $this->assertArrayHasKey('stime', $proc->getTimes());

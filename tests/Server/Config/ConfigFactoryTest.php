@@ -49,8 +49,8 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(5, (int)$conf->instance->maxChildren);
         $this->assertEquals('127.0.0.1', (string)$conf->instance->address);
         $this->assertEquals(8123, (int)$conf->instance->port);
-        $this->assertType('\SimpleXMLElement', $conf->urimap);
-        $this->assertType('\SimpleXMLElement', $conf->includes);
+        $this->assertInternalType('\SimpleXMLElement', $conf->urimap);
+        $this->assertInternalType('\SimpleXMLElement', $conf->includes);
     }
 
     function testGetSessionConf()
@@ -64,7 +64,7 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(5, (int)$conf->instance->maxChildren);
         $this->assertEquals('127.0.0.1', (string)$conf->instance->address);
         $this->assertEquals(8124, (int)$conf->instance->port);
-        $this->assertType('SimpleXMLElement', $conf->includes);
+        $this->assertInternalType('SimpleXMLElement', $conf->includes);
     }
 
     function testGetDBPoolConf()
@@ -78,7 +78,7 @@ class ConfigFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(5, (int)$conf->instance->maxChildren);
         $this->assertEquals('127.0.0.1', (string)$conf->instance->address);
         $this->assertEquals(8125, (int)$conf->instance->port);
-        $this->assertType('\SimpleXMLElement', $conf->includes);
+        $this->assertInternalType('\SimpleXMLElement', $conf->includes);
     }
 
     function tearDown()

@@ -162,7 +162,7 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
         socket_shutdown($this->_sockets[1], 2);
         $request = new \Seraphp\Comm\Http\HttpRequest($this->_sockets[0]);
         $this->assertEquals('mockListener', $request->attach($obs));
-        $this->assertType('int', $request->getState());
+        $this->assertInternalType('int', $request->getState());
         $this->assertTrue($request->detach('mockListener'));
     }
 

@@ -39,7 +39,7 @@ class GroupTest extends PHPUnit_Framework_TestCase
     {
         $grp = new Group(100);
         $members = $grp->getMembers();
-        $this->assertType('array', $grp->getMembers());
+        $this->assertInternalType('array', $members);
         $this->assertInstanceOf('\Seraphp\Process\User', $members[0]);
     }
 

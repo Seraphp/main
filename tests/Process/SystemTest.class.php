@@ -37,7 +37,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
         $access = System::getInstance()->checkAccess(
             getcwd().'/tests/AllTests.php'
         );
-        $this->assertType(
+        $this->assertInternalType(
         	'array',
             $access
         );
@@ -51,7 +51,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
     function testGetResourceLimit()
     {
         $limits = System::getInstance()->getResourceLimits();
-        $this->assertType('array', $limits);
+        $this->assertInternalType('array', $limits);
         $this->assertArrayHasKey('soft core', $limits);
     }
 
@@ -147,7 +147,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
     function testGetSystemInfo()
     {
         $info = System::getInstance()->getSystemInfo();
-        $this->assertType('array',$info);
+        $this->assertInternalType('array',$info);
         $this->assertArrayHasKey('sysname', $info);
         $this->assertArrayHasKey('nodename', $info);
         $this->assertArrayHasKey('release', $info);

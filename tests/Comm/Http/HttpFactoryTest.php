@@ -20,7 +20,7 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
         $res = \Seraphp\Comm\Http\HttpFactory::create(
             'request', array('method'=>'get')
         );
-        $this->assertType(
+        $this->assertInternalType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
         $this->assertThat(
@@ -33,7 +33,7 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
         $res = \Seraphp\Comm\Http\HttpFactory::create(
             'response', array('statusCode'=>'404')
         );
-        $this->assertType(
+        $this->assertInternalType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
         $this->assertThat(
@@ -46,7 +46,7 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
         $res = \Seraphp\Comm\Http\HttpFactory::create(
             'request', array('contentType'=>'text/html')
         );
-        $this->assertType(
+        $this->assertInternalType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
         $this->assertThat(
@@ -59,7 +59,7 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
         $res = \Seraphp\Comm\Http\HttpFactory::create(
             'response', array('contentType'=>'text/html')
         );
-        $this->assertType(
+        $this->assertInternalType(
             PHPUnit_Framework_Constraint_IsType::TYPE_OBJECT, $res
         );
         $this->assertThat(
@@ -74,7 +74,7 @@ class HttpFactoryTest extends PHPUnit_Framework_TestCase
         $res = \Seraphp\Comm\Http\HttpFactory::create(
             'cookie', null, $this->_cookies
         );
-        $this->assertType(
+        $this->assertInternalType(
             PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $res
         );
         $this->assertThat(
