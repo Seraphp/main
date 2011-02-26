@@ -22,12 +22,6 @@ class AllTests
             '/usr/share/php'
         );
         PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
-            '/opt/ZendFramework-1.10.5'
-        );
-        PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
-            '/opt/ZendFramework'
-        );
-        PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist(
             '/opt/cruisecontrol/projects/seraphp/source/tests'
         );
         return $suite;
