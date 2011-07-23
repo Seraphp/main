@@ -247,8 +247,9 @@ class JsonRpcProxy
                 self::$_log->warn($e->getMessage());
             }
         } elseif (in_array($name, $this->_allowedMethods) ) {
-            $message = (string) new JsonRpcRequest($name, $arguments,
-                self::getID());
+            $message = (string) new JsonRpcRequest(
+                $name, $arguments, self::getID()
+            );
             try {
                 $this->_write($message."\n");
             } catch (\Seraphp\Exceptions\IOException $e) {
@@ -289,7 +290,7 @@ class JsonRpcProxy
     public function parseRequest($msg)
     {
         $message = json_decode($msg);
-        if(null === $message->params) {
+        if (null === $message->params) {
             $message->params = array();
         }
         if (is_callable(array($this->_client, $message->method))) {
@@ -311,9 +312,10 @@ class JsonRpcProxy
             $response = (string) new JsonRpcResponse(
                 null,
                 new RuntimeException(
-                    'No such method:' .$message->method),
-                    $message->id
-                );
+                    'No such method:' .$message->method
+                ),
+                $message->id
+            );
         }
         try {
             $this->_write($response);

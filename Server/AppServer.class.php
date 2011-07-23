@@ -111,8 +111,9 @@ class AppServer extends Server
             if (is_dir($resource)) {
                 array_push($this->_includes, $resource);
             } else {
-                throw new \Exception($resource.
-                    ' is not a directory to include');
+                throw new \Exception(
+                    $resource.' is not a directory to include'
+                );
             }
         }
     }
@@ -180,7 +181,8 @@ class AppServer extends Server
     {
         if ($this->_ipcType !== '') {
             require_once 'Server/Registry/IpcRegistry.class.php';
-            $this->_appReg = \Seraphp\Server\Registry\IpcRegistry::getInstance();
+            $this->_appReg =
+                \Seraphp\Server\Registry\IpcRegistry::getInstance();
         } else {
             require_once 'Server/Registry/Registry.class.php';
             $this->_appReg = \Seraphp\Server\Registry\Registry::getInstance();

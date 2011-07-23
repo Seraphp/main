@@ -4,7 +4,8 @@ require_once 'Process/Process.class.php';
 require_once 'Process/User.class.php';
 require_once 'Process/Group.class.php';
 
-class Factory {
+class Factory
+{
     private function __constructor()
     {
     }

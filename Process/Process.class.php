@@ -180,13 +180,13 @@ class Process
     /**
      * Sets processgroup of the process for job control.
      *
-     * @param integer $pid
-     * @param integer $pgid
+     * @param integer $pgid Process group ID
+     * @param integer $pid Process ID, default to current if null
      * @return boolean
      */
-    public function addProc2ProcGrp($pid=null, $pgid)
+    public function addProc2ProcGrp($pgid, $pid=null)
     {
-        if(is_null($pid)) {
+        if (is_null($pid)) {
             $pid = $this->_pid;
         }
         return posix_setpgid($pid, $pgid);
@@ -200,7 +200,7 @@ class Process
      */
     public function getSessionID(Process $prc=null)
     {
-        if(is_null($prc)) {
+        if (is_null($prc)) {
             $pid = 0;
         } else {
             $pid = $prc->getId();
@@ -216,7 +216,7 @@ class Process
     public function becomeSessionLeader()
     {
         $id = @posix_setsid();
-        if($id === -1) {
+        if ($id === -1) {
             throw new ProcessException();
         } else {
             return $id;
@@ -282,20 +282,20 @@ class Process
                         !is_subclass_of($target, 'Process')
                     ) {
                         throw new ProcessException(
-                			"Provided object is not Process class's or ".
-                			" its subclass's instance");
+                            "Provided object is not Process class's or ".
+                            " its subclass's instance");
                     }
                 break;
             case 'integer':
                 break;
             default:
                 throw new ProcessException(
-                	'Only Process object or integer accepted'
+                    'Only Process object or integer accepted'
                 );
         }
         if ($this->_sys->isSignalSupported($signal)) {
             throw new ProcessException(
-            	'Signal not supported by op. system'
+                'Signal not supported by op. system'
             );
         }
         if (false === posix_kill($target, $signal)) {

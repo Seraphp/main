@@ -109,8 +109,8 @@ class IpcUnixsockets implements IpcAdapter
         $read = array(($this->_role)?$this->_sockChild:$this->_sockParent);
         if (stream_select(
             $read,
-            $write = array(),
-            $except = array(),
+            array(),
+            array(),
             0, 500
         ) > 0) {
             return stream_get_line(

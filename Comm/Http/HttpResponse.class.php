@@ -68,7 +68,9 @@ class HttpResponse
             $buffer .= $this->_getHeaders()."\r\n";
          //if (stream_socket_sendto($this->_socket, $buffer."\r\n") === false) {
             if (socket_write($this->_socket, $buffer."\r\n") === false) {
-                throw new \Seraphp\Exceptions\IOException('Cannot send out header part');
+                throw new \Seraphp\Exceptions\IOException(
+                    'Cannot send out header part'
+                );
             }
             if (!empty($this->messageBody)) {
                 try {
@@ -132,9 +134,6 @@ class HttpResponse
     private function _sendBody()
     {
         if (is_resource($this->messageBody)) {
-        /*if (stream_copy_to_stream($this->messageBody, $this->_socket) === false) {
-            throw new IOException('Cannot send file in body!');
-        }*/
             while (!feof($this->messageBody)) {
                 socket_write(
                     $this->_socket,

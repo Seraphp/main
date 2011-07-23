@@ -23,7 +23,8 @@ use \Seraphp\Exceptions\ProcessException;
  * @package Process
  *
  */
-class User {
+class User
+{
     /**
      * User ID on the system
      *

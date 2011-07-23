@@ -91,7 +91,7 @@ class Group implements \Iterator
     function current()
     {
         return Factory::create(
-        	'user',
+            'user',
             $this->_members[$this->_pointer]
         );
     }

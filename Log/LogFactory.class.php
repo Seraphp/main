@@ -69,7 +69,9 @@ class LogFactory
      * @param string $provider Accepted 'Zend' or 'PEAR' (Optional)
      * @return SeraphpLog
      */
-    public static function getInstance(\Seraphp\Server\Config\Config $conf = null, $provider = 'Zend')
+    public static function getInstance(
+        \Seraphp\Server\Config\Config $conf = null, $provider = 'Zend'
+    )
     {
         if ($conf !== null) {
             $key = md5($provider.$conf->asXml().$provider);
@@ -115,8 +117,8 @@ class LogFactory
                     self::$_instance = \Log::singleton('composite');
                     self::$provider = 'PEAR';
                 } else {
-                    throw new Exception('No logger package available'.
-                    '(Zend_Log or PEAR::Log)!');
+                    throw new Exception(
+                        'No logger package available (Zend_Log or PEAR::Log)');
                 }
                 break;
         }
@@ -164,8 +166,9 @@ class LogFactory
                     if (isset($attribs['mode'])) {
                         $stream = @fopen($logger['name'], $attribs['mode'], 0);
                         if (! $stream) {
-                            throw new \Exception('Failed to open stream: '.
-                            $logger['name']);
+                            throw new \Exception(
+                                'Failed to open stream: ' . $logger['name']
+                            );
                         }
                     } else {
                             $stream = $logger['name'];

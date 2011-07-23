@@ -78,7 +78,7 @@ class PolicyFactory implements \Seraphp\Singleton
     {
         $this->_readPlugins();
         if (array_key_exists($func, $this->_plugins)) {
-            $class = new \ReflectionClass( $this->_plugins[$func] );
+            $class = new \ReflectionClass($this->_plugins[$func]);
             return ($class->newInstanceArgs($params));
         }
         else throw new \Seraphp\Exceptions\PluginException(

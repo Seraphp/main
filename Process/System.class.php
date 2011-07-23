@@ -56,7 +56,7 @@ class System
      */
     private function _isSignalName($str)
     {
-        return (boolean)preg_match("/^SIG([alpha]*)/",$str);
+        return (boolean)preg_match("/^SIG([alpha]*)/", $str);
     }
 
     /**
@@ -97,7 +97,7 @@ class System
             foreach ($rights as $right=>$code) {
                 $access[$right] = posix_access($file, $code);
                 if (false === $access[$right]) {
-                    $access[$right] = new ProcessException();
+                    $access[$right] = new \Exception\ProcessException();
                 }
             }
         } else {
@@ -133,7 +133,7 @@ class System
             return posix_isatty($rsc);
         } else {
             throw new ProcessException(
-            	'Argument is not a valid file descriptor'
+                'Argument is not a valid file descriptor'
             );
         }
     }
@@ -164,7 +164,7 @@ class System
     public function createFIFO($path, $mode)
     {
         $res = @posix_mkfifo($path, $mode);
-        if(false === $res) {
+        if (false === $res) {
             throw new ProcessException();
         }
         return $res;
@@ -188,7 +188,7 @@ class System
     )
     {
         $res = @posix_mknod($path, $type|$mode, $major, $minor);
-        if(false === $res) {
+        if (false === $res) {
             throw new ProcessException();
         }
         return $res;
@@ -204,17 +204,16 @@ class System
     public function getTerminalName($rsc)
     {
         if (true === $this->_isFileDescriptor($rsc)) {
-
-            if($this->isTerminal($rsc)) {
+            if ($this->isTerminal($rsc)) {
                 return posix_ttyname($rsc);
             } else {
                 throw new ProcessException(
-            	'File descriptor is not a terminal'
-            );
+                    'File descriptor is not a terminal'
+                );
             }
         } else {
             throw new ProcessException(
-            	'Argument is not a valid file descriptor'
+                'Argument is not a valid file descriptor'
             );
         }
     }
@@ -227,10 +226,12 @@ class System
      *  - sysname - operating system name (e.g. Linux)
      *  - nodename - system name (e.g. valiant)
      *  - release - operating system release (e.g. 2.2.10)
-     *  - version - operating system version (e.g. #4 Tue Jul 20 17:01:36 MEST 1999)
+     *  - version - operating system version (e.g. #4 Tue Jul 20 17:01:36 MEST
+     *  1999)
      *  - machine - system architecture (e.g. i586)
      *  - domainname - DNS domainname (e.g. example.com)
-     *  domainname is a GNU extension and not part of POSIX.1, so this field is only available on GNU systems or when using the GNU libc.
+     *  domainname is a GNU extension and not part of POSIX.1, so this field is
+     *  only available on GNU systems or when using the GNU libc.
      *
      * @return array
      */

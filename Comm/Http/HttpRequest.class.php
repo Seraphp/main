@@ -211,9 +211,9 @@ class HttpRequest implements \Seraphp\Comm\Request, \Seraphp\Observable
         }
         $this->httpHeaders = $headers;
         if (array_key_exists('Cookie', $this->httpHeaders)) {
-            $this->cookies =
-                HttpFactory::getCookies(
-                    $this->httpHeaders['Cookie']);
+            $this->cookies = HttpFactory::getCookies(
+                $this->httpHeaders['Cookie']
+            );
         }
         if ($pos = strpos($this->url, '?')) {
             $this->getParams = $this->_params2array(substr($this->url, $pos+1));
@@ -368,8 +368,8 @@ class HttpRequest implements \Seraphp\Comm\Request, \Seraphp\Observable
             $resp->parse($response);
             return $resp;
         } else throw new \Seraphp\Exceptions\HttpException(
-                'HttpRequest instance is received not to be send out!'
-            );
+            'HttpRequest instance is received not to be send out!'
+        );
     }
 
     /**

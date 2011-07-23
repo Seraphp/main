@@ -71,13 +71,15 @@ class HttpFactory
             $secure = null;
             $onlyHTTP = null;
             extract($cookieParams, EXTR_IF_EXISTS);
-            $result[] = new HttpCookie($name,
-                                        $value,
-                                        $expireOn,
-                                        $path,
-                                        $domain,
-                                        $secure,
-                                        $onlyHTTP);
+            $result[] = new HttpCookie(
+                $name,
+                $value,
+                $expireOn,
+                $path,
+                $domain,
+                $secure,
+                $onlyHTTP
+            );
         }
         return $result;
     }

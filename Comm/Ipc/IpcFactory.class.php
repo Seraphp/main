@@ -67,7 +67,7 @@ class IpcFactory
 
     static function getClassName($type, $withNameSpace = true)
     {
-        if(true === $withNameSpace) {
+        if (true === $withNameSpace) {
             return sprintf('Seraphp\Comm\Ipc\Ipc%s', ucfirst($type));
         } else {
             return sprintf('Ipc%s', ucfirst($type));
