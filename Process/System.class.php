@@ -97,7 +97,7 @@ class System
             foreach ($rights as $right=>$code) {
                 $access[$right] = posix_access($file, $code);
                 if (false === $access[$right]) {
-                    $access[$right] = new \Exception\ProcessException();
+                    $access[$right] = new ProcessException();
                 }
             }
         } else {
