@@ -90,7 +90,7 @@ class AppServer extends Server
         if (isset($conf->instance)) {
             $this->_configInstance($conf->instance);
         }
-        $this->_configUrimap($conf);
+        $this->_configUrimap($conf->urimap);
         //This must be called lastly as it depends on other setting above.
         $this->_configRegistry();
     }
@@ -102,12 +102,12 @@ class AppServer extends Server
      * @return void
      * @throws Exception
      */
-    protected function _configIncludes($includes)
+    protected function _configIncludes(Config\Config $includes)
     {
         //Adding all pathes listed in config "includes/path"
         //They will not be added to include path before daemon is
         //summoned to lock out other processes seeing those paths
-        foreach ($conf->includes as $key => $resource) {
+        foreach ($includes as $key => $resource) {
             if (is_dir($resource)) {
                 array_push($this->_includes, $resource);
             } else {
@@ -197,9 +197,9 @@ class AppServer extends Server
      * @param Config $conf
      * @return void
      */
-    protected function _configUrimap(Config\Config $conf)
+    protected function _configUrimap($urimap = null)
     {
-        if (isset($conf->urimap)) {
+        if (null !== $urimap) {
             foreach ($conf->urimap->children() as $node=>$value) {
                 foreach ($value->attributes() as $attName=>$attValue) {
                     $this->_urimap[(string)$value][$attName] =
@@ -213,6 +213,7 @@ class AppServer extends Server
 
     protected function onSummon()
     {
+        self::$_log->info("Summoning new server daemon: $this->_appID");
         if ($this->_ipcType !== '') {
             $this->_appReg->useIpc($this->_ipc);
         }
@@ -244,6 +245,7 @@ class AppServer extends Server
         foreach ($this->_includes as $path) {
             $currIncludePath = get_include_path();
             if (strpos($currIncludePath, $path) === false) {
+                self::$_log->info("Adding include path: $path");
                 set_include_path($currIncludePath . PATH_SEPARATOR . $path);
             }
         }
@@ -261,6 +263,7 @@ class AppServer extends Server
     protected function _initEngines()
     {
         foreach ($this->_engines as $name=>$conf) {
+            self::$_log->info("Initaliting server engine: $name");
             $className = '\Seraphp\Server\\'.$conf['class'].'Engine';
             require_once $conf['class'].'Engine.class.php';
             $this->_engines[$name] = new $className($conf);
@@ -308,7 +311,7 @@ class AppServer extends Server
     {
         //Function usually called every 200 microsec
         $read = array($this->_socket);
-        if (socket_select($read, $w = array(), $e = array(), 0)) {
+        if (socket_select($read, array(), array(), 0)) {
         //if ($conn = @socket_accept($this->_socket)) {
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process
@@ -378,6 +381,7 @@ class AppServer extends Server
             $this->_accepting = true;
             return true;
         }*/
+        self::$_log->info("Initializing sockets");
         $this->_socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if (false === $this->_socket) {
             throw new \Seraphp\Exceptions\IOException(
@@ -399,6 +403,9 @@ class AppServer extends Server
                 socket_strerror(socket_last_error())
             );
         }
+        self::$_log->info(
+            "Acceptin connections on $this->_address:$this->_port"
+        );
         $this->_accepting = true;
         return true;
     }
@@ -417,7 +424,6 @@ class AppServer extends Server
     public function process(\Seraphp\Comm\Request $req)
     {
         $path = parse_url($req->url, PHP_URL_PATH);
-        $engine = false;
         foreach ($this->_urimap as $uriEntry=>$uriParams) {
             if (stripos($path, $uriEntry) !== false) {
                 break;
@@ -452,6 +458,7 @@ class AppServer extends Server
     public function onExpel()
     {
         $this->_accepting = false;
+        self::$_log->info('Server process '.$this->_pid.' shuting down');
         if (is_resource($this->_socket)) {
             //stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
             socket_shutdown($this->_socket, 2);
@@ -470,6 +477,7 @@ class AppServer extends Server
      */
     protected function sigchldCallback($pid, $status)
     {
+        self::$_log->info("Child process $pid exited with $status");
         if ($this->_ipc !== null) {
             $this->_appReg->mergeChanges();
         }
