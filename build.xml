@@ -1,87 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SeraPhp" default="build" basedir="..">
-    <target name="checkout">
-        <exec executable="svn" dir="${basedir}/source" failonerror="yes">
-            <arg line="up --non-interactive"/>
-        </exec>
-    </target>
-    <target name="clean" depends="checkout">
-        <delete includeemptydirs="true">
-            <fileset dir="${basedir}/build" includes="**/*"/>
-        </delete>
-        <delete file="${basedir}/source/.srpdAppMan" />
-        <delete file="${basedir}/source/.main_srphp.pid" />
-        <delete file="${basedir}/source/out.log" />
-        <delete>
-            <fileset dir="${basedir}/source" includes="srpd*"/>
-        </delete>
-    </target>
-    <target name="prepare" depends="clean">
-        <mkdir dir="${basedir}/build/logs" />
-        <mkdir dir="${basedir}/build/api" />
-        <mkdir dir="${basedir}/build/coverage" />
-        <mkdir dir="${basedir}/build/graph" />
-        <mkdir dir="${basedir}/build/php-code-browser" />
-    </target>
-    <target name="lint">
-    <apply executable="php" dir="${basedir}/source" failonerror="on" logerror="on">
-      <arg line="-l"/>
-      <fileset dir="${basedir}/source">
-        <include name="**/*.php"/>
-      </fileset>
-    </apply>
-  </target>
-    <target name="PHPDocs" depends="lint">
-        <exec executable="phpdoc" dir="${basedir}/source" logerror="on">
-            <arg line="-ct type
-                -ue on
-                -t ${basedir}/build/api
-                -tb /usr/share/php/data/phpUnderControl/data/phpdoc 
-                -o HTML:Phpuc:phpuc
-                -d ./
-                -pp on
-                -dc Seraphp
-                -dn Seraphp
-                -i tests/
-                -s on" />
-        </exec>
-    </target>
-    <target name="phpcs" depends="prepare">
-        <exec dir="${basedir}/source" executable="phpcs" 
-            output="${basedir}/build/logs/checkstyle.xml" failonerror="false">
-            <arg line="--report=checkstyle --standard=Zend ."/>
-        </exec>
-        </target>
-    <target name="phpcpd" depends="prepare">
-        <exec dir="${basedir}" executable="phpcpd" failonerror="false">
-            <arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml
-                --exclude ${basedir}/source/tests/ ."/>
-        </exec>
-    </target>
-    <target name="pdepend" depends="prepare">
-        <exec dir="${basedir}" executable="pdepend" failonerror="false">
-            <arg line="--phpunit-xml=${basedir}/build/logs/pdepend.xml 
-                --jdepend-chart=${basedir}/build/graph/08-dependencies.svg
-                --overview-pyramid=${basedir}/build/graph/09-software-metrics-pyramid.svg
-                ${basedir}/source" />
-        </exec>
-    </target>
-    <target name="phpunit" depends="prepare">
-        <exec dir="${basedir}/source/" executable="phpunit" failonerror="on">
-            <arg line="--verbose
-                --log-junit ${basedir}/build/logs/phpunit.xml
-                --coverage-clover ${basedir}/build/logs/phpunit.coverage.xml
-                --coverage-html ${basedir}/build/coverage
-                tests/AllTests.php"/>
-        </exec>
-    </target>
-    <target name="pmd" depends="prepare">
-        <exec dir="${basedir}/source/" executable="phpmd" failonerror="off">
-            <arg line="${basedir}/source/ xml codesize,unusedcode 
-                --reportfile ${basedir}/build/logs/phpunit.pmd.xml
-                --exclude tests/" />
-        </exec>
-    </target>
-    <target name="build"
-         depends="clean,prepare,checkout,phpcs,pdepend,pmd,PHPDocs,phpunit" />
+	<target name="checkout">
+		<exec executable="svn" dir="${basedir}/source" failonerror="yes">
+			<arg line="up --non-interactive" />
+		</exec>
+	</target>
+	<target name="clean" depends="checkout">
+		<delete includeemptydirs="true">
+			<fileset dir="${basedir}/build" includes="**/*" />
+		</delete>
+		<delete file="${basedir}/source/.srpdAppMan" />
+		<delete file="${basedir}/source/.main_srphp.pid" />
+		<delete file="${basedir}/source/out.log" />
+		<delete>
+			<fileset dir="${basedir}/source" includes="srpd*" />
+		</delete>
+	</target>
+	<target name="prepare" depends="clean">
+		<mkdir dir="${basedir}/build/logs" />
+		<mkdir dir="${basedir}/build/api" />
+		<mkdir dir="${basedir}/build/coverage" />
+		<mkdir dir="${basedir}/build/graph" />
+		<mkdir dir="${basedir}/build/php-code-browser" />
+	</target>
+	<target name="lint" depends="prepare">
+		<apply executable="php" dir="${basedir}/source" failonerror="on" logerror="on">
+			<arg line="-l" />
+			<fileset dir="${basedir}/source">
+				<include name="**/*.php" />
+			</fileset>
+		</apply>
+	</target>
+	<target name="PHPDocs" depends="lint">
+		<exec executable="phpdoc" dir="${basedir}/source" logerror="on">
+			<arg line="-ct type -ue on -t ${basedir}/build/api -tb /usr/share/php/data/phpUnderControl/data/phpdoc -o HTML:Phpuc:phpuc -d ./ -pp on -dc Seraphp -dn Seraphp -i tests/ -s on" />
+		</exec>
+	</target>
+	<target name="phpcs" depends="lint">
+		<exec dir="${basedir}/source" executable="phpcs" output="${basedir}/build/logs/checkstyle.xml" failonerror="false">
+			<arg line="--report=checkstyle --standard=Zend ." />
+		</exec>
+	</target>
+	<target name="phpcpd" depends="lint">
+		<exec dir="${basedir}" executable="phpcpd" failonerror="false">
+			<arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml --exclude ${basedir}/source/tests/ ." />
+		</exec>
+	</target>
+	<target name="pdepend" depends="lint">
+		<exec dir="${basedir}" executable="pdepend" failonerror="false">
+			<arg line="--phpunit-xml=${basedir}/build/logs/pdepend.xml --jdepend-chart=${basedir}/build/graph/08-dependencies.svg --overview-pyramid=${basedir}/build/graph/09-software-metrics-pyramid.svg ${basedir}/source" />
+		</exec>
+	</target>
+	<target name="phpunit" depends="lint">
+		<exec dir="${basedir}/source/" executable="phpunit" failonerror="on">
+			<arg line="--verbose --log-junit ${basedir}/build/logs/phpunit.xml --coverage-clover ${basedir}/build/logs/phpunit.coverage.xml --coverage-html ${basedir}/build/coverage tests/AllTests.php" />
+		</exec>
+	</target>
+	<target name="pmd" depends="lint">
+		<exec dir="${basedir}/source/" executable="phpmd" failonerror="off">
+			<arg line="${basedir}/source/ xml codesize,unusedcode --reportfile ${basedir}/build/logs/phpunit.pmd.xml --exclude tests/" />
+		</exec>
+	</target>
+	<target name="build" depends="clean,prepare,checkout,phpcs,pdepend,pmd,PHPDocs,phpunit" />
 </project>
