@@ -41,7 +41,7 @@ class RequestFactory
         self::$_log = \Seraphp\Log\LogFactory::getInstance();
         $read = array($socket);
         //if (stream_select($read, $write, $except, $timeout, 200) < 1) {
-        if (socket_select($read, $w=null, $e=null, $timeout, 200) < 1) {
+        if (socket_select($read, $w = null, $e = null, $timeout, 200) < 1) {
             throw new \Seraphp\Exceptions\IOException('Connection timed out!');
         }
         unset($w, $e);
