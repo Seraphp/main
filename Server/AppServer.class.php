@@ -200,7 +200,7 @@ class AppServer extends Server
     protected function _configUrimap($urimap = null)
     {
         if (null !== $urimap) {
-            foreach ($conf->urimap->children() as $node=>$value) {
+            foreach ($urimap->children() as $node=>$value) {
                 foreach ($value->attributes() as $attName=>$attValue) {
                     $this->_urimap[(string)$value][$attName] =
                     (string) $attValue;
@@ -309,10 +309,9 @@ class AppServer extends Server
      */
     private function _listen()
     {
-        //Function usually called every 200 microsec
         $read = array($this->_socket);
-        if (socket_select($read, array(), array(), 0)) {
-        //if ($conn = @socket_accept($this->_socket)) {
+        if (socket_select($read, $w = array(), $e = array(), 0)) {
+            unset($e, $w);
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process
                 $conn = socket_accept($this->_socket);
