@@ -211,7 +211,9 @@ abstract class Server implements Daemon
         declare(ticks = 1);
         while (true) {
             if ($this->daemonize === true) {
+                declare(ticks = 0);
                 $this->hartBeat();
+                declare(ticks = 1);
             } else {
                 break;
             }
