@@ -37,7 +37,9 @@ class JsonRpcResponseTest extends PHPUnit_Framework_TestCase
 
     function testConstructor()
     {
-        $response = new \Seraphp\Comm\Jsonrpc\JsonRpcResponse('result', null, 1);
+        $response = new \Seraphp\Comm\Jsonrpc\JsonRpcResponse(
+            'result', null, 1
+        );
         $this->assertEquals('result', $response->result);
         $this->assertEquals(1, $response->id);
         $this->assertEquals(null, $response->error);
@@ -55,7 +57,9 @@ class JsonRpcResponseTest extends PHPUnit_Framework_TestCase
 
     function testToString()
     {
-        $response = new \Seraphp\Comm\JsonRpc\JsonRpcResponse('result', null, 1);
+        $response = new \Seraphp\Comm\JsonRpc\JsonRpcResponse(
+            'result', null, 1
+        );
         $this->assertEquals(
             '{"result":"result","error":null,"id":1}', $response->__toString()
         );

@@ -30,7 +30,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
 
     function testFieldEqualSpecification()
     {
-        $writenByDA = new \Seraphp\Policy\FieldEqualSpecification('writer', 'Douglas Adams');
+        $writenByDA = new \Seraphp\Policy\FieldEqualSpecification(
+            'writer', 'Douglas Adams'
+        );
         $this->assertTrue($writenByDA->isSatisfiedBy($this->_src));
         $not = new \Seraphp\Policy\FieldEqualSpecification('numField', 24);
         $this->assertFalse($not->isSatisfiedBy($this->_src));
@@ -46,9 +48,13 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
 
     function testFieldMatchSpecification()
     {
-        $digits = new \Seraphp\Policy\FieldMatchesSpecification('numField', '/\d{2}/');
+        $digits = new \Seraphp\Policy\FieldMatchesSpecification(
+            'numField', '/\d{2}/'
+        );
         $this->assertTrue($digits->isSatisfiedBy($this->_src));
-        $noDigits = new \Seraphp\Policy\FieldMatchesSpecification('writer', '/\d{2}/');
+        $noDigits = new \Seraphp\Policy\FieldMatchesSpecification(
+            'writer', '/\d{2}/'
+        );
         $this->assertFalse($noDigits->isSatisfiedBy($this->_src));
     }
 
@@ -109,14 +115,20 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         return array(
             array(
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 24),
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Douglas Adams')
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Douglas Adams'
+                )
             ),
             array(
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Douglas Adams'),
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Douglas Adams'
+                ),
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 24)
             ),
             array(
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Douglas Adams'),
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Douglas Adams'
+                ),
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 42)
             )
         );
@@ -127,7 +139,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         return array(
             array(
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 24),
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Peter Nagy')
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Peter Nagy'
+                )
             )
         );
     }
@@ -136,7 +150,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     {
         return array(
             array(
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Douglas Adams'),
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Douglas Adams'
+                ),
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 42)
             )
         );
@@ -147,14 +163,20 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         return array(
             array(
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 24),
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Peter Nagy')
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Peter Nagy'
+                )
             ),
             array(
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Douglas Adams'),
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Douglas Adams'
+                ),
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 24)
             ),
             array(
-                new \Seraphp\Policy\FieldEqualSpecification('writer', 'Peter Nagy'),
+                new \Seraphp\Policy\FieldEqualSpecification(
+                    'writer', 'Peter Nagy'
+                ),
                 new \Seraphp\Policy\FieldEqualSpecification('numField', 42)
             )
         );

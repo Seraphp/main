@@ -31,7 +31,9 @@ class AppServerRegistry extends Registry
      */
     static private $_instance = null;
 
-    private function __construct(Seraphp\Server\Registry\StoreEngine $engine = null)
+    private function __construct(
+        Seraphp\Server\Registry\StoreEngine $engine = null
+    )
     {
         if (isset($engine)) {
             $this->setEngine($engine);
@@ -42,7 +44,9 @@ class AppServerRegistry extends Registry
      *
      * @return self
      */
-    public function getInstance(Seraphp\Server\Registry\StoreEngine $engine = null)
+    public function getInstance(
+        Seraphp\Server\Registry\StoreEngine $engine = null
+    )
     {
         if (self::$_instance === null) {
             self::$_instance = new self($engine);
@@ -88,7 +92,9 @@ class AppServerRegistry extends Registry
                 return $this->$appID;
             }
             // If instance already running, return proxy to it.
-            $proxy = new \Seraphp\Comm\JsonRpc\JsonRpcProxy($appID, $this->$appID);
+            $proxy = new \Seraphp\Comm\JsonRpc\JsonRpcProxy(
+                $appID, $this->$appID
+            );
             $proxy->init();
             return $proxy;
         } else {

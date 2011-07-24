@@ -85,7 +85,8 @@ class HttpCookie
         }
         return sprintf(
             '%s:%s=%s;%s',
-            ($this->type == self::COOKIE_TYPE_RFC2965)?'Set-Cookie2':'Set-Cookie',
+            ($this->type == self::COOKIE_TYPE_RFC2965)?
+                'Set-Cookie2':'Set-Cookie',
             $this->name,
             $this->value,
             implode(';', $details)

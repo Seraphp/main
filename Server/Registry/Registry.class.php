@@ -22,7 +22,8 @@ require_once 'Server/Registry/DataStore.class.php';
  * @package Server
  * @subpackage Registry
  */
-class Registry extends \Seraphp\Server\Registry\DataStore implements \Seraphp\Singleton
+class Registry extends \Seraphp\Server\Registry\DataStore
+    implements \Seraphp\Singleton
 {
 
     /**

@@ -64,7 +64,9 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
         stream_set_blocking($pipe, false);
         fwrite(
             $pipe,
-            (string) new \Seraphp\Comm\JsonRpc\JsonRpcResponse('running', null, 0)
+            (string) new \Seraphp\Comm\JsonRpc\JsonRpcResponse(
+                'running', null, 0
+            )
         );
         pcntl_signal(SIGUSR1, SIG_IGN);
         $status = $clientProxy->getStatus();
@@ -84,7 +86,9 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
         stream_set_blocking($pipeI, false);
         fwrite(
             $pipeI,
-            (string) new \Seraphp\Comm\JsonRpc\JsonRpcRequest('getStatus', null, 0)
+            (string) new \Seraphp\Comm\JsonRpc\JsonRpcRequest(
+                'getStatus', null, 0
+            )
         );
         $serverProxy->listen();
         $read = array($pipeO);
@@ -95,7 +99,9 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
             $jsonResponse = trim(fgets($pipeO));
         }
         $this->assertEquals(
-            (string) new \Seraphp\Comm\JsonRpc\JsonRpcResponse('running', null, 0),
+            (string) new \Seraphp\Comm\JsonRpc\JsonRpcResponse(
+                'running', null, 0
+            ),
             $jsonResponse
         );
     }

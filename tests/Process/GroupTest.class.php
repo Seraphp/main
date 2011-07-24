@@ -17,7 +17,7 @@ class GroupTest extends PHPUnit_Framework_TestCase
     function testCreationIvalid()
     {
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException',
+            '\Seraphp\Exceptions\ProcessException',
             'No groupid provided'
         );
         $this->assertInstanceOf('\Seraphp\Process\Group', new Group(false));

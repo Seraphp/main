@@ -22,7 +22,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
     {
         $inst = System::getInstance();
         $this->assertInstanceOf(
-        	'\Seraphp\Process\System', $inst
+            '\Seraphp\Process\System', $inst
         );
         $this->assertSame($inst, System::getInstance());
     }
@@ -38,13 +38,13 @@ class SystemTest extends PHPUnit_Framework_TestCase
             getcwd().'/tests/AllTests.php'
         );
         $this->assertInternalType(
-        	'array',
+            'array',
             $access
         );
         $this->assertTrue($access['read']);
         $this->assertTrue($access['write']);
         $this->assertInstanceOf(
-        	'\Seraphp\Exceptions\ProcessException', $access['exec']
+            '\Seraphp\Exceptions\ProcessException', $access['exec']
         );
     }
 
@@ -62,7 +62,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
             System::getInstance()->isTerminal(fopen('/dev/tty7', 'r+'))
         );
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException',
+            '\Seraphp\Exceptions\ProcessException',
             'Argument is not a valid file descriptor'
         );
         System::getInstance()->isTerminal(70);
@@ -78,15 +78,15 @@ class SystemTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(file_exists($fifo));
     }
 
-    /*
+    /*/**
      * Because test runing with ROOT rights, this test will not fail
      *
-     * function testCreateInvalidFIFO()
+    function testCreateInvalidFIFO()
     {
         $fifo = '/etc/testFifo';
         $this->assertFalse(file_exists($fifo));
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException'
+            '\Seraphp\Exceptions\ProcessException'
         );
         System::getInstance()->createFIFO($fifo, 0700);
         $this->assertFalse(file_exists($fifo));
@@ -102,16 +102,15 @@ class SystemTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(file_exists($node));
     }
 
-    /*
+    /*/**
      * Because test runing with ROOT rights, this test will not fail
      *
-     * function testCreateInvalidNode()
+    function testCreateInvalidNode()
     {
-
         $node = '/etc/testNode';
         $this->assertFalse(file_exists($node));
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException'
+            '\Seraphp\Exceptions\ProcessException'
         );
         System::getInstance()->createNode($node);
         $this->assertFalse(file_exists($node));
@@ -129,7 +128,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
     function testGetNONTerminalName()
     {
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException',
+            '\Seraphp\Exceptions\ProcessException',
             'File descriptor is not a terminal'
         );
         System::getInstance()->getTerminalName(STDOUT);
@@ -138,7 +137,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
     function testGetInvalidTerminalName()
     {
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException',
+            '\Seraphp\Exceptions\ProcessException',
             'Argument is not a valid file descriptor'
         );
         System::getInstance()->getTerminalName(42);

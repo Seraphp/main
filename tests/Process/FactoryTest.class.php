@@ -7,15 +7,15 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     function testCreation()
     {
         $this->assertInstanceOf(
-        	'\Seraphp\Process\Process',
+            '\Seraphp\Process\Process',
             Factory::create('process',getmypid())
         );
         $this->assertInstanceOf(
-        	'\Seraphp\Process\Group',
+            '\Seraphp\Process\Group',
             Factory::create('group','peter')
         );
         $this->assertInstanceOf(
-        	'\Seraphp\Process\User',
+            '\Seraphp\Process\User',
             Factory::create('user','peter')
         );
     }

@@ -7,13 +7,13 @@ class ProcessTest extends PHPUnit_Framework_TestCase
     function testCreation()
     {
         $this->assertInstanceOf(
-        	'\Seraphp\Process\Process', new Process()
+            '\Seraphp\Process\Process', new Process()
         );
         $this->assertInstanceOf(
-        	'\Seraphp\Process\Process', new Process(getmypid())
+            '\Seraphp\Process\Process', new Process(getmypid())
         );
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException',
+            '\Seraphp\Exceptions\ProcessException',
             'Only integer process id accepted'
         );
         new Process(true);
@@ -36,13 +36,17 @@ class ProcessTest extends PHPUnit_Framework_TestCase
     {
         $proc = new Process();
         $this->assertInstanceOf('\Seraphp\Process\Group', $proc->getGroup());
-        $this->assertInstanceOf('\Seraphp\Process\Group', $proc->getGroup(true));
+        $this->assertInstanceOf(
+            '\Seraphp\Process\Group', $proc->getGroup(true)
+        );
     }
 
     function testGetParent()
     {
         $proc = new Process();
-        $this->assertInstanceOf('\Seraphp\Process\Process', $proc->getParent());
+        $this->assertInstanceOf(
+            '\Seraphp\Process\Process', $proc->getParent()
+        );
     }
 
     function testGetProcGroup()

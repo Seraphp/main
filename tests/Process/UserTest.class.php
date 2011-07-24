@@ -7,7 +7,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     function testCreationByName()
     {
         $this->assertInstanceOf(
-        	'\Seraphp\Process\User',
+            '\Seraphp\Process\User',
             new User('peter')
         );
     }
@@ -15,7 +15,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     function testCreationById()
     {
         $this->assertInstanceOf(
-        	'\Seraphp\Process\User',
+            '\Seraphp\Process\User',
             new User(1000)
         );
     }
@@ -23,8 +23,8 @@ class UserTest extends PHPUnit_Framework_TestCase
     function testCreationWrongly()
     {
         $this->setExpectedException(
-        	'\Seraphp\Exceptions\ProcessException',
-        	'No user id provided'
+            '\Seraphp\Exceptions\ProcessException',
+            'No user id provided'
         );
         new User(true);
     }
