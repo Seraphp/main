@@ -93,7 +93,7 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
         $serverProxy->listen();
         $read = array($pipeO);
         $jsonResponse = '';
-        if (stream_select($read, $w=null, $e=null, 5) > 0) {
+        if (stream_select($read, $w = null, $e = null, 5) > 0) {
             $jsonResponse = trim(fgets($pipeO));
         }
         unset($w, $e);
