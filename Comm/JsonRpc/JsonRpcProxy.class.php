@@ -387,6 +387,7 @@ class JsonRpcProxy
     {
         $read = array($this->_conn['read']);
         if (stream_select($read, $w = null, $x = null, self::TIMEOUT, 15) > 0) {
+            unset($w, $e);
             if ($reply = fgets($this->_conn['read'])) {
                 return $reply;
             } else {

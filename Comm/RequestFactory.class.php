@@ -40,12 +40,11 @@ class RequestFactory
     {
         self::$_log = \Seraphp\Log\LogFactory::getInstance();
         $read = array($socket);
-        $write = null;
-        $except = null;
         //if (stream_select($read, $write, $except, $timeout, 200) < 1) {
-        if (socket_select($read, $write, $except, $timeout, 200) < 1) {
+        if (socket_select($read, $w=null, $e=null, $timeout, 200) < 1) {
             throw new \Seraphp\Exceptions\IOException('Connection timed out!');
         }
+        unset($w, $e);
         //using socket_recv with STREAM_PEEK to examin the first part
         //of the message without removing it form the socket.
         //$result = stream_socket_recvfrom($socket, 1500, STREAM_PEEK);

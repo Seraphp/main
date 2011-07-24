@@ -92,12 +92,11 @@ class JsonRpcProxyTest extends PHPUnit_Framework_TestCase
         );
         $serverProxy->listen();
         $read = array($pipeO);
-        $write = array();
-        $exc = array();
         $jsonResponse = '';
-        if (stream_select($read, $write, $exc, 5) > 0) {
+        if (stream_select($read, $w=null, $e=null, 5) > 0) {
             $jsonResponse = trim(fgets($pipeO));
         }
+        unset($w, $e);
         $this->assertEquals(
             (string) new \Seraphp\Comm\JsonRpc\JsonRpcResponse(
                 'running', null, 0

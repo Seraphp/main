@@ -310,7 +310,7 @@ class AppServer extends Server
     private function _listen()
     {
         $read = array($this->_socket);
-        if (socket_select($read, $w = array(), $e = array(), 0)) {
+        if (socket_select($read, $w = null, $e = null, 0)) {
             unset($e, $w);
             $this->spawn();
             if ($this->_role == 'child') {//we are the new process

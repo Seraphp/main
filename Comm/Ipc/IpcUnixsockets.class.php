@@ -107,12 +107,8 @@ class IpcUnixsockets implements IpcAdapter
     public function read()
     {
         $read = array(($this->_role)?$this->_sockChild:$this->_sockParent);
-        if (stream_select(
-            $read,
-            array(),
-            array(),
-            0, 500
-        ) > 0) {
+        if (stream_select($read, $w = null, $e = null, 0, 500) > 0) {
+            unset($w, $e);
             return stream_get_line(
                 ($this->_role)?$this->_sockChild:$this->_sockParent,
                 self::MAX_MESSAGE_LENGTH,

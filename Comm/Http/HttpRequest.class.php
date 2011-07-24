@@ -139,12 +139,13 @@ class HttpRequest implements \Seraphp\Comm\Request, \Seraphp\Observable
             $read = array($this->_socket);
             //if (stream_select(
             if (socket_select(
-                $read, $write = null, $except = null, $this->timeout, 200
+                $read, $w = null, $e = null, $this->timeout, 200
             ) < 1) {
                 throw new \Seraphp\Exceptions\IOException(
                     'Connection timed out!'
                 );
             }
+            unset($w, $e);
             while ($this->_buffer = socket_read($this->_socket, 8)) {
                 if ($this->_buffer === false || $this->_buffer === '') {
                      $this->_save();
