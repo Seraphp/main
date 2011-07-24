@@ -14,7 +14,8 @@ class SystemTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    function tearDown() {
+    function tearDown()
+    {
         $this->setUp();
     }
 
@@ -121,7 +122,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
         $path = '/dev/tty7';
         $this->assertEquals(
             $path,
-            System::getInstance()->getTerminalName(fopen($path,"r+"))
+            System::getInstance()->getTerminalName(fopen($path, "r+"))
         );
     }
 
@@ -146,7 +147,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
     function testGetSystemInfo()
     {
         $info = System::getInstance()->getSystemInfo();
-        $this->assertInternalType('array',$info);
+        $this->assertInternalType('array', $info);
         $this->assertArrayHasKey('sysname', $info);
         $this->assertArrayHasKey('nodename', $info);
         $this->assertArrayHasKey('release', $info);

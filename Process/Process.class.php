@@ -279,8 +279,7 @@ class Process
         switch (gettype($target)) {
             case 'object':
                     if (get_class($target) !== 'Process' &&
-                        !is_subclass_of($target, 'Process'))
-                    {
+                        !is_subclass_of($target, 'Process')) {
                         throw new ProcessException(
                             "Provided object is not Process class's or ".
                             " its subclass's instance"

@@ -8,21 +8,21 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             '\Seraphp\Process\Process',
-            Factory::create('process',getmypid())
+            Factory::create('process', getmypid())
         );
         $this->assertInstanceOf(
             '\Seraphp\Process\Group',
-            Factory::create('group','peter')
+            Factory::create('group', 'peter')
         );
         $this->assertInstanceOf(
             '\Seraphp\Process\User',
-            Factory::create('user','peter')
+            Factory::create('user', 'peter')
         );
     }
 
     function testCreateMany()
     {
-        $result = Factory::createMany('user', array('1000','peter','judit'));
+        $result = Factory::createMany('user', array('1000', 'peter', 'judit'));
         $this->assertInstanceOf(
             '\Seraphp\Process\User', $result[0]
         );
