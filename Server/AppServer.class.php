@@ -90,7 +90,11 @@ class AppServer extends Server
         if (isset($conf->instance)) {
             $this->_configInstance($conf->instance);
         }
-        $this->_configUrimap($conf->urimap);
+        if (isset($conf->urimap)) {
+            $this->_configUrimap($conf->urimap);
+        } else {
+            $this->_configUrimap();
+        }
         //This must be called lastly as it depends on other setting above.
         $this->_configRegistry();
     }
