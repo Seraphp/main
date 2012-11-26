@@ -7,7 +7,6 @@ php:
 before_script:
   - pear install pear/PHP_CodeSniffer
   - phpenv rehash
-  - php -l
-  - phpcs --report=checkstyle --standard=Zend . 
+  - phpcs --report=checkstyle --standard=Zend .
 script:
   phpunit tests/AllTests.php --coverage-text
