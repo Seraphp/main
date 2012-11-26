@@ -2,3 +2,12 @@ language: php
 php:
   - "5.4"
   - "5.3"
+
+pear install pear/PHP_CodeSniffer
+phpenv rehash  
+
+before_script:
+  - php -l
+  - phpcs --report=checkstyle --standard=Zend . 
+script:
+  phpunit tests/AllTests.php --coverage-text
