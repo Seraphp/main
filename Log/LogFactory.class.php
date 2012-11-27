@@ -116,9 +116,11 @@ class LogFactory
                 } elseif (include_once('Log.php')) {
                     self::$_instance = \Log::singleton('composite');
                     self::$provider = 'PEAR';
-                } else throw new Exception(
-                    'No logger package available (Zend_Log or PEAR::Log)'
-                );
+                } else {
+                    throw new \Exception(
+                        'No logger package available (Zend_Log or PEAR::Log)'
+                    );
+                }
                 break;
         }
     }
