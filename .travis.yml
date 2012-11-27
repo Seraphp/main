@@ -11,4 +11,4 @@ before_script:
   - phpenv rehash
   - phpcs --report=checkstyle --standard=Zend .
 script:
-  phpunit tests/AllTests.php --coverage-text
+  phpunit -v --colors tests/AllTests.php --coverage-text
