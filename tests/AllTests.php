@@ -18,12 +18,12 @@ class AllTests
         $suite->addTest(Exceptions_AllTests::suite());
         $suite->addTest(Log_AllTests::suite());
         $suite->addTest(Process_AllTests::suite());
-        $suite->filter()->addDirectoryToBlacklist(
-            '/usr/share/php'
-        );
-        $suite->filter()->addDirectoryToBlacklist(
-            '/opt/cruisecontrol/projects/seraphp/source/tests'
-        );
+        //$suite->filter()->addDirectoryToBlacklist(
+        //    '/usr/share/php'
+        //);
+        //$suite->filter()->addDirectoryToBlacklist(
+        //    '/opt/cruisecontrol/projects/seraphp/source/tests'
+        //);
         return $suite;
     }
 }
